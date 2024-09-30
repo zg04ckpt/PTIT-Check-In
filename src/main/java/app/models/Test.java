@@ -2,13 +2,15 @@ package app.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 //class test migration
 @Entity
+@Table(name = "Tests")
 public class Test {
     @Id
-    private String id;
-    private String prop1;
+    private String id; //khóa chính
+    private String prop1; // thuoc tinh 1
     private String prop2;
 
     public Test() {
@@ -20,23 +22,5 @@ public class Test {
         this.prop2 = prop2;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getProp1() {
-        return prop1;
-    }
-
-    public void setProp1(String prop1) {
-        this.prop1 = prop1;
-    }
-
-    public String getProp2() {
-        return prop2;
-    }
-
-    public void setProp2(String prop2) {
-        this.prop2 = prop2;
-    }
+    //Getter và Setter khi nao dùng mới tạo
 }
