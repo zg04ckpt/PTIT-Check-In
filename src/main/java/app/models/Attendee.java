@@ -21,7 +21,7 @@ public class Attendee {
     @NonNull
     private LocalDateTime attendOn;
 
-    @ManyToOne()
-    @JoinColumn(name = "")
+    @ManyToOne
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 }

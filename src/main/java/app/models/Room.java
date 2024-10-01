@@ -1,12 +1,11 @@
 package app.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Rooms")
@@ -33,6 +32,9 @@ public class Room {
     private String code;
     @NonNull
     private String url;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
+    private List<Attendee> attendees;
 
     public Room() {
     }
