@@ -1,0 +1,344 @@
+/*section-1*/
+.section-1{
+    padding: 120px 0;
+}
+
+.section-1 .inner-wrap .inner-title{
+    text-align: center;
+    font-size: 90px;
+    font-weight: 1000;
+    margin-bottom: 45px;
+}
+
+.section-1 .inner-wrap .inner-form-wrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    margin-bottom: 50px;
+}
+
+.section-1 .inner-wrap .inner-form-wrap .codeRoom{
+    border-radius: 5px;
+    border: 2px solid #000;
+    text-align: left;
+    padding-left: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    margin-right: 20px;
+    width: 300px;
+    height: 100%;
+}
+
+.section-1 .inner-wrap .inner-form-wrap .LogInRoom{
+    border-radius: 5px;
+    border: 2px solid #000;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    width: 100px;
+    height: 100%;
+}
+
+.section-1 .inner-wrap .inner-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #00A3DE;
+    color: #fff;
+    border-radius: 5px;
+    border: 2px solid #ffff;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    height:40px;
+    width: 300px;
+    margin: 0 auto;
+}
+/*end section-1*/
+
+/*section-2*/
+.section-2{
+    padding: 150px 0;
+}
+
+.section-2 .inner-wrap{
+    width: 450px;
+    height: 380px;
+    box-shadow: #00000026 0px 5px 15px 0px;
+    padding: 25px 30px;
+    margin: 0 auto;
+}
+
+.section-2 .inner-wrap .inner-form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #fff;
+
+}
+
+.section-2 .inner-wrap .inner-form .inner-title{
+    font-size: 32px;
+    font-weight:600;
+    margin-bottom: 50px;
+}
+
+.section-2 .inner-wrap .inner-form .inner-desc{
+    font-size: 20px;
+}
+
+.section-2 .inner-wrap .inner-form .inner-input{
+    height: 45px;
+    width: 300px;
+    border-radius: 5px;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.section-2 .inner-wrap .inner-form .inner-button{
+    width: 300px;
+    height: 35px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    background: #00B050;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.section-2 .inner-wrap .inner-form .inner-return{
+    color: #AFABAB;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/*end section-2*/
+
+/*section-3*/
+.section-3{
+    padding: 100px 0 0;
+}
+
+.section-3 .inner-wrap{
+    width: 410px;
+    height: 420px;
+    box-shadow: #00000026 0px 5px 15px 0px;
+    padding: 5px 5px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background:#fff;
+    position: relative;
+}
+
+.section-3 .inner-wrap .inner-title{
+    margin-top: -260px;
+    font-size: 32px;
+    font-weight:600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.section-3 .inner-wrap ul{
+    list-style: none;/*bỏ đi các dấu chấm tròn mặc định*/
+    margin: 0;/*đưa các thẻ ul về mặc định*/
+    padding: 0;
+}
+
+.section-3 .inner-wrap .time{
+    color: #A5A5A5;
+    font-weight: 400;
+    font-size: 18px;
+    margin-top: -20px;
+    padding-bottom: 30px;
+}
+
+.section-3 .inner-wrap .time .remaining{
+    color: #00B6F1;
+    font-weight: 500;
+}
+
+.section-3 .inner-wrap .information-list{
+    position: absolute;
+    right: 130px;
+    margin-bottom: 20px;
+}
+
+.section-3 .inner-wrap .information-list li{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.section-3 .inner-wrap .LogOutRoom{
+    position: absolute;
+    bottom:10px;
+    width: 300px;
+    height: 40px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    margin-bottom: 30px;
+    font-size: 17px;
+}
+
+.section-3 .inner-wrap .modal-header{
+    border: none;
+    position: relative;
+}
+
+.section-3 .inner-wrap .modal-header .inner-sub-title{
+    position: absolute;
+    left: 120px;
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.section-3 .inner-wrap .modal-header .close .span{
+    right: 1px;
+    position: absolute;
+    bottom: 8px;
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.section-3 .inner-wrap .modal-content{
+    height: 150px;
+}
+
+.section-3 .inner-wrap .modal-content .modal-footer{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    margin: 20px;
+    padding-top: 30px;
+}
+
+.section-3 .inner-wrap .modal-content .modal-footer .accept{
+    background: #00B050;
+    width: 200px;
+    margin-right: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.section-3 .inner-wrap .modal-content .modal-footer .home-stay{
+    background: #A5A5A5;
+    width: 200px;
+    font-size: 20px;
+    font-weight: 600;
+}
+/*end section-3/
+
+/*section-4*/
+.section-4{
+    padding: 100px 0;
+}
+
+.section-4 .inner-wrap{
+    width: 410px;
+    height: 430px;
+    box-shadow: #00000026 0px 5px 15px 0px;
+    padding: 5px 5px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #fff;
+
+}
+
+.section-4 .inner-wrap .inner-title{
+    font-size: 32px;
+    font-weight:600;
+    margin-bottom: 25px;
+}
+
+.section-4 .inner-wrap ul{
+    list-style: none;/*bỏ đi các dấu chấm tròn mặc định*/
+    margin: 0;/*đưa các thẻ ul về mặc định*/
+    padding: 0;
+}
+
+.section-4 .inner-wrap .result-list{
+    position: relative;
+    float: right; /* Hoặc float: left nếu bạn muốn đẩy sang trái */
+    width: 350px;
+}
+
+.section-4 .inner-wrap .result-list li{
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .success{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00A049;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .fail{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #C00000;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .pending{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000000;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .absent{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #BFBFBF;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .total{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00B0F0;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .color-green{
+    margin-top: 10px;
+    color: #1EB462;
+    font-weight: 1000;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.section-4 .inner-wrap .downloadDetail{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 40px;
+    background: #00B0F0;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.section-4 .inner-wrap .inner-home{
+    color: #AEABAB;
+    font-size: 20px;
+    font-weight: 600;
+}
+/*end section-4*/
