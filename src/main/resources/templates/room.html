@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+<head>
+    <title layout:fragment="title">Phòng điểm danh</title>
+</head>
+<body>
+
+    <div layout:fragment="content">
+
+        <!-- Nam -->
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card card-body mx-3 mx-lg-0 shadow" style="margin-top: 50px; height: 600px;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="fs-2 fw-bolder">Điểm danh nhóm 8 OOP</h1>
+                    <div class="d-flex">
+                        <div class="fs-5">Còn lại: <b class="text-info">05p:49s</b></div>
+                        <button class="btn btn-outline-danger btn-sm ms-3">Đóng phòng</button>
+                    </div>
+                </div>
+            
+                <div class="d-flex text-secondary">
+                    <p class="me-3">
+                        Mã phòng: <b class="text-info">[Mã room]</b>
+                        <i class='bx bx-copy'></i>
+                    </p>
+                    <p class="me-3">Chủ phòng: <b class="text-info">[Chủ room]</b></p>
+                    <p class="me-3">Số lượng: <b class="text-info">[Số lượng người tham gia]</b></p>
+                </div>
+            
+                <div class="d-flex mt-4 justify-content-between">
+                    <div class="d-flex">
+            
+                        <button class="btn btn-outline-dark btn-sm me-2">
+                            Cấu hình
+                            <i class='bx bxs-brightness'></i>
+                        </button>
+                
+                        <button class="btn btn-outline-dark btn-sm me-2">
+                            QR Code
+                            <i class='bx bx-qr' ></i>
+                        </button>
+                
+                        <button class="btn btn-outline-dark btn-sm me-2">
+                            Tự động duyệt
+                            <i class='bx bxs-rocket' ></i>
+                        </button>
+                    </div>
+            
+                    <button class="btn btn-outline-success btn-sm">
+                        Duyệt tất cả
+                        <i class='bx bxs-check-circle'></i>
+                    </button>
+                </div>
+            
+                <table class="table table-sm mt-2" >
+                    <thead>
+                        <tr>
+                            <th >STT</th>
+                            <th>Mã điểm danh</th>
+                            <th>Tên</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                            <th style="width: 4%; text-align: end;">Chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr  class="bg-secondary text-white">
+                            <td>1</td>
+                            <td>B22DCCN589</td>
+                            <td>Hoàng Cao Nguyên</td>
+                            <td>Chờ điểm danh</td>
+                            <td><button class="btn btn-sm btn-success py-0">Duyệt</button></td>
+                            <td style="text-align: center;">
+                                <i class='bx bx-dots-vertical-rounded dropdown' data-bs-toggle="dropdown"></i>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-item">Chi tiết</li>
+                                    <li class="dropdown-item">Xem vị trí</li>
+                                    <li class="dropdown-item">Chặn</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr  class="bg-success text-white">
+                            <td>2</td>
+                            <td>B22DCCN589</td>
+                            <td>Hoàng Cao Nguyên</td>
+                            <td>Đã điểm danh</td>
+                            <td><button class="btn btn-sm btn-danger py-0">Bỏ duyệt</button></td>
+                            <td style="text-align: center;"><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>B22DCCN589</td>
+                            <td>Hoàng Cao Nguyên</td>
+                            <td>Chưa vào phòng</td>
+                            <td></td>
+                            <td style="text-align: center;"><i class='bx bx-dots-vertical-rounded'></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+</html>

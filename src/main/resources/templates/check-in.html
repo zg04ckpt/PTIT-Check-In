@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+<head>
+    <title layout:fragment="title">Vào phòng</title>
+    <link rel="stylesheet" href="/css/check-in.css">
+</head>
+<body>
+
+    <div layout:fragment="content">
+
+        <!-- Thịnh -->
+        <div class="section-2" style="padding-top: 50px;">
+            <div class="container">
+                <div class="inner-wrap" style="padding: 15px; height: auto; width: 360px;">
+                    <form action="" class="inner-form">
+        
+                        <h1 class="inner-title text-center px-4 mt-2" style="font-size: 25px;">Điểm danh Nhóm 10 - CSDL - 2024</h1>
+                        <p class="fst-italic" style="margin-bottom: 40px;">Mã phòng: <b>9GHT1K</b></p>
+        
+                        <p class="inner-desc text-secondary" style="margin-bottom: 8px;">Vui lòng nhập mã điểm danh:</p>
+        
+                        <input type="text" placeholder="Mã điểm danh..." class="inner-input">
+        
+                        <div class="d-flex flex-column mt-4 justify-content-center mb-2 w-75">
+                            <button type="submit" class="btn btn-success px-3 ">Vào phòng</button>
+                            <button class="btn btn-outline-secondary px-3 mt-2">
+                                <i class="fa-solid fa-arrow-left m-0"></i> Quay lại
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+</html>
