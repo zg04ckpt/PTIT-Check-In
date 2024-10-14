@@ -1,7 +1,6 @@
 package app.controller;
 
 import app.dtos.CheckInDTO;
-import app.dtos.RoomInfoDTO;
 import app.dtos.WaitingRoomDTO;
 import app.models.Attendee;
 import app.models.Room;
