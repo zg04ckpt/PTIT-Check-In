@@ -17,7 +17,7 @@ import java.util.ArrayList;
 @Controller
 @RequestMapping("/tests")
 public class TestController {
-    private TestService service;
+    private final TestService service;
 
     public TestController(TestService service) {
         this.service = service;

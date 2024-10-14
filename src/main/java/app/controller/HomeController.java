@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class HomeController {
-    private AttendeeService attendeeService;
+    private final AttendeeService attendeeService;
 
     public HomeController(AttendeeService attendeeService) {
         this.attendeeService = attendeeService;
