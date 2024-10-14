@@ -13,36 +13,20 @@ import java.util.UUID;
 @Service
 public class TestServiceImpl implements TestService {
     private TestRepository repository;
+    //thêm bất kì repository nào
 
     @Autowired
     public TestServiceImpl(TestRepository repository) {
         this.repository = repository;
     }
 
-    @Override
-    public Test phuongThuc1(CreateTestDTO dto) {
-        try{
-            //định nghĩa hành động của phương thức này
-            return null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     @Override
-    public boolean createNewTest(CreateTestDTO dto) {
+    public boolean phuongThucTest(String test) {
         try {
-            if(repository.findByProp1(dto.prop1) != null) {
-                return false;
-            }
-            Test test = new Test(
-                    UUID.randomUUID().toString(),
-                    dto.prop1,
-                    dto.prop2
-            );
-            repository.save(test);
+            //xử lý
             return true;
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return false;
         }
     }

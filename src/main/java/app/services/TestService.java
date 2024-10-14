@@ -7,7 +7,5 @@ import app.models.Test;
 //xử lý dữ liệu sau khi được kiểm tra hợp lệ ở Controller hoặc sau khi lấy dữ liệu từ Repository
 public interface TestService {
     //chỉ định nghĩa tên phương thức, tham số và kiểu trả về
-     Test phuongThuc1(CreateTestDTO dto);
-
-     boolean createNewTest(CreateTestDTO dto);
+     boolean phuongThucTest(String test);
 }
