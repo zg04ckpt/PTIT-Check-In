@@ -5,30 +5,25 @@
     layout:decorate="~{layout}">
 <head>
     <title layout:fragment="title">Trang chủ</title>
-    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
 
     <div layout:fragment="content">
 
-        <!-- Thịnh -->
-        <div class="section-1" style="padding-top: 50px;">
-            <div class="container" >
-                <div class="inner-wrap" >
-                    <form action="">
-                        <p class="fs-2 text-center text-secondary mb-0">Dự án website hỗ trợ điểm danh online</p>
-                        <h3 class="inner-title">PTIT CHECK-IN</h3>
-                        <p class="fs-5 fst-italic text-info text-center">Phát triển bởi: Team 2</p>
-        
-                        <div class="inner-form-wrap" style="margin-bottom: 15px; margin-top: 50px;">
-                            <input type="text" placeholder="Nhập mã phòng" class="codeRoom">
-                            <button type="text" class="LogInRoom border-0 bg-dark text-light">Vào phòng</button>
-                        </div>
-        
-                        <p class="text-center text-secondary mb-3">Hoặc</p>
-        
-                        <button type="submit" class="inner-button">Tạo phòng điểm danh</button>
-                    </form>
+        <div style="padding-top: 50px;">
+            <div class="container">
+                <p class="fs-2 text-center text-secondary mb-0">Dự án website hỗ trợ điểm danh online</p>
+                <div class="text-center" style="font-size: 60px; font-weight: 1000;">PTIT CHECK-IN</div>
+                <p class="fs-5 fst-italic text-info text-center">Phát triển bởi: Team 2</p>
+                <form th:action="@{/}" th:object="${data}" method="post" style="margin-bottom: 15px; margin-top: 50px;">
+                    <div class="d-flex w-100 justify-content-center">
+                        <input type="text" placeholder="Nhập mã phòng" th:field="*{roomCode}" class="border-1 border-secondary shadow-sm form-control me-2" style="width: 200px;">
+                        <button type="submit" class="btn btn-dark">Vào phòng</button>
+                    </div>
+                </form>
+                <p class="text-center text-secondary mb-3">Hoặc</p>
+                <div class="w-100 text-center">
+                    <button onclick="window.location.href='/rooms/create-room'" class="btn text-white shadow" style="width: 300px; background-color: #00A3DE;">Tạo phòng điểm danh</button>
                 </div>
             </div>
         </div>

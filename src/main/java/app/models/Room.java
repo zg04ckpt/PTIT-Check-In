@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Table(name = "Rooms")
@@ -15,7 +16,7 @@ public class Room {
     private String name; //tên phòng
     @Column(nullable = false)
     private String createBy; // người tạo phòng
-    private boolean isCheckLocationEnabled; //có bật kiểm tra vị trí hay không
+    private boolean requireCheckLocation; //có bật kiểm tra vị trí hay không
     @Column(nullable = true)
     private double latitude; // vĩ độ mốc (phòng)
     @Column(nullable = true)
@@ -26,7 +27,7 @@ public class Room {
     private LocalDateTime startTime; // thời gian mở phòng (null -> mở lúc tạo)
     @Column(nullable = true)
     private LocalDateTime endTime; // thời gian đóng phòng (null ->đóng bằng tay)
-    private boolean isAutoApproval; // có bật tự động duyệt hay ko
+    private boolean enableAutoApproval; // có bật tự động duyệt hay ko
     @Column(nullable = false)
     private LocalDateTime createOn; // tạo phòng lúc nào
     @Column(nullable = false, unique = true)
@@ -41,22 +42,25 @@ public class Room {
     public Room() {
     }
 
-    public Room(String id, String name, String createBy, boolean isCheckLocationEnabled, double latitude, double longitude, double acceptRange, LocalDateTime startTime, LocalDateTime endTime, boolean isAutoApproval, LocalDateTime createOn, String url, boolean isEnded) {
+    public Room(String id, String name, String createBy, boolean requireCheckLocation, double latitude, double longitude, double acceptRange, LocalDateTime startTime, LocalDateTime endTime, boolean enableAutoApproval, LocalDateTime createOn, boolean isEnded) {
         this.id = id;
         this.name = name;
         this.createBy = createBy;
-        this.isCheckLocationEnabled = isCheckLocationEnabled;
+        this.requireCheckLocation = requireCheckLocation;
         this.latitude = latitude;
         this.longitude = longitude;
         this.acceptRange = acceptRange;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isAutoApproval = isAutoApproval;
+        this.enableAutoApproval = enableAutoApproval;
         this.createOn = createOn;
-        this.url = url;
         this.isEnded = isEnded;
 
         this.attendees = new ArrayList<>();
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void addAttendee(Attendee attendee) {
@@ -99,12 +103,12 @@ public class Room {
         this.createBy = createBy;
     }
 
-    public boolean isCheckLocationEnabled() {
-        return isCheckLocationEnabled;
+    public boolean isRequireCheckLocation() {
+        return requireCheckLocation;
     }
 
-    public void setCheckLocationEnabled(boolean checkLocationEnabled) {
-        isCheckLocationEnabled = checkLocationEnabled;
+    public void setRequireCheckLocation(boolean requireCheckLocation) {
+        this.requireCheckLocation = requireCheckLocation;
     }
 
     public double getLatitude() {
@@ -147,12 +151,12 @@ public class Room {
         this.endTime = endTime;
     }
 
-    public boolean isAutoApproval() {
-        return isAutoApproval;
+    public boolean isEnableAutoApproval() {
+        return enableAutoApproval;
     }
 
-    public void setAutoApproval(boolean autoApproval) {
-        isAutoApproval = autoApproval;
+    public void setEnableAutoApproval(boolean enableAutoApproval) {
+        this.enableAutoApproval = enableAutoApproval;
     }
 
     public boolean isEnded() {
@@ -161,5 +165,16 @@ public class Room {
 
     public void setEnded(boolean ended) {
         isEnded = ended;
+    }
+
+    public void generateRandomCode() {
+        String src = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        int codeLen = 6;
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        while (codeLen-- > 0) {
+            sb.append(src.charAt(random.nextInt(src.length())));
+        }
+        this.code = sb.toString();
     }
 }

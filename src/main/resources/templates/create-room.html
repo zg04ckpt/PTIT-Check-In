@@ -15,37 +15,31 @@
         <!-- Content -->
         <div class="container-lg px-lg-5" style="margin-top: 50px;">
             <div class="card card-body col-lg-8 offset-lg-2 shadow-sm">
-            <h1 class = "font-medium text-3xl w-fit pl-[50px] w-100 text-center" style="font-size: 28px;">Tạo phòng điểm danh</h1>
-            <form action="" style="margin-top: 80px;" class="ms-5">
+            <div class = "font-medium text-3xl w-fit pl-[50px] w-100 text-center" style="font-size: 28px;">Tạo phòng điểm danh</div>
+            <form th:object="${data}" th:action="@{/rooms/create-room}" method="post" style="margin-top: 80px;" class="ms-5">
                 
                 <!-- room name -->
                 <div class="row mb-4">
                 <label class = "col-4 text-lg font-medium">Tên phòng:</label>
-                <input type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
+                <input th:field="*{name}" type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
                 </div>
 
                 <!-- room owner name -->
                 <div class="row mb-4">
                 <label class = "col-4 text-lg font-medium">Tên chủ phòng:</label>
-                <input type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
+                <input th:field="*{createBy}" type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
                 </div>
 
                 <!-- list -->
                 <div class="row mb-4">
-                <label class = "col-4 text-lg font-medium">Danh sách duyệt:</label>
-                <div class = "col-8 flex flex-row div4_1" style="padding-left: 0px; align-items: center;">
-                    <button id="getListBtn" class = "bg-gray-400 text-white w-[120px] rounded py-1" data-bs-toggle="modal" data-bs-target="#getListDialog">Chỉnh sửa</button>
-                    <div class="d-flex d-none">
-                    <box-icon class = "w-[20px] h-[20px] ml-[2vw] mr-[5px]" name='check' color='#34ba65' ></box-icon>
-                    <p id="successLabel">Đã tạo danh sách</p>
+                    <label class = "col-4 text-lg font-medium">Danh sách duyệt:</label>
+                    <div class = "col-8 flex flex-row div4_1" style="padding-left: 0px; align-items: center;">
+                        <button id="getListBtn" class = "bg-gray-400 text-white w-[120px] rounded py-1" data-bs-toggle="modal" data-bs-target="#getListDialog">Chỉnh sửa</button>
+                        <p id="successLabel" class="p-0 m-0 ms-2 text-success" hidden>
+                            <i class='bx bx-check'></i>
+                            Lấy vị trí thành công
+                        </p>
                     </div>
-                </div>
-                <div id="list" hidden>
-                    <div th:each="attendee, iterStat : *{attendees}">
-                        <input type="text" th:field="*{attendees[__${iterStat.index}__].id}"/>
-                        <input type="text" th:field="*{attendees[__${iterStat.index}__].name}"/>
-                    </div>
-                </div>
                 </div>
 
                 <!-- Options -->
@@ -54,66 +48,80 @@
                 <div class="col-8" style="padding-left: 0px;">
                     <!-- check vi tri -->
                     <div class="list flex flex-row">
-                    <input type="checkbox" id="check1" class="mr-4 cursor-pointer w-[20px]">
-                    <label for="check1" class="flex items-center mr-6">
-                        <span class = "text-medium">Check vị trí</span>
-                    </label>
+                        <input type="checkbox" id="check1" class="mr-4 cursor-pointer w-[20px]" th:field="*{requireCheckLocation}">
+                        <label for="check1" class="flex items-center mr-6">
+                            <span class = "text-medium">Check vị trí</span>
+                        </label>
 
-                    <div class = "flex flex-row hidden" id = "info1" style="font-size: 14px; height: 25px;">
-                        <button id="check7" class = "btn btn-success btn-sm me-2" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#getLocationDialog">
-                        <i class='bx bxs-map text-danger'></i>
-                        Lấy mốc
-                        </button>
+                        <div class = "flex flex-row" id = "info1" style="font-size: 14px; height: 25px;" hidden>
+                            <button id="check7" class = "btn btn-success btn-sm me-2 align-content-center" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#getLocationDialog">
+                                <i class='bx bxs-map text-danger'></i> Lấy mốc
+                            </button>
 
-                        <div id="rangeInput" class="d-flex align-items-center">
-                        <label class="me-2">Phạm vi</label>
-                        <input type="number" placeholder="Lớp học(50m)" min="1" style="width: 120px;" class = "ps-2 h-[30px] border-[1.5px] border-gray-900 rounded-sm focus:outline-none focus:border-green-600">
+                            <div id="rangeInput" class="d-flex align-items-center">
+                                <label class="me-2">Phạm vi</label>
+                                <input th:field="*{range}" min="0" type="number" placeholder="Lớp học(50m)" style="width: 120px;" class = "ps-2 h-[30px] border-[1.5px] border-gray-900 rounded-sm focus:outline-none focus:border-green-600">
+                            </div>
                         </div>
-                    </div>
                     </div>
 
                     <!-- Hẹn giờ mở -->
                     <div class="list flex flex-row mt-3">
-                    <input type="checkbox" id="check2" class="mr-4 cursor-pointer w-[20px]">
-                    <label for="check2" class="flex items-center mr-6">
-                        <span class = "text-medium">Hẹn giờ mở</span>
-                    </label>
+                        <input type="checkbox" id="check2" class="mr-4 cursor-pointer w-[20px]">
+                        <label for="check2" class="flex items-center mr-6">
+                            <span class = "text-medium">Hẹn giờ mở</span>
+                        </label>
 
-                    <div class="flex-fill pe-4">
-                        <input id="info2" type="datetime-local" class="border-1 p-1 rounded-1 float-end hidden" style="height: 25px;">
-                        <p class="fst-italic float-end text-secondary">(Mặc định: Mở khi tạo phòng)</p>
-                    </div>
+                        <div class="flex-fill pe-4">
+                            <div id="info2" hidden>
+                                <input th:field="*{startTime}"  type="datetime-local" class="border-1 p-1 rounded-1 float-end " style="height: 25px;">
+                            </div>
+                            <p class="fst-italic float-end text-secondary">(Mặc định: Mở khi tạo phòng)</p>
+                        </div>
                     </div>
 
                     <!-- Hẹn giờ đóng -->
                     <div class="list flex flex-row mt-3">
-                    <input type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
-                    <label for="check3" class="flex items-center mr-6">
-                        <span class = "text-medium">Hẹn giờ đóng</span>
-                    </label>
+                        <input type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
+                        <label for="check3" class="flex items-center mr-6">
+                            <span class = "text-medium">Hẹn giờ đóng</span>
+                        </label>
 
-                    <div class="flex-fill pe-4">
-                        <input id="info3" type="datetime-local" class="border-1 p-1 rounded-1 float-end hidden" style="height: 25px;">
-                        <p class="fst-italic float-end text-secondary">(Mặc định: Đóng thủ công)</p>
-                    </div>
+                        <div class="flex-fill pe-4">
+                            <div id="info3" hidden>
+                                <input th:field="*{endTime}" type="datetime-local" class="border-1 p-1 rounded-1 float-end" style="height: 25px;">
+                            </div>
+                            <p class="fst-italic float-end text-secondary">(Mặc định: Đóng thủ công)</p>
+                        </div>
                     </div>
 
                     <!-- Auto điểm danh -->
                     <div class="list flex flex-row mt-3">
-                    <input type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
-                    <label for="check3" class="flex items-center mr-6">
-                        <span class = "text-medium">Tự động điểm danh</span>
-                    </label>
+                        <input th:field="*{enableAutoApproval}" type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
+                        <label for="check3" class="flex items-center mr-6">
+                            <span class = "text-medium">Tự động điểm danh</span>
+                        </label>
                     </div>
-                </div>
+
+                    <!-- Ẩn -->
+                    <div hidden>
+                        <div id="list">
+                            <div th:each="attendee, iterStat : *{attendees}">
+                                <input type="text" th:field="*{attendees[__${iterStat.index}__].checkInCode}"/>
+                                <input type="text" th:field="*{attendees[__${iterStat.index}__].name}"/>
+                            </div>
+                        </div>
+                        <input type="number" th:field="*{latitude}">
+                        <input type="number" th:field="*{longitude}">
+                    </div>
                 </div>
 
                 <!-- Button -->
                 <div class="w-100 text-center mt-5 mb-3">
-                <button class="btn btn-outline-secondary" style="width: 200px;">
-                    <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
-                </button>
-                <button type="submit" class="btn btn-success" style="width: 200px;">Tạo phòng</button>
+                    <button class="btn btn-outline-secondary" id="backBtn" style="width: 200px;" >
+                        <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
+                    </button>
+                    <button type="submit" class="btn btn-success" style="width: 200px;">Tạo phòng</button>
                 </div>
             </form>
 
@@ -124,7 +132,7 @@
         <div class="modal fade" id="getListDialog" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content pt-0 px-3 translate-middle-x start-50" style="width: 700px;">
-                <h5 class="ms-2 mt-2 text-center fs-5 fw-bold">Danh sách người tham gia</h5>
+                <div class="ms-2 mt-2 text-center fs-5 fw-bold">Danh sách người tham gia</div>
                 <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
                 
                 <!-- content -->
@@ -185,7 +193,7 @@
         <div class="modal fade" id="getLocationDialog" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content pt-0 px-3 translate-middle-x start-50" style="width: 700px;">
-                <h5 class="ms-2 mt-2 text-center fs-5 fw-bold">Lấy vị trí</h5>
+                <div class="ms-2 mt-2 text-center fs-5 fw-bold">Lấy vị trí</div>
                 <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
                 
                 <!-- content -->
@@ -234,22 +242,21 @@
         </div>
 
         <!-- Notification -->
-        <div class="modal fade" id="notification" aria-hidden="true">
-            <div class="modal-dialog" style="width: 340px;">
-                <div class="modal-content pt-0">
-                <button class="btn btn-close position-absolute top-0 start-100" data-bs-dismiss="modal" style="transform: translateX(-100%); padding: 12px;"></button>            <h5 class="modal-title ms-2 my-2 text-center fs-6 fw-bold">Thông báo</h5>
-                <hr>
-                <p id="noti-msg" class="mx-3 text-center text-dark my-3" style="font-size: 16px;">Xác nhận thoát phòng</p>
-
-                <!-- <div class="d-flex m-2 justify-content-center mt-3">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal" style="width: 100px;">Xác nhận</button>
-                    <button class="btn btn-primary ms-2" style="width: 100px;">Ở lại</button>
-                </div> -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="noti-msg" class="text-center px-2"></p>
+                
+                <div class="d-flex justify-content-center mt-3">
+                    <button class="btn btn-outline-success btn-sm text-center" style="width: 100px;" onclick="notification.hidden = true">OK</button>
                 </div>
             </div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script th:inline="javascript"> var data = /*[[${data}]]*/ {}; </script>
         <script src="/js/create-room.js"></script>
     </div>
 </body>

@@ -19,6 +19,7 @@
     <nav class="navbar fixed-top navbar-dark bg-dark py-1">
         <div class="container-lg">
           <a class="navbar-brand" href="#">PTIT CheckIn</a>
+          <p class="text-white">id phòng mẫu: 6f7ffd60-959a-4953-9444-6bf0919dbe4a, mã phòng mẫu: HS12JK</p>
         </div>
     </nav>
 
@@ -26,6 +27,20 @@
 
     <!-- Content -->
     <div layout:fragment="content">
+    </div>
+
+    <!-- Message -->
+    <div th:if="${message != null}" id="noti" class="position-fixed w-100 h-100 top-0" style="background-color: rgba(128, 128, 128, 0.551);">
+        <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+            <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="noti.hidden = true"></button>
+            <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+            <hr class="mt-2 mb-2">
+            <p class="text-center px-2" th:text="${message}"></p>
+            
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-outline-success btn-sm text-center" style="width: 100px;" onclick="noti.hidden = true">OK</button>
+            </div>
+        </div>
     </div>
 
     <!-- script BS5 -->

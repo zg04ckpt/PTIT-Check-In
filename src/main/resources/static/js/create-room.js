@@ -4,26 +4,26 @@ console.log("script works!");
 const getListBtn = document.getElementById('getListBtn')
 const getListDialog = document.getElementById('getListDialog')
 const getListCloseBtn = document.getElementById('getListCloseBtn')
-const idColumnInput = document.getElementById('idColumnInput')
-const nameColumnInput = document.getElementById('nameColumnInput')
-const startRowInput = document.getElementById('startRowInput')
 const getListFromExcelBtn = document.getElementById('getListFromExcelBtn')
 const previewTable = document.getElementById('previewTable')
 const count = document.getElementById('count')
 const saveBtn = document.getElementById('saveBtn')
 const successLabel = document.getElementById('successLabel')
 const list = document.getElementById('list')
+let previewData = [];
 
 getListFromExcelBtn.onclick = e => {
+    e.target.value = '';
     if(!idColumnInput.value || !nameColumnInput.value || !startRowInput.value) {
-        alert("Vui lòng điền vị trí cột, dòng")
+        showNotification("Vui lòng điền vị trí cột, dòng");
         e.preventDefault();
     }
 }
 
-let previewData = [];
+
 getListFromExcelBtn.onchange = e => {
     const file = e.target.files[0];
+    resetPreviewTable();
     if(file) {
         const reader = new FileReader();
         reader.onload = e => {
@@ -35,9 +35,9 @@ getListFromExcelBtn.onchange = e => {
 
             const rowData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-            const idCol = idColumnInput.value - 1;
-            const nameCol = nameColumnInput.value - 1;
-            const startRow = startRowInput.value - 1;
+            const idCol = document.getElementById('idColumnInput').value - 1;
+            const nameCol = document.getElementById('nameColumnInput').value - 1;
+            const startRow = document.getElementById('startRowInput').value - 1;
             for(let i = startRow; i < rowData.length; i++) {
                 previewTable.querySelector('tbody').replaceChildren();
                 const row = previewTable.insertRow();
@@ -48,12 +48,18 @@ getListFromExcelBtn.onchange = e => {
                     id: rowData[i][idCol], 
                     name: rowData[i][nameCol]
                 });
-                
             }
             
             count.innerText = "Số lượng: " + (rowData.length - startRow);
         }
         reader.readAsArrayBuffer(file);
+    }
+}
+
+function resetPreviewTable() {
+    previewData = [];
+    while (previewTable.rows.length > 1) {
+        previewTable.deleteRow(1);
     }
 }
 
@@ -71,7 +77,7 @@ saveBtn.onclick = e => {
     previewData.forEach((e, index) => {
         const id = document.createElement('input');
         id.type = 'text'
-        id.name = 'attendees[' + index + '].id';
+        id.name = 'attendees[' + index + '].checkInCode';
         id.value = e.id;
         
         const name = document.createElement('input');
@@ -83,8 +89,8 @@ saveBtn.onclick = e => {
         list.appendChild(name);
     });
 
-    successLabel.innerText = "Lấy danh sách thành công";
-    successLabel.parentElement.classList.toggle('d-none');
+    successLabel.hidden = false;
+    console.log(data);
 }
 
 // ----------------------------- GET LOCATION -----------------------
@@ -122,17 +128,17 @@ const startTimeInput = document.getElementById('check2')
 const endTimeInput = document.getElementById('check3')
 
 startTimeInput.onchange = e => {
-    room.startTime = startTimeInput.value;
+    data.startTime = startTimeInput.value;
 }
 
 endTimeInput.onchange = e => {
-    room.endTime = endTimeInput.value;
+    data.endTime = endTimeInput.value;
 }
 
 function showNotification(msg) {
-    var modal = new bootstrap.Modal(document.getElementById('notification'));
+    const notification = document.getElementById('notification');
     document.getElementById('noti-msg').innerText = msg;
-    modal.show();
+    notification.hidden = false;
 }
 
 
@@ -140,21 +146,23 @@ function showNotification(msg) {
 const checkbox1 = document.getElementById('check1');
 const additionalInfo1 = document.getElementById('info1');
 checkbox1.addEventListener('change', () => {
-    additionalInfo1.classList.toggle('hidden');
+    additionalInfo1.hidden = !additionalInfo1.hidden;
 });
 
 const checkbox2 = document.getElementById('check2');
 const additionalInfo2 = document.getElementById('info2');
 checkbox2.addEventListener('change', () => {
-    additionalInfo2.classList.toggle('hidden');
-    additionalInfo2.parentElement.querySelector('p').classList.toggle('hidden')
+    additionalInfo2.hidden = !additionalInfo2.hidden;
+    const lb2 = additionalInfo2.parentElement.querySelector('p');
+    lb2.hidden = !lb2.hidden;
 });
 
 const checkbox3 = document.getElementById('check3');
 const additionalInfo3 = document.getElementById('info3');
 checkbox3.addEventListener('change', () => {
-    additionalInfo3.classList.toggle('hidden');
-    additionalInfo3.parentElement.querySelector('p').classList.toggle('hidden')
+    additionalInfo3.hidden = !additionalInfo3.hidden;
+    const lb3 = additionalInfo3.parentElement.querySelector('p');
+    lb3.hidden = !lb3.hidden;
 });
 
 document.getElementById('getListBtn').onclick = e => {
@@ -163,4 +171,9 @@ document.getElementById('getListBtn').onclick = e => {
 
 document.getElementById('check7').onclick = e => {
     e.preventDefault();
+}
+
+document.getElementById("backBtn").onclick = e => {
+    e.preventDefault();
+    window.location.href='/';
 }

@@ -18,15 +18,15 @@
                     <h1 class="inner-title text-center" style="font-size: 28px;">Kết quả điểm danh</h1>
                     <ul class="result-list" style="padding-left: 30px;">
         
-                        <li class="text-secondary">Thành công: <span class="success">32</span></li>
+                        <li class="text-secondary">Thành công: <span class="success" th:text="${data.accepted}">32</span></li>
         
-                        <li class="text-secondary">Vi phạm: <span class="fail">2</span></li>
+                        <li class="text-secondary">Vi phạm: <span class="fail" th:text="${data.rejected}">2</span></li>
         
-                        <li class="text-secondary">Chưa duyệt: <span class="pending">3</span></li>
+                        <li class="text-secondary">Chưa duyệt: <span class="pending" th:text="${data.pending}">3</span></li>
         
-                        <li class="text-secondary">Chưa vào phòng: <span class="absent">0</span></li>
+                        <li class="text-secondary">Chưa vào phòng: <span class="absent" th:text="${data.outOfRoom}">0</span></li>
         
-                        <li class="text-secondary mb-3">Tổng cộng:<span class="total"> 37</span></li>
+                        <li class="text-secondary mb-3">Tổng cộng:<span class="total" th:text="${data.accepted + data.rejected + data.pending + data.outOfRoom}"> 37</span></li>
         
                     </ul>
         
@@ -37,8 +37,8 @@
                         <i class="fa-solid fa-download"></i>
                     </button>
         
-                    <button class="btn btn-outline-secondary px-3 mt-2 form-control">
-                        <i class="fa-solid fa-arrow-left m-0"></i> Quay lại
+                    <button onclick="window.location.href='/'" class="btn btn-outline-secondary px-3 mt-2 form-control">
+                        <i class="fa-solid fa-arrow-left m-0"></i> Trang chủ
                     </button>
                 </div>
             </div>

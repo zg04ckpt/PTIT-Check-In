@@ -10,24 +10,23 @@
 
     <div layout:fragment="content">
 
-        <!-- Nam -->
         <div class="col-lg-10 offset-lg-1">
-            <div class="card card-body mx-3 mx-lg-0 shadow" style="margin-top: 50px; height: 600px;">
+            <div class="card card-body mx-3 mx-lg-0 shadow" style="margin-top: 40px; height: 600px;">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h1 class="fs-2 fw-bolder">Điểm danh nhóm 8 OOP</h1>
+                    <div th:text="${data.name}" class="fs-2 fw-bolder"></div>
                     <div class="d-flex">
                         <div class="fs-5">Còn lại: <b class="text-info">05p:49s</b></div>
-                        <button class="btn btn-outline-danger btn-sm ms-3">Đóng phòng</button>
+                        <button th:onclick="closeRoom()" class="btn btn-outline-danger btn-sm ms-3">Đóng phòng</button>
                     </div>
                 </div>
             
                 <div class="d-flex text-secondary">
                     <p class="me-3">
-                        Mã phòng: <b class="text-info">[Mã room]</b>
+                        Mã phòng: <b class="text-info" th:text="${data.code}"></b>
                         <i class='bx bx-copy'></i>
                     </p>
-                    <p class="me-3">Chủ phòng: <b class="text-info">[Chủ room]</b></p>
-                    <p class="me-3">Số lượng: <b class="text-info">[Số lượng người tham gia]</b></p>
+                    <p class="me-3">Chủ phòng: <b class="text-info" th:text="${data.createBy}">[Chủ room]</b></p>
+                    <p class="me-3">Số lượng: <b class="text-info" th:text="${data.attendees.size()}">[Số lượng người tham gia]</b></p>
                 </div>
             
                 <div class="d-flex mt-4 justify-content-between">
@@ -67,13 +66,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr  class="bg-secondary text-white">
-                            <td>1</td>
-                            <td>B22DCCN589</td>
-                            <td>Hoàng Cao Nguyên</td>
-                            <td>Chờ điểm danh</td>
-                            <td><button class="btn btn-sm btn-success py-0">Duyệt</button></td>
-                            <td style="text-align: center;">
+                        <tr th:each="attendee, iterStat : ${data.attendees}" th:attr="data-index=${iterStat.index}">
+                            <td th:text="${iterStat.index + 1}"></td>
+                            <td th:text="${attendee.checkInCode}"></td>
+                            <td th:text="${attendee.name}"></td>
+                            <td></td>
+                            <td></td>
+                            <td>
                                 <i class='bx bx-dots-vertical-rounded dropdown' data-bs-toggle="dropdown"></i>
                                 <ul class="dropdown-menu">
                                     <li class="dropdown-item">Chi tiết</li>
@@ -82,27 +81,59 @@
                                 </ul>
                             </td>
                         </tr>
-                        <tr  class="bg-success text-white">
-                            <td>2</td>
-                            <td>B22DCCN589</td>
-                            <td>Hoàng Cao Nguyên</td>
-                            <td>Đã điểm danh</td>
-                            <td><button class="btn btn-sm btn-danger py-0">Bỏ duyệt</button></td>
-                            <td style="text-align: center;"><i class='bx bx-dots-vertical-rounded'></i></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>B22DCCN589</td>
-                            <td>Hoàng Cao Nguyên</td>
-                            <td>Chưa vào phòng</td>
-                            <td></td>
-                            <td style="text-align: center;"><i class='bx bx-dots-vertical-rounded'></i></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                
+                <div id="action" class="d-flex justify-content-center mt-3">
+                </div>
+            </div>
+        </div>
+
+        <form id="result-data" method="post" th:object="${data}" th:action="@{/rooms/result}" hidden>
+            <input type="text" th:field="*{id}">
+            <input type="text" th:field="*{name}">
+            <input type="text" th:field="*{createBy}">
+            <input type="checkbox" th:field="*{requireCheckLocation}">
+            <input type="number" th:field="*{latitude}">
+            <input type="number" th:field="*{longitude}">
+            <input type="number" th:field="*{acceptRange}">
+            <input type="datetime-local" th:field="*{startTime}" th:if="${startTime != null}">
+            <input type="datetime-local" th:field="*{startTime}" th:if="${startTime == null}" value="">
+            <input type="datetime-local" th:field="*{endTime}" th:if="${endTime != null}">
+            <input type="datetime-local" th:field="*{endTime}" th:if="${endTime == null}" value="">
+            <input type="checkbox" th:field="*{enableAutoApproval}">
+            <input type="datetime-local" th:field="*{createOn}">
+            <input type="text" th:field="*{code}">
+            <input type="text" th:field="*{url}">
+            <div th:each="attendee, iterStat : ${data.attendees}" th:attr="data-index=${iterStat.index}">
+                <input type="text" th:field="*{attendees[__${iterStat.index}__].id}">
+                <input type="text" th:field="*{attendees[__${iterStat.index}__].checkInCode}">
+                <input type="text" th:field="*{attendees[__${iterStat.index}__].name}">
+                <input type="number" th:field="*{attendees[__${iterStat.index}__].latitude}">
+                <input type="number" th:field="*{attendees[__${iterStat.index}__].longitude}">
+                <input type="number" th:field="*{attendees[__${iterStat.index}__].checkInStatus}">
+                <input type="number" th:field="*{attendees[__${iterStat.index}__].distance}">
+                <input type="text" th:field="*{attendees[__${iterStat.index}__].ipAddress}">
+                <input type="datetime-local" th:field="*{attendees[__${iterStat.index}__].attendOn}" th:if="${attendee.attendOn != null}">
+                <input type="datetime-local" th:field="*{attendees[__${iterStat.index}__].attendOn}" th:if="${attendee.attendOn == null}" value="">
+            </div>
+            <button type="submit"></button>
+        </form>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script th:inline="javascript"> var room = /*[[${data}]]*/ {}; </script>
+        <script src="/js/room.js"></script>
     </div>
     
 </body>

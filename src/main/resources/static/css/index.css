@@ -1,55 +1,5 @@
 /*section-1*/
 .section-1{
-    padding: 120px 0;
-}
-
-.section-1 .inner-wrap .inner-title{
-    margin-top: 0;
-    text-align: center;
-    font-size: 60px;
-    font-weight: 1000;
-}
-
-.section-1 .inner-wrap .inner-form-wrap{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    margin-bottom: 50px;
-    margin-top: 20px;
-}
-
-.section-1 .inner-wrap .inner-form-wrap .codeRoom{
-    border-radius: 5px;
-    border: 2px solid #000;
-    text-align: left;
-    padding-left: 10px;
-    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
-    margin-right: 10px;
-    width: 200px;
-    height: 100%;
-}
-
-.section-1 .inner-wrap .inner-form-wrap .LogInRoom{
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
-    width: 100px;
-    height: 100%;
-}
-
-.section-1 .inner-wrap .inner-button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #00A3DE;
-    color: #fff;
-    border-radius: 5px;
-    border: 2px solid #00A3DE;
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
-    height:40px;
-    width: 300px;
-    margin: 0 auto;
+    
 }
 /*end section-1*/

@@ -1,15 +1,14 @@
 package app.controller;
 
+import app.dtos.CheckInDTO;
 import app.dtos.CreateTestDTO;
 import app.services.TestService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 
@@ -24,31 +23,33 @@ public class TestController {
         this.service = service;
     }
 
-    @GetMapping("/create")
-    public String getCreateTestForm(Model model) {
-        model.addAttribute("data", new CreateTestDTO());
-        return "test.html";
+    @GetMapping("")
+    public String getHome() {
+        return "index.html";
     }
 
-    @PostMapping("/create")
-    public String createTest(@Valid @ModelAttribute CreateTestDTO dto, BindingResult result, Model model) {
+    @PostMapping("")
+    public String findRoom(@RequestParam("roomCode") String roomCode, Model model) {
+        if(roomCode.length() != 6) {
+            model.addAttribute("message", "Mã phải gồm 6 chữ số");
+            return "index.html";
+        }
+        // xử lý
 
-        if(result.hasErrors()) {
-            ArrayList<String> errors = new ArrayList<>();
-            for(var error: result.getFieldErrors()) {
-                errors.add(error.getDefaultMessage());
-            }
-            model.addAttribute("errors", errors);
-            model.addAttribute("data", dto);
-            return "test.html";
+
+        return "redirect:/tests/check-in";
+    }
+
+
+    @PostMapping("/check-in")
+    public String checkIn(@ModelAttribute("Data")CheckInDTO data, Model model) {
+        if(data.checkInCode == null) {
+            model.addAttribute("message", "Vui lòng điền mã điểm danh");
+            return "check-in.html";
         }
 
-        if(service.createNewTest(dto)) {
-            return "redirect:/";
-        } else {
-            model.addAttribute("errors", new String[]{"Lỗi tạo test"});
-            model.addAttribute("data", dto);
-            return "test.html";
-        }
+        // xử lý
+
+        return "check-in.html";
     }
 }
