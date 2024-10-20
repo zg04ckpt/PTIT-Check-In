@@ -1,5 +1,6 @@
 package app.services.impl;
 
+import app.models.Attendee;
 import app.repositories.AttendeeRepository;
 import app.repositories.RoomRepository;
 import app.services.AttendeeService;
@@ -9,11 +10,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class AttendeeServiceImpl implements AttendeeService {
     private final AttendeeRepository attendeeRepository;
-    private final RoomRepository roomRepository;
 
     @Autowired
-    public AttendeeServiceImpl(AttendeeRepository attendeeRepository, RoomRepository roomRepository) {
+    public AttendeeServiceImpl(AttendeeRepository attendeeRepository) {
         this.attendeeRepository = attendeeRepository;
-        this.roomRepository = roomRepository;
+    }
+    public boolean existsByRoomId(String roomId){
+        try {
+            return attendeeRepository.existsByRoomId(roomId);
+        } catch (Exception exception) {
+            return false;
+        }
+
+    }
+    public boolean existsByCheckInCode(String checkInCode){
+
+        try {
+            return attendeeRepository.existsByCheckInCode(checkInCode);
+        } catch (Exception exception) {
+            return false;
+        }
     }
 }

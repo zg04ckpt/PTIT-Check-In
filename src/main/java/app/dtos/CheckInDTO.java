@@ -14,4 +14,5 @@ public class CheckInDTO {
     public double latitude;
     public double longitude;
     public String ipAddress;
+
 }
