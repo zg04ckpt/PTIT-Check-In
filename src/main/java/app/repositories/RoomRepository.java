@@ -8,4 +8,5 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     Room findByCode(String code);
     //sử dụng code để kiểm tra xem có tồn tại phòng không
     boolean existsByCode(String code);
+    boolean existsByName(String name);
 }

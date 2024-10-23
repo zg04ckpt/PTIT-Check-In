@@ -1,8 +1,10 @@
 package app.services;
 
+import app.dtos.CheckInDTO;
 import app.models.Attendee;
 
 public interface AttendeeService {
-    boolean existsByRoomId(String roomId);
-    boolean existsByCheckInCode(String checkInCode);
+    Attendee getByCheckInCodeAndRoomId(String checkInCode, String roomId);
+    Attendee getById(String id);
+    void checkIn(Attendee attendee, CheckInDTO data);
 }

@@ -5,7 +5,6 @@ const CheckInStatus = {
     ACCEPTED: 2,
     REJECTED: 3
 };
-
 const tableBody = document.querySelector('table tbody');
 
 function setAllRowsStatus() {
@@ -16,97 +15,48 @@ function setAllRowsStatus() {
 }
 
 function setRowStatus(row, status) {
+    debugger
     const cols = row.querySelectorAll('td');
+    const attendeeId = row.getAttribute('data-id');
     switch (status) {
         case CheckInStatus.OUT_OF_ROOM:
             cols[3].innerText = 'Chưa vào phòng';
             row.className = 'bg-white text-dark';
+            row.setAttribute("data-status", CheckInStatus.OUT_OF_ROOM);
             break;
 
         case CheckInStatus.WAITING:
             cols[3].innerText = 'Chờ duyệt';
             row.className = 'bg-secondary text-white';
+            row.setAttribute("data-status", CheckInStatus.WAITING);
 
             cols[4].innerHTML = '';
             const approvalBtn = document.createElement('button');
             approvalBtn.className = 'btn btn-sm btn-success py-0';
             approvalBtn.textContent = "Duyệt";
+            approvalBtn.onclick = () => setStatus(attendeeId, CheckInStatus.ACCEPTED);
             cols[4].appendChild(approvalBtn);
             break;
 
         case CheckInStatus.ACCEPTED:
             cols[3].innerText = 'Đã duyệt';
             row.className = 'bg-success text-white';
+            row.setAttribute("data-status", CheckInStatus.ACCEPTED);
 
             cols[4].innerHTML = '';
             const cancelBtn = document.createElement('button');
             cancelBtn.className = 'btn btn-sm btn-danger py-0';
             cancelBtn.textContent = "Hủy duyệt";
+            cancelBtn.onclick = () => setStatus(attendeeId, CheckInStatus.WAITING);
             cols[4].appendChild(cancelBtn);
             break;
 
         case CheckInStatus.REJECTED:
             cols[3].innerText = 'Từ chối';
             row.className = 'bg-danger text-white';
+            row.setAttribute("data-status", CheckInStatus.REJECTED);
             break;
     }
-
-    //change data value:
-    debugger
-    const realIndex = row.getAttribute('data-index');
-    // room.attendees[realIndex].checkInStatus = status;
-    changeData(`attendees[${realIndex}].checkInStatus`, status);
-}
-
-const resultData = document.getElementById('result-data');
-function changeData(key, value) {
-    resultData.elements[key].value = value;
-}
-
-function insertRowToBottomOfInRoomStatus(row) {
-    const copy = row.cloneNode(true);
-    tableBody.removeChild(row);
-    var target = Array.from(tableBody.rows).find(e => e.querySelectorAll('td')[3].innerText == 'Chưa vào phòng');
-    if(target != null) {
-        tableBody.insertBefore(copy, target);
-    } else {
-        tableBody.appendChild(copy);
-    }
-}
-
-function insertRowToTop(row) {
-    const copy = row.cloneNode(true);
-    tableBody.removeChild(row);
-    tableBody.insertBefore(copy, tableBody.firstElementChild);
-}
-
-function insertRowToBottom(row) {
-    const copy = row.cloneNode(true);
-    tableBody.removeChild(row);
-    tableBody.appendChild(copy);
-}
-
-tableBody.addEventListener('click', (event) => {
-    if (event.target.classList.contains('btn-success')) {
-        const row = event.target.closest('tr');
-        setRowStatus(row, CheckInStatus.ACCEPTED);
-        insertRowToBottomOfInRoomStatus(row);
-        refreshOrder();
-    } else if (event.target.classList.contains('btn-danger')) {
-        const row = event.target.closest('tr');
-        setRowStatus(row, CheckInStatus.WAITING);
-        insertRowToTop(row);
-        refreshOrder();
-    }
-});
-
-function refreshOrder() {
-    //chỉnh lại số thứ tự
-    debugger
-    const rows = tableBody.querySelectorAll('tr');
-    rows.forEach((e, index) => {
-        e.querySelector('td').innerText = (index + 1);
-    });
 }
 
 window.onload = e => {
@@ -114,7 +64,6 @@ window.onload = e => {
 }
 
 //----------------- WEBSOCKET -------------------------
-
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const DEG_TO_RAD = Math.PI / 180;
     const R = 63710088; // Bán kính Trái Đất chính xác hơn (m)
@@ -137,27 +86,23 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 var socket = new SockJS("/ws");
 var stompClient = Stomp.over(socket);
 stompClient.connect({}, function(frame) {
-    stompClient.subscribe("/topic/room/" + room.id, data => {
-        //data.body : là checkInId
+    stompClient.subscribe("/topic/rooms/" + room.id, next => {
+        //data.body : {id, roomId, status}
         debugger
-        var idx = Array.from(room.attendees).findIndex(e => e.checkInId == data.body);
-        room.attendees[idx].checkInStatus = CheckInStatus.WAITING;
-
-        var currentRow = Array.from(tableBody.rows).find(e => e.querySelectorAll('td')[1].innerText == data.body);
-        var copy = currentRow.cloneNode(true);
-        tableBody.removeChild(currentRow);
-
-        //đổi button
-        const buttons = copy.querySelectorAll('button');
-        buttons[0].classList.remove('d-none');
-
-        //đổi message trạng thái
-        copy.querySelectorAll('td')[3].innerText = "Chờ duyệt";
-
-        //move element to top
-        tableBody.insertBefore(copy, tableBody.firstElementChild);
+        const data = JSON.parse(next.body);
+        const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == data['id']);
+        setRowStatus(targetRow, data['status']);
     });
 });
+
+function setStatus(id, status) {
+    const json = {
+        id: id,
+        roomId: room.id,
+        status: status
+    };
+    stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
+}
 
 // ----------------- Notification management -------------------------
 const notification = document.getElementById('notification');
@@ -167,13 +112,53 @@ const action = document.getElementById('action');
 function showNotification(msg, actions) {
     content.innerText = msg;
     action.innerHTML = '';
-    actions.forEach(e => {
-        const btn = document.createElement('button');
-        btn.className = "btn btn-outline-secondary btn-sm me-2";
-        btn.onclick = e.action;
-        btn.innerText = e.name;
-        action.appendChild(btn);
-    });
+    if(actions) {
+        actions.forEach(e => {
+            const btn = document.createElement('button');
+            btn.className = "btn btn-outline-secondary btn-sm me-2";
+            btn.onclick = e.action;
+            btn.innerText = e.name;
+            action.appendChild(btn);
+        });
+    } else {
+        const accept = document.createElement('button');
+        accept.className = "btn btn-outline-success btn-sm me-2";
+        accept.onclick = () => {
+            notification.hidden = true;
+        }
+        accept.innerText = 'OK';
+        accept.style.width = '100px';
+        action.appendChild(accept);
+    }
+    notification.hidden = false;
+}
+
+function showConfirm(msg, onConfirm, onCancel) {
+    content.innerText = msg;
+    action.innerHTML = '';
+
+    const cancel = document.createElement('button');
+    cancel.className = "btn btn-outline-secondary btn-sm me-2";
+    cancel.onclick = () => {
+        notification.hidden = true;
+        if(onCancel) onCancel();
+    }
+    cancel.innerText = 'Hủy';
+    cancel.style.width = '100px';
+    action.appendChild(cancel);
+
+
+    const accept = document.createElement('button');
+    accept.className = "btn btn-outline-success btn-sm me-2";
+    accept.onclick = () => {
+        notification.hidden = true;
+        onConfirm();
+    }
+    accept.innerText = 'Xác nhận';
+    accept.style.width = '100px';
+    action.appendChild(accept);
+
+    
     notification.hidden = false;
 }
 
@@ -185,9 +170,40 @@ function closeRoom() {
             { name: 'Hủy', action: () => notification.hidden = true },
             { name: 'Xác nhận', action: () => {
                 notification.hidden = true;
-                debugger
-                document.querySelector('form button').click();
+                window.location.href = '/rooms/result?roomId=' + room.id;
             }}
         ]
     )
+}
+
+function acceptAll() {
+    showConfirm("Xác nhận duyệt tất cả?", () => {
+        const rows = tableBody.querySelectorAll('tr')
+        rows.forEach(e => {
+            if(e.getAttribute('data-status') == '1')
+                setStatus(e.getAttribute('data-id'), CheckInStatus.ACCEPTED);
+        });
+    }, null);
+}
+
+function copyCheckInUrl() {
+    navigator.clipboard.writeText(room.url).then(() => {
+        showNotification('Đã sao chép link tham gia', null);
+    }).catch(err => {
+        showNotification('Sao chép link thất bại (err)', null);
+    });
+}
+
+function copyRoomCode() {
+    navigator.clipboard.writeText(room.code).then(() => {
+        showNotification('Đã sao chép mã phòng', null);
+    }).catch(err => {
+        showNotification('Sao chép mã phòng thất bại (err)', null);
+    });
+}
+
+function generateQRCode() {
+    const qrImage = document.getElementById('qrImage');
+    const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(room.url)}&size=300x300`;
+    qrImage.src = apiUrl;
 }

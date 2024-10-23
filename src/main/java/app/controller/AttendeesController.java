@@ -1,8 +1,9 @@
 package app.controller;
 
 import app.dtos.CheckInDTO;
-import app.dtos.CreateTestDTO;
 import app.dtos.WaitingRoomDTO;
+import app.enums.CheckInStatus;
+import app.models.Attendee;
 import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
@@ -23,45 +24,57 @@ public class AttendeesController {
         this.roomService = roomService;
     }
 
-    //code ở đây
     @GetMapping("/join-room")
-    public String getHandle(@RequestParam String roomId, Model model) {
-        //sử dụng roomId để lấy giá trị roomId từ trong query sau đó từ giá trị đấy gọi sang hàm findById trong roomService để lấy được cấu hình phòng
-        Room roomConfiguration = roomService.findById(roomId);//tìm phòng theo roomId và lấy cấu hình phòng
-        //khởi tại CheckInDTO với các cấu hình cần thiết lấy từ roomConfiguration bên trên
-        CheckInDTO roomCheckIn = new CheckInDTO();
-        roomCheckIn.roomId=roomConfiguration.getId();
-        roomCheckIn.roomName= roomConfiguration.getName();
-        roomCheckIn.roomCode=roomConfiguration.getCode();
-        roomCheckIn.requireCheckLocation=roomConfiguration.isRequireCheckLocation();
-        //trả về check-in.html kèm theo bến DTO
-        model.addAttribute("data", roomCheckIn);
+    public String getJoinRoomForm(@RequestParam String roomId, Model model) {
+        // Lấy cấu hình phòng khởi tạo CheckInDTO
+        Room room = roomService.findById(roomId);//tìm phòng theo roomId và lấy cấu hình phòng
+        CheckInDTO data = new CheckInDTO();
+        data.roomId = room.getId();
+        data.roomName = room.getName();
+        data.roomCode = room.getCode();
+        data.requireCheckLocation = room.isRequireCheckLocation();
+
+        //trả về trang check-in.html kèm theo biến DTO
+        model.addAttribute("data", data);
         return "check-in.html";
     }
 
     @PostMapping("/join-room")
-    public String postHandle(@ModelAttribute("data") CheckInDTO data, Model model) {
-        //@ModelAttribute là anotation hoạt động tương tự @RequestParam nhưng có tác dụng ánh xạ đến mô hình(ở đây là ánh xạ đến biến data vừa ược gửi lên)
-        if(attendeeService.existsByRoomId(data.roomId)&&attendeeService.existsByCheckInCode(data.checkInCode)){
-            //tìm kiếm dữ liệu attendees theo roomId và checkInCode nếu có đính kèm thêm biến kiểu query
-            return "redirect:/attendees/waiting?"+"roomId="+data.roomId+"&checkInCode="+data.checkInCode;
+    public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model) {
+
+        Attendee attendee = attendeeService.getByCheckInCodeAndRoomId(data.checkInCode, data.roomId);
+        // Kiểm tra attendee có trong danh sách điểm danh hay ko
+        if(attendee == null) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Mã điểm danh không hợp lệ");
+            return "check-in.html";
         }
-        //nếu không có dữ liệu roomId hoặc checkInCode thì trả về thông báo lỗi
-        model.addAttribute("data", data);
-        model.addAttribute("message", "Sai mã rồi bạn êi");
-        return "check-in.html";
+
+        // Kiểm tra attendee đã được điểm danh hay chưa
+        if(attendee.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Mã này đã được điểm danh bởi: " + attendee.getName());
+            return "check-in.html";
+        }
+
+        // Điểm danh
+        attendeeService.checkIn(attendee, data);
+
+        return "redirect:/attendees/waiting?roomId=" + data.roomId + "&attendeeId=" + attendee.getId();
     }
 
     @GetMapping("/waiting")
-    public String handleWaiting(@RequestParam String roomId,@RequestParam String checkInCode,Model model){
+    public String getWaitingRoom(@RequestParam String roomId, @RequestParam String attendeeId, Model model){
+        Room room = roomService.findById(roomId);
+        Attendee attendee = attendeeService.getById(attendeeId);
 
-        Room roomConfiguration = roomService.findById(roomId);//tìm phòng theo roomId và lấy cấu hình phòng
-        WaitingRoomDTO waitingRoomDTO = new WaitingRoomDTO();
-        waitingRoomDTO.roomName= roomConfiguration.getName();
-        waitingRoomDTO.roomCode= roomConfiguration.getCode();
-        waitingRoomDTO.checkInCode=checkInCode;
-        waitingRoomDTO.roomOwner=roomConfiguration.getCreateBy();
-        model.addAttribute("data",waitingRoomDTO );
+        WaitingRoomDTO data = new WaitingRoomDTO();
+        data.roomName = room.getName();
+        data.roomCode = room.getCode();
+        data.checkInCode = attendee.getCheckInCode();
+        data.roomOwner = room.getCreateBy();
+
+        model.addAttribute("data", data);
         return "waiting-room.html";
     }
 }

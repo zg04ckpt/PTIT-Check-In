@@ -6,7 +6,7 @@ const getListDialog = document.getElementById('getListDialog')
 const getListCloseBtn = document.getElementById('getListCloseBtn')
 const getListFromExcelBtn = document.getElementById('getListFromExcelBtn')
 const previewTable = document.getElementById('previewTable')
-const count = document.getElementById('count')
+const count = document.querySelector('#count b')
 const saveBtn = document.getElementById('saveBtn')
 const successLabel = document.getElementById('successLabel')
 const list = document.getElementById('list')
@@ -34,14 +34,19 @@ getListFromExcelBtn.onchange = e => {
             const sheet = workbook.Sheets[sheetName];
 
             const rowData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
+            
             const idCol = document.getElementById('idColumnInput').value - 1;
             const nameCol = document.getElementById('nameColumnInput').value - 1;
             const startRow = document.getElementById('startRowInput').value - 1;
+            let cnt = 0;
             for(let i = startRow; i < rowData.length; i++) {
+                if (rowData[i][idCol] == null && rowData[i][nameCol] == null) {
+                    continue;
+                }
+                cnt++;
                 previewTable.querySelector('tbody').replaceChildren();
                 const row = previewTable.insertRow();
-                row.insertCell(0).textContent = i;
+                row.insertCell(0).textContent = cnt;
                 row.insertCell(1).textContent = rowData[i][idCol];
                 row.insertCell(2).textContent = rowData[i][nameCol];
                 previewData.push({
@@ -50,7 +55,7 @@ getListFromExcelBtn.onchange = e => {
                 });
             }
             
-            count.innerText = "Số lượng: " + (rowData.length - startRow);
+            count.innerText = cnt;
         }
         reader.readAsArrayBuffer(file);
     }
@@ -70,8 +75,13 @@ saveBtn.onclick = e => {
         showNotification("Danh sách trống");
         return;
     }
-    
-    console.log(list);
+
+    for (const e of previewData) {
+        if (e['id'] === undefined || e['name'] === undefined) {
+            showNotification("Danh sách không hợp lệ!");
+            return;
+        }
+    }
 
     list.replaceChildren();
     previewData.forEach((e, index) => {
@@ -177,3 +187,10 @@ document.getElementById("backBtn").onclick = e => {
     e.preventDefault();
     window.location.href='/';
 }
+
+//fix lỗi quay lại trang cữ có form ko hợp lệ
+window.history.pushState({}, window.location.href);
+window.addEventListener('popstate', (event) => {
+    event.preventDefault();
+    window.location.href = '/';
+});

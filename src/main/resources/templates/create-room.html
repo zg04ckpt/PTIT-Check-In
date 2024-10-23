@@ -37,7 +37,7 @@
                         <button id="getListBtn" class = "bg-gray-400 text-white w-[120px] rounded py-1" data-bs-toggle="modal" data-bs-target="#getListDialog">Chỉnh sửa</button>
                         <p id="successLabel" class="p-0 m-0 ms-2 text-success" hidden>
                             <i class='bx bx-check'></i>
-                            Lấy vị trí thành công
+                            Tải danh sách thành công
                         </p>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                 <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
                 
                 <!-- content -->
-                <small id="count" class="mt-4">Số lượng: 0</small>
+                <small id="count" class="mt-4">Số lượng: <b th:text="${data.attendees.size()}"></b></small>
                 <div class="row" style="font-size: 14px;">
                     <div class="col-6">
                         <table class="table" id="previewTable" th:object="${data}">
@@ -148,13 +148,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <div th:each="attendee, iterStat : *{attendees}">
+                                <div th:each="attendee, iterStat : *{attendees}">
                                     <tr>
                                         <td th:text="${iterStat.index + 1}"></td>
-                                        <td th:text="${attendee.id}"></td>
+                                        <td th:text="${attendee.checkInCode}"></td>
                                         <td th:text="${attendee.name}"></td>
                                     </tr>
-                                </div> -->
+                                </div>
                             </tbody>
                         </table>
                     </div>

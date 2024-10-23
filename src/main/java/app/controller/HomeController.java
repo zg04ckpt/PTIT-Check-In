@@ -22,24 +22,31 @@ public class HomeController {
 
     //code ở đây
     @GetMapping("/")
-    public String returnHome( Model model) {
+    public String getHome( Model model) {
         SearchRoomDTO data = new SearchRoomDTO();
         model.addAttribute("data", data);
         return "index.html";
     }
 
     @PostMapping("/")
-    public String handle(@ModelAttribute("data") SearchRoomDTO data,  Model model) {
-        /*kiểm tra lỗi xem đối tượng gửi lên bị lỗi không*/
-        if (!roomService.isRoomCodeExists(data.roomCode)) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Nhập đúng tên phòng vào bạn êi,cho nghỉ học giờ:)))");
-            return "index.html";/*nếu lối in ra thông báo tra về index*/
-        }else {
-            /*nếu không lỗi sử dung phương thức findByCode thì đến data.roomCode để lấy ra thông tin phòng*/
-            Room room = roomService.findByCode(data.roomCode);
-            return "redirect:/attendees/join-room?"+"roomId="+room.getId();/*chuyển hướng phòng sang attendees đính kèm thêm query*/
+    public String findRoom(@ModelAttribute("data") SearchRoomDTO data,  Model model) {
 
+        // Kiểm tra độ dài
+        if(data.roomCode.length() != 6) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Mã phòng phải có 6 kí tự!");
+            return "index.html";
         }
+
+        //kiểm tra phòng hợp lệ
+        Room room = roomService.findByCode(data.roomCode);
+        if (room == null) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Phòng không tồn tại!");
+            return "index.html";
+        }
+
+        /*nếu room tồn tại chuyển hướng đến join-room(AttendeesController)*/
+        return "redirect:/attendees/join-room?"+"roomId="+room.getId();
     }
 }
