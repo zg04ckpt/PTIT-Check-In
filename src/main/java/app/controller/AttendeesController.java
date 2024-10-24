@@ -26,16 +26,8 @@ public class AttendeesController {
 
     @GetMapping("/join-room")
     public String getJoinRoomForm(@RequestParam String roomId, Model model) {
-        // Lấy cấu hình phòng khởi tạo CheckInDTO
-        Room room = roomService.findById(roomId);//tìm phòng theo roomId và lấy cấu hình phòng
-        CheckInDTO data = new CheckInDTO();
-        data.roomId = room.getId();
-        data.roomName = room.getName();
-        data.roomCode = room.getCode();
-        data.requireCheckLocation = room.isRequireCheckLocation();
-
         //trả về trang check-in.html kèm theo biến DTO
-        model.addAttribute("data", data);
+        model.addAttribute("data", attendeeService.getCheckInData(roomId));
         return "check-in.html";
     }
 
@@ -65,16 +57,7 @@ public class AttendeesController {
 
     @GetMapping("/waiting")
     public String getWaitingRoom(@RequestParam String roomId, @RequestParam String attendeeId, Model model){
-        Room room = roomService.findById(roomId);
-        Attendee attendee = attendeeService.getById(attendeeId);
-
-        WaitingRoomDTO data = new WaitingRoomDTO();
-        data.roomName = room.getName();
-        data.roomCode = room.getCode();
-        data.checkInCode = attendee.getCheckInCode();
-        data.roomOwner = room.getCreateBy();
-
-        model.addAttribute("data", data);
+        model.addAttribute("data", attendeeService.getWaitingData(roomId, attendeeId));
         return "waiting-room.html";
     }
 }

@@ -5,6 +5,7 @@ const CheckInStatus = {
     ACCEPTED: 2,
     REJECTED: 3
 };
+
 const tableBody = document.querySelector('table tbody');
 
 function setAllRowsStatus() {
@@ -21,6 +22,7 @@ function setRowStatus(row, status) {
     switch (status) {
         case CheckInStatus.OUT_OF_ROOM:
             cols[3].innerText = 'Chưa vào phòng';
+            cols[4].innerHTML = '';
             row.className = 'bg-white text-dark';
             row.setAttribute("data-status", CheckInStatus.OUT_OF_ROOM);
             break;
@@ -53,6 +55,7 @@ function setRowStatus(row, status) {
 
         case CheckInStatus.REJECTED:
             cols[3].innerText = 'Từ chối';
+            cols[4].innerHTML = '';
             row.className = 'bg-danger text-white';
             row.setAttribute("data-status", CheckInStatus.REJECTED);
             break;
@@ -83,25 +86,43 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c; // Khoảng cách tính bằng m
 }
 
+const MessageType = {
+    ATTENDEE_STATUS: 0,
+    ROOM_STATUS: 1,
+}
+
 var socket = new SockJS("/ws");
 var stompClient = Stomp.over(socket);
 stompClient.connect({}, function(frame) {
     stompClient.subscribe("/topic/rooms/" + room.id, next => {
-        //data.body : {id, roomId, status}
+        /**next.body = {
+         *     type: MessageType
+         *     data: any
+         * }
+         */
         debugger
-        const data = JSON.parse(next.body);
-        const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == data['id']);
-        setRowStatus(targetRow, data['status']);
+        const message = JSON.parse(next.body);
+        if(message.type === MessageType.ATTENDEE_STATUS) {
+            const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == message.data.attendeeId);
+            setRowStatus(targetRow, message.data.attendeeStatus);
+        }
     });
 });
 
 function setStatus(id, status) {
     const json = {
-        id: id,
+        type: MessageType.ATTENDEE_STATUS,
         roomId: room.id,
-        status: status
+        data : {
+            attendeeId: id,
+            attendeeStatus: status
+        }
     };
     stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
+}
+
+function setCloseStatus() {
+
 }
 
 // ----------------- Notification management -------------------------

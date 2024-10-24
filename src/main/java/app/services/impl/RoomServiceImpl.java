@@ -2,13 +2,14 @@ package app.services.impl;
 
 import app.dtos.*;
 import app.enums.CheckInStatus;
+import app.enums.MessageType;
 import app.models.Attendee;
 import app.models.Room;
 import app.repositories.AttendeeRepository;
 import app.repositories.RoomRepository;
 import app.services.RoomService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -153,13 +154,17 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void setAttendeeStatus(String jsonData) {
-        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
-        String id = jsonObject.get("id").getAsString();
-        String roomId = jsonObject.get("roomId").getAsString();
-        int status = jsonObject.get("status").getAsInt();
-        int result = attendeeRepository.updateStatusById(id, CheckInStatus.values()[status]);
-        if(result > 0) {
-            sender.convertAndSend("/topic/rooms/" + roomId, jsonData);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            MessageDTO<AttendeeStatusDTO> message = mapper.readValue(jsonData, new TypeReference<>() {});
+            if(message.type == MessageType.ATTENDEE_STATUS) {
+                int result = attendeeRepository.updateStatusById(message.data.attendeeId, message.data.attendeeStatus);
+                if(result > 0) {
+                    sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Lỗi parse json data (setAttendeeStatus)", ex);
         }
     }
 
