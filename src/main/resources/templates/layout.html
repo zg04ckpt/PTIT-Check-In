@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html 
+    lang="en" 
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <!-- BS5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">PTIT CheckIn</title>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar fixed-top navbar-dark bg-dark py-1">
+        <div class="container-lg">
+          <a class="navbar-brand" href="#">PTIT CheckIn</a>
+          <p class="text-info me-2">version 1.0</p>
+          <p class="text-white">id phòng mẫu: adba854f-4acd-4874-a149-2fc5634bd76f, mã phòng mẫu: 15GR35</p>
+        </div>
+    </nav>
+
+    <div style="width: 100%; height: 50px;"></div>
+
+    <!-- Content -->
+    <div layout:fragment="content">
+    </div>
+
+    <!-- Message -->
+    <div th:if="${message != null}" id="noti" class="position-fixed w-100 h-100 top-0" style="background-color: rgba(128, 128, 128, 0.551);">
+        <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+            <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="noti.hidden = true"></button>
+            <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+            <hr class="mt-2 mb-2">
+            <p class="text-center px-2" th:text="${message}"></p>
+            
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-outline-success btn-sm text-center" style="width: 100px;" onclick="noti.hidden = true">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- script BS5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- script Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+</html>

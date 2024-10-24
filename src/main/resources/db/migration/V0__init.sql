@@ -1,0 +1,6 @@
+CREATE TABLE Tests (
+  id VARCHAR(255) NOT NULL,
+   prop1 VARCHAR(255) NULL,
+   prop2 VARCHAR(255) NULL,
+   CONSTRAINT pk_test PRIMARY KEY (id)
+);

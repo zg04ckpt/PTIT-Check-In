@@ -1,0 +1,111 @@
+/*section-4*/
+.section-4{
+    padding: 100px 0;
+}
+
+.section-4 .inner-wrap{
+    width: 410px;
+    height: 430px;
+    box-shadow: #00000026 0px 5px 15px 0px;
+    padding: 5px 5px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #fff;
+
+}
+
+.section-4 .inner-wrap .inner-title{
+    font-size: 32px;
+    font-weight:600;
+    margin-bottom: 25px;
+}
+
+.section-4 .inner-wrap ul{
+    list-style: none;/*bỏ đi các dấu chấm tròn mặc định*/
+    margin: 0;/*đưa các thẻ ul về mặc định*/
+    padding: 0;
+}
+
+.section-4 .inner-wrap .result-list{
+    position: relative;
+    float: right; /* Hoặc float: left nếu bạn muốn đẩy sang trái */
+    width: 350px;
+}
+
+.section-4 .inner-wrap .result-list li{
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .success{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00A049;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .fail{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #C00000;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .pending{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000000;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .absent{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #BFBFBF;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .result-list .total{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 700;
+    color: #00B0F0;
+    left:300px;
+    margin-bottom: 10px;
+}
+
+.section-4 .inner-wrap .color-green{
+    margin-top: 10px;
+    color: #1EB462;
+    font-weight: 1000;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.section-4 .inner-wrap .downloadDetail{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 40px;
+    background: #00B0F0;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.section-4 .inner-wrap .inner-home{
+    color: #AEABAB;
+    font-size: 20px;
+    font-weight: 600;
+}
+/*end section-4*/
