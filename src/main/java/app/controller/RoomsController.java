@@ -87,6 +87,8 @@ public class RoomsController {
 
     @GetMapping("/result")
     public String getResult(@RequestParam("roomId") String roomId, Model model) {
+        //Gửi thông báo đóng phòng đến các client
+        roomService.sendCloseRoomMessage(roomId);
         model.addAttribute("data", roomService.getResult(roomId));
         return "result.html";
     }

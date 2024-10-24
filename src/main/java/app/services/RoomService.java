@@ -17,4 +17,5 @@ public interface RoomService {
     ResultDTO getResult(String roomId);
     void setAttendeeStatus(String jsonData);
     boolean isAttendeeListValid(List<CreateAttendeeDTO> data);
+    void sendCloseRoomMessage(String roomId);
 }

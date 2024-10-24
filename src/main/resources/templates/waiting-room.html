@@ -52,6 +52,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                
+                <div id="action" class="d-flex justify-content-center mt-3">
+                </div>
+            </div>
+        </div>
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>

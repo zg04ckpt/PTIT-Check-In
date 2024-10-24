@@ -113,38 +113,6 @@
             </div>
         </div>
 
-         <!-- Hidden -->
-        <form id="result-data" method="post" th:object="${data}" th:action="@{/rooms/result}" hidden>
-            <input type="text" th:field="*{id}">
-            <input type="text" th:field="*{name}">
-            <input type="text" th:field="*{createBy}">
-            <input type="checkbox" th:field="*{requireCheckLocation}">
-            <input type="number" th:field="*{latitude}">
-            <input type="number" th:field="*{longitude}">
-            <input type="number" th:field="*{acceptRange}">
-            <input type="datetime-local" th:field="*{startTime}" th:if="${startTime != null}">
-            <input type="datetime-local" th:field="*{startTime}" th:if="${startTime == null}" value="">
-            <input type="datetime-local" th:field="*{endTime}" th:if="${endTime != null}">
-            <input type="datetime-local" th:field="*{endTime}" th:if="${endTime == null}" value="">
-            <input type="checkbox" th:field="*{enableAutoApproval}">
-            <input type="datetime-local" th:field="*{createOn}">
-            <input type="text" th:field="*{code}">
-            <input type="text" th:field="*{url}">
-            <div th:each="attendee, iterStat : ${data.attendees}" th:attr="data-index=${iterStat.index}">
-                <input type="text" th:field="*{attendees[__${iterStat.index}__].id}">
-                <input type="text" th:field="*{attendees[__${iterStat.index}__].checkInCode}">
-                <input type="text" th:field="*{attendees[__${iterStat.index}__].name}">
-                <input type="number" th:field="*{attendees[__${iterStat.index}__].latitude}">
-                <input type="number" th:field="*{attendees[__${iterStat.index}__].longitude}">
-                <input type="number" th:field="*{attendees[__${iterStat.index}__].checkInStatus}">
-                <input type="number" th:field="*{attendees[__${iterStat.index}__].distance}">
-                <input type="text" th:field="*{attendees[__${iterStat.index}__].ipAddress}">
-                <input type="datetime-local" th:field="*{attendees[__${iterStat.index}__].attendOn}" th:if="${attendee.attendOn != null}">
-                <input type="datetime-local" th:field="*{attendees[__${iterStat.index}__].attendOn}" th:if="${attendee.attendOn == null}" value="">
-            </div>
-            <button type="submit"></button>
-        </form>
-
         <!-- QRCode -->
         <div id="qrCode" class="position-fixed w-100 h-100 top-0 start-0" 
         style="z-index: 99999; background-color: rgba(128, 128, 128, 0.551);" hidden>

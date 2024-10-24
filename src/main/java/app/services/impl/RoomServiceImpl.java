@@ -8,6 +8,7 @@ import app.models.Room;
 import app.repositories.AttendeeRepository;
 import app.repositories.RoomRepository;
 import app.services.RoomService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -176,5 +178,27 @@ public class RoomServiceImpl implements RoomService {
             }
         }
         return true;
+    }
+
+    @Override
+    public void sendCloseRoomMessage(String roomId) {
+        try {
+            List<Attendee> attendees = roomRepository.getReferenceById(roomId).getAttendees();
+            MessageDTO<HashMap<String, CheckInResultDTO>> message = new MessageDTO<>();
+            message.type = MessageType.CLOSE_ROOM;
+            message.roomId = roomId;
+            message.data = new HashMap<>();
+            for(Attendee attendee : attendees) {
+                CheckInResultDTO result = new CheckInResultDTO();
+                result.success = attendee.getCheckInStatus() == CheckInStatus.ACCEPTED;
+                message.data.put(attendee.getId(), result);
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(message);
+            sender.convertAndSend("/topic/rooms/" + roomId, json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Lỗi gửi thông báo đóng phòng (sendCloseRoomMessage)", e);
+        }
     }
 }

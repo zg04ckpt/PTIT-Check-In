@@ -6,4 +6,5 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum MessageType { // Dành cho websocket
     ATTENDEE_STATUS,
     ROOM_STATUS,
+    CLOSE_ROOM
 }
