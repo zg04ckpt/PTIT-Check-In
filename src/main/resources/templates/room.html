@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+<head>
+    <title layout:fragment="title">Phòng điểm danh</title>
+    <link rel="stylesheet" href="/css/room.css">
+</head>
+<body>
+
+    <div layout:fragment="content">
+
+        <!-- Content -->
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card card-body mx-3 mx-lg-0 shadow" style="margin-top: 40px; height: 600px;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div th:text="${data.name}" class="fs-2 fw-bolder"></div>
+                    <div class="d-flex">
+                        <div class="fs-5">Còn lại: <b class="text-info">05p:49s</b></div>
+                        <button th:onclick="closeRoom()" class="btn btn-outline-danger btn-sm ms-3">Đóng phòng</button>
+                    </div>
+                </div>
+            
+                <div class="d-flex text-secondary">
+                    <p class="me-3">
+                        Mã phòng: <b class="text-info" th:text="${data.code}"></b>
+                        <i class='bx bx-copy bnt m-0 p-0' onclick="copyRoomCode()"></i>
+                    </p>
+                    <p class="me-3">Chủ phòng: <b class="text-info" th:text="${data.createBy}">[Chủ room]</b></p>
+                    <p class="me-3">Số lượng: <b class="text-info" th:text="${data.attendees.size()}">[Số lượng người tham gia]</b></p>
+                </div>
+            
+                <div class="d-flex mt-4 justify-content-between">
+                    <div class="d-flex">
+            
+                        <button class="btn btn-outline-dark btn-sm me-2">
+                            Cấu hình
+                            <i class='bx bxs-brightness'></i>
+                        </button>
+                
+                        <button class="btn btn-outline-dark btn-sm me-2"
+                        onclick="qrCode.hidden = false; generateQRCode()">
+                            QR Code
+                            <i class='bx bx-qr' ></i>
+                        </button>
+                        
+                        <button id="enableAuto" class="btn btn-outline-dark btn-sm me-2 box position-relative"
+                        onclick="this.hidden = true; disableAuto.hidden = false">
+                          Tự động duyệt
+                          <i class='bx bxs-rocket' ></i>
+                        </button>
+    
+                        <button id="disableAuto" class="btn btn-sm me-2 box position-relative"
+                        onclick="this.hidden = true; enableAuto.hidden = false" hidden>
+                          Tắt tự động duyệt
+                          <i class='bx bxs-rocket' ></i>
+                          <span class="auto-border"></span>
+                        </button>
+                    </div>
+            
+                    <button class="btn btn-outline-success btn-sm" onclick="acceptAll()">
+                        Duyệt tất cả
+                        <i class='bx bxs-check-circle'></i>
+                    </button>
+                </div>
+                
+                
+                <div class="table-wrapper mt-2">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr >
+                                <th style="width: 4%;">STT</th>
+                                <th style="width: 20%;">Mã điểm danh</th>
+                                <th >Tên</th>
+                                <th style="width: 20%;">Trạng thái</th>
+                                <th style="width: 20%;">Hành động</th>
+                                <th style="width: 4%; text-align: center;">Chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr th:each="attendee, iterStat : ${data.attendees}" th:attr="data-id=${attendee.id}">
+                                <td th:text="${iterStat.index + 1}"></td>
+                                <td th:text="${attendee.checkInCode}"></td>
+                                <td th:text="${attendee.name}"></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-center">
+                                    <i class='bx bx-dots-vertical-rounded dropdown' data-bs-toggle="dropdown"></i>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-item">Chi tiết</li>
+                                        <li class="dropdown-item">Xem vị trí</li>
+                                        <li class="dropdown-item">Chặn</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                
+                <div id="action" class="d-flex justify-content-center mt-3">
+                </div>
+            </div>
+        </div>
+
+        <!-- QRCode -->
+        <div id="qrCode" class="position-fixed w-100 h-100 top-0 start-0" 
+        style="z-index: 99999; background-color: rgba(128, 128, 128, 0.551);" hidden>
+        <div class="card card-body p-2 position-absolute start-50 translate-middle-x">
+            <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="qrCode.hidden = true"></button>
+            <div class="m-0 text-center fw-bold" style="font-size: 18px;">Tham gia với QR Code / URL</div>
+            <p class="text-center text-secondary mt-2">Còn lại: <b class="text-info">05m:45s</b></p>
+            
+            <div class="d-flex flex-column w-100 px-3">
+                <img id="qrImage" src="" alt="" width="300" height="300" class="mx-auto"
+                onclick="qrCode.classList.add('zoom-img'); closeZoomBtn.hidden = false">
+                
+                <div class="d-flex justify-content-center my-3">
+                <button class="btn btn-sm btn-outline-secondary" style="width: 70px;">
+                    <i class='bx bx-copy fw-bold' style="font-size: 16px;"></i> QR
+                </button>
+                <button onclick="copyCheckInUrl()" class="btn btn-sm btn-outline-secondary ms-2" style="width: 70px;">
+                    <i class='bx bx-copy fw-bold' style="font-size: 16px;"></i> URL
+                </button>
+                </div>
+            </div>
+        </div>
+
+        <button id="closeZoomBtn" class="btn btn-close position-absolute end-0 top-0" 
+        onclick="qrCode.classList.remove('zoom-img'); this.hidden = true" hidden></button>
+        </div>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script th:inline="javascript"> var room = /*[[${data}]]*/ {}; </script>
+        <script src="/js/room.js"></script>
+    </div>
+    
+</body>
+</html>
