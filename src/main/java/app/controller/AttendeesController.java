@@ -7,6 +7,7 @@ import app.models.Attendee;
 import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class AttendeesController {
     }
 
     @PostMapping("/join-room")
-    public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model) {
+    public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model, HttpSession session) {
 
         Attendee attendee = attendeeService.getByCheckInCodeAndRoomId(data.checkInCode, data.roomId);
         // Kiểm tra attendee có trong danh sách điểm danh hay ko
@@ -51,6 +52,10 @@ public class AttendeesController {
 
         // Điểm danh
         attendeeService.checkIn(attendee, data);
+
+        // Lưu session
+        session.setAttribute("attendeeId", attendee.getId());
+        session.setAttribute("joinedRoomId", data.roomId);
 
         return "redirect:/attendees/waiting?roomId=" + data.roomId + "&attendeeId=" + attendee.getId();
     }

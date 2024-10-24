@@ -6,14 +6,17 @@ import app.models.Room;
 import app.services.FileService;
 import app.services.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.Objects;
 
 // id phong mau: 6f7ffd60-959a-4953-9444-6bf0919dbe4a
 // ma phong mau: HS12JK
@@ -37,7 +40,7 @@ public class RoomsController {
     }
 
     @PostMapping("/create-room")
-    public String createRoom(@ModelAttribute("data") CreateRoomDTO data, Model model, HttpServletRequest request) {
+    public String createRoom(@ModelAttribute("data") CreateRoomDTO data, Model model, HttpServletRequest request, HttpSession session) {
         if(data.name.isEmpty()) {
             model.addAttribute("data", data);
             model.addAttribute("message", "Tên phòng trống");
@@ -75,6 +78,9 @@ public class RoomsController {
             return "create-room.html";
         }
 
+        // Lưu session
+        session.setAttribute("roomId", newRoom.getId());
+
         return "redirect:/rooms/" + newRoom.getId();
     }
 
@@ -86,7 +92,10 @@ public class RoomsController {
     }
 
     @GetMapping("/result")
-    public String getResult(@RequestParam("roomId") String roomId, Model model) {
+    public String getResult(@RequestParam("roomId") String roomId, Model model, HttpSession session) {
+        // Xóa session
+        session.removeAttribute("roomId");
+
         //Gửi thông báo đóng phòng đến các client
         roomService.sendCloseRoomMessage(roomId);
         model.addAttribute("data", roomService.getResult(roomId));
@@ -104,7 +113,8 @@ public class RoomsController {
     }
 
     @MessageMapping("/setAttendeeStatus")
-    public void setAttendeeStatus(String data) {
-        roomService.setAttendeeStatus(data);
+    public void setAttendeeStatus(String data, SimpMessageHeaderAccessor headerAccessor) {
+        HttpSession session = (HttpSession) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("HTTP_SESSION");
+        roomService.setAttendeeStatus(data, session);
     }
 }

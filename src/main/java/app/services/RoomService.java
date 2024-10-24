@@ -4,6 +4,7 @@ import app.dtos.*;
 import app.models.Room;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface RoomService {
     Room createNewRoom(CreateRoomDTO data, HttpServletRequest request);
     RoomDTO getRoomData(String roomId);
     ResultDTO getResult(String roomId);
-    void setAttendeeStatus(String jsonData);
+    void setAttendeeStatus(String jsonData, HttpSession session);
     boolean isAttendeeListValid(List<CreateAttendeeDTO> data);
     void sendCloseRoomMessage(String roomId);
 }

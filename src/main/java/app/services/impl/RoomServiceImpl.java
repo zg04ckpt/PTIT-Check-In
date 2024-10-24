@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -155,7 +156,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void setAttendeeStatus(String jsonData) {
+    public void setAttendeeStatus(String jsonData, HttpSession session) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             MessageDTO<AttendeeStatusDTO> message = mapper.readValue(jsonData, new TypeReference<>() {});
@@ -163,6 +164,12 @@ public class RoomServiceImpl implements RoomService {
                 int result = attendeeRepository.updateStatusById(message.data.attendeeId, message.data.attendeeStatus);
                 if(result > 0) {
                     sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
+                }
+
+                //Xóa session của attendee
+                if(message.data.attendeeStatus == CheckInStatus.OUT_OF_ROOM) {
+                    session.removeAttribute("joinedRoomId");
+                    session.removeAttribute("attendeeId");
                 }
             }
         } catch (Exception ex) {
