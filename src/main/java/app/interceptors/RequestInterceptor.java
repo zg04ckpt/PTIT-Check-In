@@ -3,7 +3,6 @@ package app.interceptors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.hibernate.query.sqm.mutation.internal.Handler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -18,15 +17,18 @@ public class RequestInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession(false);
 
         if(session != null) {
+            // Nếu có roomId => đang là chủ phòng
             if(session.getAttribute("roomId") != null) {
                 String roomId = session.getAttribute("roomId").toString();
-                if(request.getRequestURI().contains("/rooms/" + roomId) || request.getRequestURI().contains("result")) {
+                String currentUri = request.getRequestURI();
+                if(currentUri.contains("/rooms/" + roomId) || currentUri.contains("result") || currentUri.contains("open-room")) {
                     return true;
                 }
                 response.sendRedirect("/rooms/" + roomId);
                 return false;
             }
 
+            // Nếu có cả attendeeId và joinedRoomId thì đang là người tham gia
             if(session.getAttribute("attendeeId") != null && session.getAttribute("joinedRoomId") != null) {
                 String attendeeId = session.getAttribute("attendeeId").toString();
                 String joinedRoomId = session.getAttribute("joinedRoomId").toString();

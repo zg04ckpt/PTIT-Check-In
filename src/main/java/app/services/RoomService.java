@@ -1,6 +1,7 @@
 package app.services;
 
 import app.dtos.*;
+import app.enums.RoomStatus;
 import app.models.Room;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,4 +20,7 @@ public interface RoomService {
     void setAttendeeStatus(String jsonData, HttpSession session);
     boolean isAttendeeListValid(List<CreateAttendeeDTO> data);
     void sendCloseRoomMessage(String roomId);
+    RoomStatus getStatus(String roomId);
+    long getRemainingSecondsUntilRoomOpens(String roomId);
+    void openRoom(String roomId);
 }

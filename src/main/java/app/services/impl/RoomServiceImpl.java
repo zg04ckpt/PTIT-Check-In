@@ -3,6 +3,7 @@ package app.services.impl;
 import app.dtos.*;
 import app.enums.CheckInStatus;
 import app.enums.MessageType;
+import app.enums.RoomStatus;
 import app.models.Attendee;
 import app.models.Room;
 import app.repositories.AttendeeRepository;
@@ -13,10 +14,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,12 +69,19 @@ public class RoomServiceImpl implements RoomService {
                 data.latitude,
                 data.longitude,
                 data.range,
-                data.startTime,
-                data.endTime,
                 data.enableAutoApproval,
                 LocalDateTime.now(),
                 false
         );
+
+        //Thiết lập trạng thái phòng
+        if(data.startTime == null) {
+            room.setStatus(RoomStatus.OPENING);
+            room.setStartTime(LocalDateTime.now());
+        } else {
+            room.setStartTime(data.startTime);
+            room.setStatus(RoomStatus.PENDING);
+        }
 
         // Tạo link phòng
         room.setUrl("https://" + request.getServerName() + "/attendees/join-room?roomId=" + room.getId());
@@ -207,5 +217,27 @@ public class RoomServiceImpl implements RoomService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Lỗi gửi thông báo đóng phòng (sendCloseRoomMessage)", e);
         }
+    }
+
+    @Override
+    public RoomStatus getStatus(String roomId) {
+        return roomRepository.getRoomStatus(roomId);
+    }
+
+    @Override
+    public long getRemainingSecondsUntilRoomOpens(String roomId) {
+        LocalDateTime startTime = roomRepository.getStartTime(roomId);
+        if(startTime.isAfter(LocalDateTime.now())) {
+            return Duration.between(LocalDateTime.now(), startTime).getSeconds();
+        }
+        return 0;
+    }
+
+    @Override
+    public void openRoom(String roomId) {
+        Room room = roomRepository.getReferenceById(roomId);
+        room.setStatus(RoomStatus.OPENING);
+        room.setStartTime(LocalDateTime.now());
+        roomRepository.save(room);
     }
 }

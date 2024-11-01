@@ -1,5 +1,6 @@
 package app.models;
 
+import app.enums.RoomStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,8 @@ public class Room {
     @Column(nullable = false, unique = true)
     private String url; //link vào phòng
     private boolean isEnded; // đã đóng phòng hay chưa
+    @Enumerated(EnumType.ORDINAL)
+    private RoomStatus status; // trạng thái phòng
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
     private List<Attendee> attendees;
@@ -42,7 +45,7 @@ public class Room {
     public Room() {
     }
 
-    public Room(String id, String name, String createBy, boolean requireCheckLocation, double latitude, double longitude, double acceptRange, LocalDateTime startTime, LocalDateTime endTime, boolean enableAutoApproval, LocalDateTime createOn, boolean isEnded) {
+    public Room(String id, String name, String createBy, boolean requireCheckLocation, double latitude, double longitude, double acceptRange, boolean enableAutoApproval, LocalDateTime createOn, boolean isEnded) {
         this.id = id;
         this.name = name;
         this.createBy = createBy;
@@ -50,13 +53,19 @@ public class Room {
         this.latitude = latitude;
         this.longitude = longitude;
         this.acceptRange = acceptRange;
-        this.startTime = startTime;
-        this.endTime = endTime;
         this.enableAutoApproval = enableAutoApproval;
         this.createOn = createOn;
         this.isEnded = isEnded;
 
         this.attendees = new ArrayList<>();
+    }
+
+    public RoomStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RoomStatus status) {
+        this.status = status;
     }
 
     public void setUrl(String url) {

@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dtos.CreateRoomDTO;
 import app.dtos.RoomDTO;
+import app.enums.RoomStatus;
 import app.models.Room;
 import app.services.FileService;
 import app.services.RoomService;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
 import java.util.Objects;
 
 // id phong mau: 6f7ffd60-959a-4953-9444-6bf0919dbe4a
@@ -87,8 +89,25 @@ public class RoomsController {
     // Quản lý phòng
     @GetMapping("/{roomId}")
     public String getRoom(@PathVariable("roomId") String roomId,  Model model) {
+        if(roomService.getStatus(roomId) == RoomStatus.PENDING) {
+            return "redirect:/rooms/" + roomId + "/wait-open";
+        }
+
         model.addAttribute("data", roomService.getRoomData(roomId));
         return "room.html";
+    }
+
+    @GetMapping("/{roomId}/wait-open")
+    public String getWaitOpenPage(@PathVariable("roomId") String roomId,  Model model) {
+        model.addAttribute("roomId", roomId);
+        model.addAttribute("remaining", roomService.getRemainingSecondsUntilRoomOpens(roomId));
+        return "wait-open.html";
+    }
+
+    @PostMapping("/open-room")
+    public String openRoom(@RequestBody String roomId) {
+        roomService.openRoom(roomId);
+        return "redirect:/rooms/" + roomId;
     }
 
     @GetMapping("/result")
