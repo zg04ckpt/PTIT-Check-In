@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dtos.CreateTestDTO;
 import app.dtos.SearchRoomDTO;
+import app.enums.RoomStatus;
 import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
@@ -45,8 +46,19 @@ public class HomeController {
             model.addAttribute("message", "Phòng không tồn tại!");
             return "index.html";
         }
+        else if(room.getStatus() == RoomStatus.PENDING) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Phòng điểm danh chưa mở!");
+            return "index.html";
+        }
+        else if(room.getStatus() == RoomStatus.CLOSED) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Phòng điểm danh đã đóng!");
+            return "index.html";
+        }
 
-        /*nếu room tồn tại chuyển hướng đến join-room(AttendeesController)*/
+
+        /*Chuyển hướng đến join-room(AttendeesController)*/
         return "redirect:/attendees/join-room?"+"roomId="+room.getId();
     }
 }

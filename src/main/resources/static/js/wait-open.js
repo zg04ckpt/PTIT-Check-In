@@ -1,6 +1,6 @@
 var h, m, s;
-const time = document.getElementById('time');
 var sub;
+const time = document.getElementById('time');
 
 window.onload = e => {
     h = Math.floor(remaining / 3600);

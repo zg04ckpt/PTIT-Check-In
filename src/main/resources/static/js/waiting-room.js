@@ -36,10 +36,10 @@ function registerSocket() {
             } else if(message.type === MessageType.CLOSE_ROOM) {
                 const result = message.data[data.attendeeId];
                 if(result.success) {
-                    showNotification("Điểm danh thành công!", [{name: 'OK', action: () => window.location.href = '/'}])
+                    showNotification("Điểm danh thành công!", [{name: 'OK', action: () => outRoom()}])
                     
                 } else {
-                    showNotification("Điểm danh thất bại!", [{name: 'OK', action: () => window.location.href = '/'}])
+                    showNotification("Điểm danh thất bại!", [{name: 'OK', action: () => outRoom()}])
                 }
                 notification.querySelector('.btn-close').onclick = () => window.location.href = '/';
             }
@@ -88,4 +88,50 @@ function showNotification(msg, actions) {
         action.appendChild(accept);
     }
     notification.hidden = false;
+}
+
+// ----------------------- TIME REMAINING ----------------------------
+var h, m, s;
+var sub;
+const remainingTime = document.getElementById("remainingTime");
+
+function initRemainingTime() {
+    if(data.end) {
+        const remaining = Math.floor((new Date(data.end) - new Date()) / 1000);
+        remainingTime.hidden = false;
+        h = Math.floor(remaining / 3600);
+        m = Math.floor((remaining % 3600) / 60); 
+        s = remaining % 60;
+        sub = setInterval(updateRemainingTime, 1000);
+    }
+}
+
+function updateRemainingTime() {
+    remainingTime.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    s--;
+    if(s < 0) {
+        m--;
+        if(m < 0) {
+            h--;
+            if(h < 0) {
+                clearInterval(sub);
+            }
+            m = 59
+        }
+        s = 59;
+    }
+}
+
+window.onload = e => {
+    initRemainingTime();
+}
+
+// -------------------------------- OTHER --------------------------------
+function outRoom() {
+    fetch(`/attendees/clear-session`)
+    .then(res => {
+        if(res.redirected) {
+            window.location.href = res.url;
+        }
+    });
 }

@@ -17,7 +17,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div th:text="${data.name}" class="fs-2 fw-bolder"></div>
                     <div class="d-flex">
-                        <div class="fs-5">Còn lại: <b class="text-info">05p:49s</b></div>
+                        <div id="remainingTime" class="fs-6" hidden>Còn lại: <b class="text-info"></b></div>
                         <button th:onclick="closeRoom()" class="btn btn-outline-danger btn-sm ms-3">Đóng phòng</button>
                     </div>
                 </div>
@@ -119,9 +119,8 @@
             <div class="card card-body p-2 position-absolute start-50 translate-middle-x">
                 <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="qrCode.hidden = true"></button>
                 <div class="m-0 text-center fw-bold" style="font-size: 18px;">Tham gia với QR Code / URL</div>
-                <p class="text-center text-secondary mt-2">Còn lại: <b class="text-info">05m:45s</b></p>
                 
-                <div class="d-flex flex-column w-100 px-3">
+                <div class="d-flex flex-column w-100 px-3 mt-3">
                     <img id="qrImage" src="" alt="" width="300" height="300" class="mx-auto"
                     onclick="qrCode.classList.add('zoom-img'); closeZoomBtn.hidden = false">
                     

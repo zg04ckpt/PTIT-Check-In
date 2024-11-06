@@ -9,7 +9,7 @@ function getCurrentDateFormatted() {
 function down() {
     let filename;
     fetch(
-        '/rooms/export/' + room.roomId,
+        '/rooms/export',
         { method: 'GET' }
     )
     .then(res => {

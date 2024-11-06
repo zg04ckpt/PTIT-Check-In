@@ -1,3 +1,5 @@
+
+
 // ----------------------- Attendee management -------------------------
 const CheckInStatus = {
     OUT_OF_ROOM: 0,
@@ -64,6 +66,7 @@ function setRowStatus(row, status) {
 
 window.onload = e => {
     setAllRowsStatus();
+    initRemainingTime();
 }
 
 //----------------- WEBSOCKET -------------------------
@@ -184,6 +187,39 @@ function showConfirm(msg, onConfirm, onCancel) {
 }
 
 // ----------------- OTHER --------------------
+var h, m, s;
+var sub;
+const remainingTime = document.getElementById("remainingTime");
+
+function initRemainingTime() {
+    if(room.endTime) {
+        const remaining = Math.floor((new Date(room.endTime) - new Date()) / 1000);
+        remainingTime.hidden = false;
+        h = Math.floor(remaining / 3600);
+        m = Math.floor((remaining % 3600) / 60); 
+        s = remaining % 60;
+        sub = setInterval(updateRemainingTime, 1000);
+    }
+}
+
+function updateRemainingTime() {
+    remainingTime.querySelector('b').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    s--;
+    if(s < 0) {
+        m--;
+        if(m < 0) {
+            h--;
+            if(h < 0) {
+                window.location.href = '/rooms/result?roomId=' + room.id;
+                clearInterval(sub);
+            }
+            m = 59
+        }
+        s = 59;
+    }
+}
+
+
 function closeRoom() {
     showNotification(
         "Xác nhận đóng phòng điểm danh?",

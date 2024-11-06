@@ -45,6 +45,7 @@ public class AttendeeServiceImpl implements AttendeeService {
         data.attendeeId = attendeeId;
         data.roomName = room.getName();
         data.roomCode = room.getCode();
+        data.end = room.getEndTime();
         data.checkInCode = attendee.getCheckInCode();
         data.roomOwner = room.getCreateBy();
 

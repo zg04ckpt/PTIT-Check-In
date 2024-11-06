@@ -3,6 +3,7 @@ package app.controller;
 import app.dtos.CheckInDTO;
 import app.dtos.WaitingRoomDTO;
 import app.enums.CheckInStatus;
+import app.enums.RoomStatus;
 import app.models.Attendee;
 import app.models.Room;
 import app.services.AttendeeService;
@@ -37,16 +38,16 @@ public class AttendeesController {
 
         Attendee attendee = attendeeService.getByCheckInCodeAndRoomId(data.checkInCode, data.roomId);
         // Kiểm tra attendee có trong danh sách điểm danh hay ko
+        String errorMessage = null;
         if(attendee == null) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Mã điểm danh không hợp lệ");
-            return "check-in.html";
+            errorMessage = "Mã điểm danh không hợp lệ";
+        } else if(attendee.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM) {
+            errorMessage = "Mã này đã được điểm danh bởi: " + attendee.getName();
         }
 
-        // Kiểm tra attendee đã được điểm danh hay chưa
-        if(attendee.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM) {
+        if(errorMessage != null) {
             model.addAttribute("data", data);
-            model.addAttribute("message", "Mã này đã được điểm danh bởi: " + attendee.getName());
+            model.addAttribute("message", errorMessage);
             return "check-in.html";
         }
 
@@ -57,12 +58,21 @@ public class AttendeesController {
         session.setAttribute("attendeeId", attendee.getId());
         session.setAttribute("joinedRoomId", data.roomId);
 
-        return "redirect:/attendees/waiting?roomId=" + data.roomId + "&attendeeId=" + attendee.getId();
+        return "redirect:/attendees/waiting";
     }
 
     @GetMapping("/waiting")
-    public String getWaitingRoom(@RequestParam String roomId, @RequestParam String attendeeId, Model model){
+    public String getWaitingRoom(Model model, HttpSession session){
+        String attendeeId = session.getAttribute("attendeeId").toString();
+        String roomId = session.getAttribute("joinedRoomId").toString();
         model.addAttribute("data", attendeeService.getWaitingData(roomId, attendeeId));
         return "waiting-room.html";
+    }
+
+    @GetMapping("/clear-session")
+    public String clearSession(HttpSession session) {
+        session.removeAttribute("attendeeId");
+        session.removeAttribute("joinedRoomId");
+        return "redirect:/";
     }
 }

@@ -83,46 +83,57 @@ public class RoomsController {
         // Lưu session
         session.setAttribute("roomId", newRoom.getId());
 
-        return "redirect:/rooms/" + newRoom.getId();
+        return "redirect:/rooms/";
     }
 
     // Quản lý phòng
-    @GetMapping("/{roomId}")
-    public String getRoom(@PathVariable("roomId") String roomId,  Model model) {
-        if(roomService.getStatus(roomId) == RoomStatus.PENDING) {
-            return "redirect:/rooms/" + roomId + "/wait-open";
+    @GetMapping("/")
+    public String getRoom(Model model, HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
+
+        RoomStatus status = roomService.getStatus(roomId);
+        if(status == RoomStatus.PENDING) {
+            return "redirect:/rooms/wait-open";
+        } else if(status == RoomStatus.CLOSED) {
+            return "error.html";
         }
 
         model.addAttribute("data", roomService.getRoomData(roomId));
         return "room.html";
     }
 
-    @GetMapping("/{roomId}/wait-open")
-    public String getWaitOpenPage(@PathVariable("roomId") String roomId,  Model model) {
+    @GetMapping("/wait-open")
+    public String getWaitOpenPage(Model model, HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
+
         model.addAttribute("roomId", roomId);
         model.addAttribute("remaining", roomService.getRemainingSecondsUntilRoomOpens(roomId));
         return "wait-open.html";
     }
 
     @PostMapping("/open-room")
-    public String openRoom(@RequestBody String roomId) {
+    public String openRoom(HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
         roomService.openRoom(roomId);
-        return "redirect:/rooms/" + roomId;
+        return "redirect:/rooms/";
     }
 
     @GetMapping("/result")
-    public String getResult(@RequestParam("roomId") String roomId, Model model, HttpSession session) {
+    public String getResult(Model model, HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
+        // Đóng phòng
+        roomService.closeRoom(roomId);
+        model.addAttribute("data", roomService.getResult(roomId));
+
         // Xóa session
         session.removeAttribute("roomId");
 
-        //Gửi thông báo đóng phòng đến các client
-        roomService.sendCloseRoomMessage(roomId);
-        model.addAttribute("data", roomService.getResult(roomId));
         return "result.html";
     }
 
-    @GetMapping("/export/{roomId}")
-    public ResponseEntity<InputStreamResource> exportResult(@PathVariable String roomId) {
+    @GetMapping("/export")
+    public ResponseEntity<InputStreamResource> exportResult(HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
         ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
         if(stream == null)  {
             return ResponseEntity.internalServerError().body(null);

@@ -22,4 +22,8 @@ server:
     path: /error
   servlet:
     session:
-      timeout: 60m
+      timeout: 60m        # Thời gian timeout của session
+      cookie:
+        max-age: 86400    # Thời gian sống của cookie (86400 giây = 1 ngày)
+        http-only: true   # Kích hoạt HttpOnly
+        secure: true      # (Tùy chọn) Bảo mật cookie qua HTTPS

@@ -82,6 +82,7 @@ public class RoomServiceImpl implements RoomService {
             room.setStartTime(data.startTime);
             room.setStatus(RoomStatus.PENDING);
         }
+        room.setEndTime(data.endTime);
 
         // Tạo link phòng
         room.setUrl("https://" + request.getServerName() + "/attendees/join-room?roomId=" + room.getId());
@@ -198,7 +199,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void sendCloseRoomMessage(String roomId) {
+    public void closeRoom(String roomId) {
+        Room room = roomRepository.getReferenceById(roomId);
+        room.setEndTime(LocalDateTime.now());
+        room.setStatus(RoomStatus.CLOSED);
+        roomRepository.save(room);
+
+        // Send closing message
         try {
             List<Attendee> attendees = roomRepository.getReferenceById(roomId).getAttendees();
             MessageDTO<HashMap<String, CheckInResultDTO>> message = new MessageDTO<>();

@@ -19,7 +19,7 @@ public interface RoomService {
     ResultDTO getResult(String roomId);
     void setAttendeeStatus(String jsonData, HttpSession session);
     boolean isAttendeeListValid(List<CreateAttendeeDTO> data);
-    void sendCloseRoomMessage(String roomId);
+    void closeRoom(String roomId);
     RoomStatus getStatus(String roomId);
     long getRemainingSecondsUntilRoomOpens(String roomId);
     void openRoom(String roomId);
