@@ -77,6 +77,6 @@ public class AttendeesController {
     public String clearSession(HttpSession session) {
         session.removeAttribute("attendeeId");
         session.removeAttribute("joinedRoomId");
-        return "redirect:/" + baseUrl;
+        return "redirect:" + baseUrl;
     }
 }

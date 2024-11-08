@@ -210,7 +210,7 @@ function updateRemainingTime() {
         if(m < 0) {
             h--;
             if(h < 0) {
-                window.location.href = '/rooms/result?roomId=' + room.id;
+                window.location.href = '/rooms/result';
                 clearInterval(sub);
             }
             m = 59

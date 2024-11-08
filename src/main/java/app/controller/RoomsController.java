@@ -125,25 +125,31 @@ public class RoomsController {
     @GetMapping("/result")
     public String getResult(Model model, HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
-        // Đóng phòng
-        roomService.closeRoom(roomId);
-        model.addAttribute("data", roomService.getResult(roomId));
-
-        // Xóa session
-        session.removeAttribute("roomId");
-
-        return "result.html";
+        if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
+            model.addAttribute("data", roomService.getResult(roomId));
+            return "result.html";
+        }
+        return "error.html";
     }
 
     @GetMapping("/export")
     public ResponseEntity<InputStreamResource> exportResult(HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
-        ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
-        if(stream == null)  {
-            return ResponseEntity.internalServerError().body(null);
+        if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
+            ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
+
+            // Đóng phòng
+            roomService.closeRoom(roomId);
+            // Xóa session
+            session.removeAttribute("roomId");
+
+            if(stream == null)  {
+                return ResponseEntity.internalServerError().body(null);
+            }
+            return ResponseEntity.ok()
+                    .body(new InputStreamResource(stream));
         }
-        return ResponseEntity.ok()
-                .body(new InputStreamResource(stream));
+        return ResponseEntity.badRequest().body(null);
     }
 
     @MessageMapping("/setAttendeeStatus")

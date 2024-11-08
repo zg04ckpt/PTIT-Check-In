@@ -27,16 +27,17 @@
                         Mã phòng: <b class="text-info" th:text="${data.code}"></b>
                         <i class='bx bx-copy bnt m-0 p-0' onclick="copyRoomCode()"></i>
                     </p>
-                    <p class="me-3">Chủ phòng: <b class="text-info" th:text="${data.createBy}">[Chủ room]</b></p>
-                    <p class="me-3">Số lượng: <b class="text-info" th:text="${data.attendees.size()}">[Số lượng người tham gia]</b></p>
+                    <p class="me-3">Chủ phòng: <b class="text-info" th:text="${data.createBy}"></b></p>
+                    <p class="me-3">Số lượng: <b class="text-info" th:text="${data.attendees.size()}"></b></p>
                 </div>
             
+                <!-- Function -->
                 <div class="d-flex mt-4 justify-content-between">
                     <div class="d-flex">
             
                         <button class="btn btn-outline-dark btn-sm me-2">
-                            Cấu hình
-                            <i class='bx bxs-brightness'></i>
+                            Quét vi phạm
+                            <i class='bx bxs-error-alt'></i>
                         </button>
                 
                         <button class="btn btn-outline-dark btn-sm me-2"
