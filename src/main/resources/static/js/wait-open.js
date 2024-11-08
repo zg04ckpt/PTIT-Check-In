@@ -34,17 +34,18 @@ function openRoom() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: roomId
+        body: roomId,
     })
     .then(response => {
         debugger
         if (response.redirected) {
-            window.location.href = response.url; // Redirect to the new URL
+            window.location.href = response.url;
         } else {
             return response.json();
         }
     })
     .catch(error => {
+        console.log(error);
         console.error('Error:', error);
     });
 }

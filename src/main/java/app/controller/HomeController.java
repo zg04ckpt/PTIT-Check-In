@@ -6,6 +6,7 @@ import app.enums.RoomStatus;
 import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class HomeController {
 
     private final RoomService roomService;
+
+    @Value("${spring.base-url}")
+    private String baseUrl;
 
     public HomeController( RoomService roomService) {
         this.roomService = roomService;
@@ -59,6 +63,6 @@ public class HomeController {
 
 
         /*Chuyển hướng đến join-room(AttendeesController)*/
-        return "redirect:/attendees/join-room?"+"roomId="+room.getId();
+        return "redirect:" + baseUrl + "/attendees/join-room?" + "roomId=" + room.getId();
     }
 }

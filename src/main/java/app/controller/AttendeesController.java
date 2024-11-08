@@ -9,6 +9,7 @@ import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class AttendeesController {
     private final AttendeeService attendeeService;
     private final RoomService roomService;
+
+    @Value("${spring.base-url}")
+    private String baseUrl;
 
     public AttendeesController(AttendeeService attendeeService, RoomService roomService) {
         this.attendeeService = attendeeService;
@@ -58,7 +62,7 @@ public class AttendeesController {
         session.setAttribute("attendeeId", attendee.getId());
         session.setAttribute("joinedRoomId", data.roomId);
 
-        return "redirect:/attendees/waiting";
+        return "redirect:" + baseUrl + "/attendees/waiting";
     }
 
     @GetMapping("/waiting")
@@ -73,6 +77,6 @@ public class AttendeesController {
     public String clearSession(HttpSession session) {
         session.removeAttribute("attendeeId");
         session.removeAttribute("joinedRoomId");
-        return "redirect:/";
+        return "redirect:/" + baseUrl;
     }
 }

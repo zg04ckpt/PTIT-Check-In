@@ -8,6 +8,7 @@ import app.services.FileService;
 import app.services.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -27,6 +28,9 @@ import java.util.Objects;
 public class RoomsController {
     private final RoomService roomService;
     private final FileService fileService;
+
+    @Value("${spring.base-url}")
+    private String baseUrl;
 
     public RoomsController(RoomService roomService, FileService fileService) {
         this.roomService = roomService;
@@ -83,7 +87,7 @@ public class RoomsController {
         // Lưu session
         session.setAttribute("roomId", newRoom.getId());
 
-        return "redirect:/rooms/";
+        return "redirect:" + baseUrl + "/rooms/";
     }
 
     // Quản lý phòng
@@ -93,7 +97,7 @@ public class RoomsController {
 
         RoomStatus status = roomService.getStatus(roomId);
         if(status == RoomStatus.PENDING) {
-            return "redirect:/rooms/wait-open";
+            return "redirect:" + baseUrl + "/rooms/wait-open";
         } else if(status == RoomStatus.CLOSED) {
             return "error.html";
         }
@@ -115,7 +119,7 @@ public class RoomsController {
     public String openRoom(HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
         roomService.openRoom(roomId);
-        return "redirect:/rooms/";
+        return "redirect:" + baseUrl + "/rooms/";
     }
 
     @GetMapping("/result")

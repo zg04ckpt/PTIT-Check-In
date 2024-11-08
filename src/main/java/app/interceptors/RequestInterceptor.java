@@ -3,11 +3,14 @@ package app.interceptors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class RequestInterceptor implements HandlerInterceptor {
+    @Value("${spring.base-url}")
+    private String baseUrl;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(request.getRequestURI().contains("/js/") || request.getRequestURI().contains("/css/")) {
@@ -25,7 +28,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                     !currentUri.endsWith("/rooms/open-room") &&
                     !currentUri.endsWith("/rooms/wait-open")
                 ) {
-                    response.sendRedirect("/rooms/");
+                    response.sendRedirect(baseUrl + "/rooms/");
                     return false;
                 }
             }
@@ -36,7 +39,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                     !currentUri.endsWith("/attendees/waiting") &&
                     !currentUri.endsWith("/attendees/clear-session")
                 ) {
-                    response.sendRedirect("/attendees/waiting");
+                    response.sendRedirect(baseUrl + "/attendees/waiting");
                     return false;
                 }
             }
