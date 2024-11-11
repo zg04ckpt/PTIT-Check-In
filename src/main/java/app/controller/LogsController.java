@@ -13,10 +13,10 @@ import java.util.List;
 @Controller
 @RequestMapping("/logs")
 public class LogsController {
-    private final ILogService _logService;
+    private final ILogService logService;
 
     public LogsController(ILogService logService) {
-        _logService = logService;
+        this.logService = logService;
     }
 
     @GetMapping("/room")
@@ -25,7 +25,7 @@ public class LogsController {
             return ResponseEntity.badRequest().body(null);
         }
         String roomId = session.getAttribute("roomId").toString();
-        return ResponseEntity.ok(_logService.getLogsOfRoom(roomId));
+        return ResponseEntity.ok(logService.getLogsOfRoom(roomId));
     }
 
     @GetMapping("/attendee")
@@ -34,6 +34,6 @@ public class LogsController {
             return ResponseEntity.badRequest().body(null);
         }
         String attendeeId = session.getAttribute("attendeeId").toString();
-        return ResponseEntity.ok(_logService.getLogsOfAttendee(attendeeId));
+        return ResponseEntity.ok(logService.getLogsOfAttendee(attendeeId));
     }
 }

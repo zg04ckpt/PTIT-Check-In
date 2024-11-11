@@ -24,12 +24,14 @@ public class LogService implements ILogService {
         String ip = request.getRemoteAddr();
         HttpSession session = request.getSession(false);
         String attendeeId = null;
-        if(session.getAttribute("attendeeId") != null) {
-            attendeeId = session.getAttribute("attendeeId").toString();
-        }
         String roomId = null;
-        if(session.getAttribute("roomId") != null) {
-            roomId = session.getAttribute("roomId").toString();
+        if(session != null) {
+            if(session.getAttribute("attendeeId") != null) {
+                attendeeId = session.getAttribute("attendeeId").toString();
+            }
+            if(session.getAttribute("roomId") != null) {
+                roomId = session.getAttribute("roomId").toString();
+            }
         }
         _logRepository.save(new Log(ip, desc, attendeeId, roomId));
     }

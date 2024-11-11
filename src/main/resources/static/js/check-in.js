@@ -23,7 +23,12 @@ function getLocation() {
             document.getElementById("longitude").value = position.coords.longitude;
             showNotification("Lấy vị trí thành công", null);
         }, 
-        error => showNotification("Lấy vị trí thất bại", null)
+        error => showNotification("Lấy vị trí thất bại", null),
+        {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+        }
     );
 }
 

@@ -10,7 +10,7 @@ import app.models.Attendee;
 import app.models.Room;
 import app.repositories.AttendeeRepository;
 import app.repositories.RoomRepository;
-import app.services.AttendeeService;
+import app.services.IAttendeeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +21,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class AttendeeServiceImpl implements AttendeeService {
+public class AttendeeService implements IAttendeeService {
     private final AttendeeRepository attendeeRepository;
     private final RoomRepository roomRepository;
     private final SimpMessagingTemplate sender;
 
     @Autowired
-    public AttendeeServiceImpl(AttendeeRepository attendeeRepository, RoomRepository roomRepository, SimpMessagingTemplate sender) {
+    public AttendeeService(AttendeeRepository attendeeRepository, RoomRepository roomRepository, SimpMessagingTemplate sender) {
         this.attendeeRepository = attendeeRepository;
         this.roomRepository = roomRepository;
         this.sender = sender;

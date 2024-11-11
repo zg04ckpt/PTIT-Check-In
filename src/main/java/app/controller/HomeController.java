@@ -4,7 +4,7 @@ import app.dtos.attendee.SearchRoomDTO;
 import app.enums.RoomStatus;
 import app.models.Room;
 import app.services.ILogService;
-import app.services.RoomService;
+import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class HomeController {
 
-    private final RoomService roomService;
+    private final IRoomService roomService;
     private final ILogService logService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public HomeController(RoomService roomService, ILogService logService) {
+    public HomeController(IRoomService roomService, ILogService logService) {
         this.roomService = roomService;
         this.logService = logService;
     }
@@ -30,7 +30,7 @@ public class HomeController {
     //code ở đây
     @GetMapping("/")
     public String getHome(Model model, HttpServletRequest request) {
-//        logService.writeLog("Truy cập trang chủ", request);
+        logService.writeLog("Truy cập trang chủ", request);
         SearchRoomDTO data = new SearchRoomDTO();
         model.addAttribute("data", data);
         return "index.html";

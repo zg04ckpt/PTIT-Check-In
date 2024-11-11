@@ -3,10 +3,9 @@ package app.controller;
 import app.dtos.attendee.AttendeeDTO;
 import app.dtos.room.CreateRoomDTO;
 import app.enums.RoomStatus;
-import app.models.Attendee;
 import app.models.Room;
-import app.services.FileService;
-import app.services.RoomService;
+import app.services.IFileService;
+import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,13 +26,13 @@ import java.util.Objects;
 @Controller
 @RequestMapping("/rooms")
 public class RoomsController {
-    private final RoomService roomService;
-    private final FileService fileService;
+    private final IRoomService roomService;
+    private final IFileService fileService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public RoomsController(RoomService roomService, FileService fileService) {
+    public RoomsController(IRoomService roomService, IFileService fileService) {
         this.roomService = roomService;
         this.fileService = fileService;
     }

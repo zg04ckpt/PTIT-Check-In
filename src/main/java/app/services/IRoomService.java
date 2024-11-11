@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
-public interface RoomService {
+public interface IRoomService {
     Room findByCode(String code);
     Room findById(String Id);
     boolean isRoomNameExisted(String name);

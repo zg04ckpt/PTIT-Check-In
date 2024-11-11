@@ -3,8 +3,7 @@ package app.services.impl;
 import app.enums.CheckInStatus;
 import app.models.Attendee;
 import app.repositories.RoomRepository;
-import app.services.FileService;
-import app.services.RoomService;
+import app.services.IFileService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,10 +16,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class FileServiceImpl implements FileService {
+public class FileService implements IFileService {
     private final RoomRepository roomRepository;
 
-    public FileServiceImpl(RoomRepository roomRepository) {
+    public FileService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 

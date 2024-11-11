@@ -3,8 +3,8 @@ package app.controller;
 import app.dtos.attendee.CheckInDTO;
 import app.enums.CheckInStatus;
 import app.models.Attendee;
-import app.services.AttendeeService;
-import app.services.RoomService;
+import app.services.IAttendeeService;
+import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,15 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/attendees")
 public class AttendeesController {
-    private final AttendeeService attendeeService;
-    private final RoomService roomService;
+    private final IAttendeeService attendeeService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public AttendeesController(AttendeeService attendeeService, RoomService roomService) {
+    public AttendeesController(IAttendeeService attendeeService) {
         this.attendeeService = attendeeService;
-        this.roomService = roomService;
     }
 
     @GetMapping("/join-room")

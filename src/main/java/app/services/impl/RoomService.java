@@ -15,7 +15,7 @@ import app.models.Attendee;
 import app.models.Room;
 import app.repositories.AttendeeRepository;
 import app.repositories.RoomRepository;
-import app.services.RoomService;
+import app.services.IRoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,12 +36,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RoomServiceImpl implements RoomService {
+public class RoomService implements IRoomService {
     private final RoomRepository roomRepository;
     private final AttendeeRepository attendeeRepository;
     private final SimpMessagingTemplate sender;
     @Autowired
-    public RoomServiceImpl(RoomRepository roomRepository, AttendeeRepository attendeeRepository, SimpMessagingTemplate sender) {
+    public RoomService(RoomRepository roomRepository, AttendeeRepository attendeeRepository, SimpMessagingTemplate sender) {
         this.roomRepository = roomRepository;
         this.attendeeRepository = attendeeRepository;
         this.sender = sender;
