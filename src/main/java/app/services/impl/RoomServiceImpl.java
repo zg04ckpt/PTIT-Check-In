@@ -3,6 +3,7 @@ package app.services.impl;
 import app.dtos.*;
 import app.enums.CheckInStatus;
 import app.enums.MessageType;
+import app.enums.RoomStatus;
 import app.models.Attendee;
 import app.models.Room;
 import app.repositories.AttendeeRepository;
@@ -208,4 +209,42 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Lỗi gửi thông báo đóng phòng (sendCloseRoomMessage)", e);
         }
     }
+    //lấy ra danh sách phòng
+    @Override
+    public List<RoomStatusDTO> listRoomStatusDTO() {
+        List<RoomStatusDTO> roomStatusDTOList=new ArrayList<>();
+        List<Room> listRoom=roomRepository.findAll();
+        for(Room room:listRoom){
+            RoomStatusDTO roomStatusDTO=new RoomStatusDTO();
+            roomStatusDTO.id=room.getId();
+            roomStatusDTO.name=room.getName();
+            roomStatusDTO.createBy=room.getCreateBy();
+            roomStatusDTO.latitude=room.getLatitude();
+            roomStatusDTO.longitude=room.getLongitude();
+            roomStatusDTO.acceptRange=room.getAcceptRange();
+            roomStatusDTO.startTime=room.getStartTime();
+            roomStatusDTO.endTime=room.getEndTime();
+            roomStatusDTO.isEnded=room.isEnded();
+
+            roomStatusDTOList.add(roomStatusDTO);
+        }
+        return roomStatusDTOList;
+    }
+
+
+    @Override//xóa phòng
+    public void deleteById(String id) {
+        roomRepository.deleteById(id);
+    }
+
+    @Override//kiếm phòng
+    public Room findByID(String id) {
+        return roomRepository.getReferenceById(id);
+    }
+
+//    @Override//cập nhập trạng thái
+//    public void updateStatusById(String id, RoomStatus roomStatus) {
+//        Room room=roomRepository.getReferenceById(id) ;
+//        room.getStatus=roomStatus;
+//    }
 }

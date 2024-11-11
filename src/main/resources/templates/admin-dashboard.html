@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang tổng quan</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+    <style>
+
+        /* html, body {
+            padding: 0;
+            margin: 0;
+        } */
+
+        table { margin-top: 20px;
+            width: 90%;
+            margin-left: 5%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #95afc0;
+            text-align: left;
+            border: none;
+        }
+
+        td {
+            text-align: left;
+            border: none;
+        }
+
+        tr {
+            border-bottom: 1px solid black; /* Tạo đường kẻ ngang */
+        }
+
+        .stt-column {
+            width: 5%;
+            text-align: center;
+        }
+
+        .tenphong-column {
+            width: 15%;
+            text-align: center;
+        }
+
+        .chuphong-column {
+            width: 20%;
+            text-align: center;
+        }
+
+        .trangthai-column {
+            width: 15%;
+            text-align: center;
+        }
+
+        .chitiet-column {
+            width: 15%;
+            text-align: center;
+        }
+
+        .xoa-column {
+            width: 10%;
+            text-align: center;
+        }
+
+        .delete-button, .closed {
+            background-color: #d63031;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .isOpen, .xemchitiet {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .waiting {
+            background-color: #f1c40f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-button:hover {
+            background-color: #e60000;
+        }
+
+        tbody {
+            background-color: #dff9fb;
+        }
+
+    </style>
+
+</head>
+
+<body class = "bg-white">
+    <!-- Danh sách phòng điểm danh -->
+    <div class = "w-[80vw] h-[80vh] bg-white border border-black rounded-sm mt-[10vh] ml-[10vw] relative">
+        <h1 class = "text-4xl font-medium text-center mt-2">Danh sách phòng điểm danh</h1>
+        <!-- Bảng chi tiết  -->
+        <div class = "max-h-80 overflow-y-auto	 ">
+            <table >
+                <thead>
+                <tr>
+                    <th class="stt-column" >STT</th>
+                    <th class="tenphong-column">Tên Phòng</th>
+                    <th class="chuphong-column">Chủ Phòng</th>
+                    <th class="trangthai-column">Trạng Thái</th>
+                    <th class="chitiet-column">Chi tiết</th>
+                    <th class="xoa-column">Xóa Phòng</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="RoomStatusDTO ,iterStat:${listRoomStatus}" th:attr="data-id=${RoomStatusDTO.id}">
+                        <td class="stt-column" th:text="${iterStat.count}"></td>
+                        <td class="tenphong-column" th:text="${RoomStatusDTO.name}"></td>
+                        <td class="chuphong-column" th:text="${RoomStatusDTO.createBy}"></td>
+                        <td class="trangthai-column"><button class="isOpen">Đang mở</button></td>
+                        <td class="chitiet-column detail"><button class="xemchitiet" th:onclick="showDetails(this)">Xem chi tiết</button></td>
+                        <td class="xoa-column"><button class="delete-button " th:onclick="deleteRoom(this)">Xóa phòng</button></td>
+                    </tr>
+    <!--                    <td class="trangthai-column"><button class="waiting">Đang chờ</button></td>-->
+    <!--                    <td class="trangthai-column"><button class="closed">Đã đóng</button></td>-->
+                    <!-- Thêm các hàng dữ liệu khác tại đây -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Xem chi tiết phòng,cái này là trong object roomStatus chứ không phải listRoomStatus=>đang có 2 dữ liệu chồng nhau ở trong đây -->
+        <div class="bg-cyan-100	absolute w-[70%] h-[60%] top-28 left-36 border border-black rounded-sm" hidden id = "detail-box" >
+            <div class = "flex flex-row relative">
+                <h1 class = "text-3xl font-medium text-center mt-3 absolute ml-[35%] ">Chi tiết phòng</h1>
+                <box-icon name='x' color='rgba(0,0,0,0.65)' class = "w-12 h-12 absolute ml-[90%]"  onclick="hideDetails()"></box-icon>
+            </div>
+            <!-- Bảng chi tiết phòng -->
+            <div class = "flex flex-row w-[100%] h-[200px] gap-20 mt-16">
+                <!-- Bảng trái -->
+                <div class = "w-[40%] h-[200px] flex flex-col ml-10 gap-3">
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Tên phòng:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[15%]" id="name"></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold" >Người tạo:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[15%]" id="createBy"></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Kinh độ:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[15%]" id="latitude"></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Vĩ độ:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[15%]" id="longitude"></h4>
+                    </div>
+                </div>
+
+                <!-- Bảng phải -->
+                <div class = "w-[40%] h-[200px] flex flex-col gap-3">
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Phạm vi bán kính:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[30%]" id="acceptRange"></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Thời gian mở:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[30%]" id="startTime" ></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Thời gian kết thúc:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[30%]" id="endTime" ></h4>
+                    </div>
+                    <div class = "flex flex-row gap-2">
+                        <h4 class = "text-lg italic font-semibold">Thời gian đóng phòng:</h4>
+                        <h4 class = "text-lg italic font-normal absolute ml-[30%]" id="isEnded"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Xóa phòng -->
+        <div class="bg-cyan-100	absolute w-[40%] h-[35%] top-28 left-72 border border-black rounded-sm" hidden id ="delete-box">
+            <h1 class = "text-xl font-medium text-center mt-4  ml-[0%] ">Bạn có chắc chắn muốn xóa phòng này không ?</h1>
+            <div class = "flex flex-row justify-evenly mt-8">
+                <button class = "w-20 h-8 border border-black rounded-sm bg-gray-300" onclick="hideDeleteTrue()">Hủy bỏ</button>
+                <button class = "w-20 h-8 border border-black rounded-sm bg-green-600" id="confirmDelete"  onclick="hideDeleteTrue()">Đồng ý</button>
+            </div>
+        </div>
+        <script th:inline="javascript"> var rooms = /*[[${listRoomStatus}]]*/ {}; </script>
+        <script src="/js/admin-dashboard.js"></script>
+    </div>
+</body>
+</html>

@@ -1,11 +1,13 @@
 package app.services;
 
 import app.dtos.*;
+import app.enums.RoomStatus;
 import app.models.Room;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface RoomService {
@@ -19,4 +21,9 @@ public interface RoomService {
     void setAttendeeStatus(String jsonData, HttpSession session);
     boolean isAttendeeListValid(List<CreateAttendeeDTO> data);
     void sendCloseRoomMessage(String roomId);
+    List<RoomStatusDTO> listRoomStatusDTO();
+
+    void deleteById(String id);
+    Room findByID(String id);
+//    void updateStatusById(String id, RoomStatus roomStatus);
 }
