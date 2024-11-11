@@ -1,4 +1,4 @@
-package app.dtos;
+package app.dtos.attendee;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,7 +15,10 @@ public class AttendeeDTO {
     public double longitude; //Kinh độ
     @Enumerated(EnumType.ORDINAL)
     public int checkInStatus;
-    public double distance; //km
-    public String ipAddress; //IP check-in
-    private LocalDateTime attendOn;
+    public String violationPrediction;
+    public double distance;
+    public String device;
+    public String browser;
+    public String ip; //IP check-in
+    public String attendOn;
 }

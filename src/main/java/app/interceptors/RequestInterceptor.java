@@ -13,7 +13,11 @@ public class RequestInterceptor implements HandlerInterceptor {
     private String baseUrl;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(request.getRequestURI().contains("/js/") || request.getRequestURI().contains("/css/")) {
+        if(
+            request.getRequestURI().contains("/js/") ||
+            request.getRequestURI().contains("/css/") ||
+            request.getRequestURI().contains("/images/")
+        ) {
             return true;
         }
 
@@ -25,8 +29,10 @@ public class RequestInterceptor implements HandlerInterceptor {
                 if(
                     !currentUri.endsWith("/rooms/") &&
                     !currentUri.endsWith("/rooms/result") &&
+                    !currentUri.endsWith("/rooms/export") &&
                     !currentUri.endsWith("/rooms/open-room") &&
-                    !currentUri.endsWith("/rooms/wait-open")
+                    !currentUri.endsWith("/rooms/wait-open") &&
+                    !currentUri.endsWith("/rooms/attendees-info")
                 ) {
                     response.sendRedirect(baseUrl + "/rooms/");
                     return false;

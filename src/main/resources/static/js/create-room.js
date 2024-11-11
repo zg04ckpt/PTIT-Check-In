@@ -86,12 +86,12 @@ saveBtn.onclick = e => {
     list.replaceChildren();
     previewData.forEach((e, index) => {
         const id = document.createElement('input');
-        id.type = 'text'
+        id.type = 'hidden'
         id.name = 'attendees[' + index + '].checkInCode';
         id.value = e.id;
         
         const name = document.createElement('input');
-        name.type = 'text'
+        name.type = 'hidden'
         name.name = 'attendees[' + index + '].name';
         name.value = e.name;
 
@@ -113,14 +113,27 @@ const positionInput = document.getElementById('positionInput')
 const QR = document.getElementById('QR')
 const saveLocationBtn = document.getElementById('saveLocationBtn')
 const rangeSelect = document.getElementById('rangeSelect')
-const rangeInput = document.getElementById('rangeInput')
+const latitudeInp = document.getElementById('latitude')
+const longitudeInp = document.getElementById('longitude')
 
+function saveLocation() {
+    const selection = getLocationMethodSelect.value;
+    if(selection == 1) {
+        // Tạm thời
+        latitudeInp.value = 20.98113532126582;
+        longitudeInp.value = 105.78753244306769;
+    }
+    showNotification("Lấy vị trí thành công");
+}
 
 getLocationMethodSelect.onchange = e => {
     const select = e.target.value; 
     if(select == 1) {
         locationSelect.hidden = false;
         positionInput.hidden = true;
+
+        
+
         QR.hidden = true;
     } else if(select == 2) {
         locationSelect.hidden = true;
@@ -194,3 +207,17 @@ window.addEventListener('popstate', (event) => {
     event.preventDefault();
     window.location.href = '/';
 });
+window.onload = e => {
+    additionalInfo1.hidden = !data.requireCheckLocation;
+
+    additionalInfo2.hidden = data.startTime == null;
+    additionalInfo2.querySelector('input').value = data.startTime;
+    additionalInfo2.parentElement.querySelector('p').hidden = !additionalInfo2.hidden;
+    checkbox2.checked = data.startTime != null;
+
+    additionalInfo3.hidden = data.endTime == null;
+    additionalInfo3.querySelector('input').value = data.endTime;
+    additionalInfo3.parentElement.querySelector('p').hidden = !additionalInfo3.hidden;
+    checkbox3.checked = data.endTime != null;
+}
+

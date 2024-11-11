@@ -1,4 +1,4 @@
-package app.dtos;
+package app.dtos.attendee;
 
 import lombok.Data;
 

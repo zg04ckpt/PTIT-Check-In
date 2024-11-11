@@ -1,8 +1,9 @@
 package app.controller;
 
-import app.dtos.CreateRoomDTO;
-import app.dtos.RoomDTO;
+import app.dtos.attendee.AttendeeDTO;
+import app.dtos.room.CreateRoomDTO;
 import app.enums.RoomStatus;
+import app.models.Attendee;
 import app.models.Room;
 import app.services.FileService;
 import app.services.RoomService;
@@ -18,7 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 // id phong mau: 6f7ffd60-959a-4953-9444-6bf0919dbe4a
@@ -74,6 +75,12 @@ public class RoomsController {
         if(!roomService.isAttendeeListValid(data.attendees)) {
             model.addAttribute("data", data);
             model.addAttribute("message", "Danh sách người tham gia không hợp lệ");
+            return "create-room.html";
+        }
+
+        if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
+            model.addAttribute("data", data);
+            model.addAttribute("message", "Vị trí không hợp lệ");
             return "create-room.html";
         }
 
@@ -150,6 +157,13 @@ public class RoomsController {
                     .body(new InputStreamResource(stream));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @GetMapping("/attendees-info")
+    public ResponseEntity<List<AttendeeDTO>> getAdditionalInfos(HttpSession session) {
+        String roomId = session.getAttribute("roomId").toString();
+        List<AttendeeDTO> data = roomService.getRoomData(roomId).attendees;
+        return ResponseEntity.ok().body(data);
     }
 
     @MessageMapping("/setAttendeeStatus")

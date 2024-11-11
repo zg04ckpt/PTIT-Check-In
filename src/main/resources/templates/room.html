@@ -13,7 +13,7 @@
 
         <!-- Content -->
         <div class="col-lg-10 offset-lg-1">
-            <div class="card card-body mx-3 mx-lg-0 shadow" style="margin-top: 40px; height: 600px;">
+            <div class="card card-body mx-3 mx-lg-0 shadow pt-2" style="margin-top: 40px; height: 600px;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div th:text="${data.name}" class="fs-2 fw-bolder"></div>
                     <div class="d-flex">
@@ -22,6 +22,7 @@
                     </div>
                 </div>
             
+                <!-- Headers -->
                 <div class="d-flex text-secondary">
                     <p class="me-3">
                         Mã phòng: <b class="text-info" th:text="${data.code}"></b>
@@ -35,9 +36,9 @@
                 <div class="d-flex mt-4 justify-content-between">
                     <div class="d-flex">
             
-                        <button class="btn btn-outline-dark btn-sm me-2">
-                            Quét vi phạm
-                            <i class='bx bxs-error-alt'></i>
+                        <button class="btn btn-outline-dark btn-sm me-2" onclick="showDetail()">
+                            Thông tin chi tiết
+                            <i class='bx bxs-info-circle' ></i>
                         </button>
                 
                         <button class="btn btn-outline-dark btn-sm me-2"
@@ -66,7 +67,7 @@
                     </button>
                 </div>
                 
-                
+                <!-- Table -->
                 <div class="table-wrapper mt-2">
                     <table class="table table-sm">
                         <thead>
@@ -140,6 +141,83 @@
             onclick="qrCode.classList.remove('zoom-img'); this.hidden = true" hidden></button>
         </div>
 
+        <!-- Detail information -->
+        <div id="detail" class="w-100 h-100 position-fixed top-0 start-0" 
+        style="background-color: rgba(128, 128, 128, 0.502);" hidden>
+            <div class="card card-body col-lg-8 offset-lg-2 pt-2 shadow"
+            style="margin-top: 50px; height: 600px;">
+                <div class="fs-6 text-center mt-0">Thông tin chi tiết người tham gia</div>
+                <button class="btn btn-close position-absolute top-0 end-0 m-2" onclick="detail.hidden = true"></button>
+        
+                <div class="d-flex align-items-center mt-3" style="font-size: 12px;">
+                <div>
+                    <label class="fw-bolder">Phạm vi tối đa:</label>
+                    <input id="range" type="number" min="1" placeholder="(m)" class="ms-1 px-1" style="width: 100px;border: 1px solid rgb(188, 188, 188);">
+                </div>
+
+                <div class="ms-3">
+                    <label class="fw-bolder">Thiết bị hợp lệ:</label>
+                    <select id="device" class="ms-1" style="border: 1px solid rgb(188, 188, 188);">
+                        <option value="Any">Bất kì</option>
+                        <option value="Computer">Máy tính</option>
+                        <option value="Mobile">Điện thoại</option>
+                    </select>
+                </div>
+
+                <div class="ms-3">
+                    <label class="fw-bolder">IP hợp lệ:</label>
+                    <input id="ip" type="text" class="ms-1 px-1" style="border: 1px solid rgb(188, 188, 188);">
+                    <button class="border-1 border-dark px-1">Lấy IP mạng hiện tại</button>
+                </div>
+
+                <button id="filterBtn" class="border-1 ms-3 bg-black text-light" style="width: 100px;" onclick="getViolation()">Lọc vi phạm</button>
+                <button id="resetBtn" class="border-1 ms-3 bg-secondary text-light" style="width: 100px;" hidden onclick="resetFilter()">Bỏ lọc</button>
+                <button class="border-1 ms-1 bg-white text-dark px-1" onclick="reloadAdditionalInfo()">Tải lại</button>
+                </div>
+
+                <div class="table-wrapper mt-2">
+                    <table class="table table-sm table-auto table-hover table-bordered" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th class="w-auto text-center align-content-start">STT</th>
+                                <th class="col-2 text-center align-content-start">Họ & tên</th>
+                                <th class="col-2 text-center align-content-start">Mã điểm danh</th>
+                                <th class="col-1 text-center align-content-start">Thiết bị</th>
+                                <th class="col-1 text-center align-content-start">Trình duyệt</th>
+                                <th class="col-1 text-center align-content-start">Vị trí</th>
+                                <th class="col-2 text-center align-content-start">IP</th>
+                                <th class="col-1 text-center align-content-start">Checkin</th>
+                                <th class="col-4 text-center align-content-start">Dự đoán vi phạm</th>
+                                <th class="w-auto">Chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Hoàng Cao Nguyên</td>
+                                <td>B22DCCN589</td>
+                                <td>Máy tính</td>
+                                <td>Chrome</td>
+                                <td>32.0m</td>
+                                <td>172.168.78.22</td>
+                                <td>14:56</td>
+                                <td>Sử dụng 2 trình duyệt</td>
+                                <td class="text-center">
+                                <div class="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded" data-bs-toggle="dropdown"></i>
+                                    <div class="dropdown-menu rounded-0 py-0" style="font-size: 12px;">
+                                    <button class="dropdown-item">Xem log</button>
+                                    <button class="dropdown-item">Xem log</button>
+                                    </div>
+                                </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>

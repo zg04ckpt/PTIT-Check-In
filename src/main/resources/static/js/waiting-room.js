@@ -30,7 +30,7 @@ function registerSocket() {
 
             debugger
             if(message.type === MessageType.ATTENDEE_STATUS && message.data.attendeeId === data.attendeeId) {
-                if(message.data.attendeeStatus === CheckInStatus.OUT_OF_ROOM) {
+                if(message.data.attendeeStatus === CheckInStatus.REJECTED) {
                     window.location.href = '/';
                 }
             } else if(message.type === MessageType.CLOSE_ROOM) {
@@ -49,7 +49,7 @@ function registerSocket() {
 
 registerSocket()
 
-function outRoom() {
+function sendOutRoomMessage() {
     const json = {
         type: MessageType.ATTENDEE_STATUS,
         roomId: data.roomId,
@@ -107,7 +107,7 @@ function initRemainingTime() {
 }
 
 function updateRemainingTime() {
-    remainingTime.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    remainingTime.innerText = `Còn lại: ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     s--;
     if(s < 0) {
         m--;

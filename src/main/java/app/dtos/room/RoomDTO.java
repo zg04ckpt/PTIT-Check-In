@@ -1,5 +1,6 @@
-package app.dtos;
+package app.dtos.room;
 
+import app.dtos.attendee.AttendeeDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;

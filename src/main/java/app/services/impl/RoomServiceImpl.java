@@ -1,6 +1,13 @@
 package app.services.impl;
 
-import app.dtos.*;
+import app.dtos.attendee.AttendeeDTO;
+import app.dtos.attendee.AttendeeStatusDTO;
+import app.dtos.attendee.CheckInResultDTO;
+import app.dtos.attendee.CreateAttendeeDTO;
+import app.dtos.room.CreateRoomDTO;
+import app.dtos.room.RoomDTO;
+import app.dtos.system.MessageDTO;
+import app.dtos.system.ResultDTO;
 import app.enums.CheckInStatus;
 import app.enums.MessageType;
 import app.enums.RoomStatus;
@@ -12,15 +19,17 @@ import app.services.RoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +138,12 @@ public class RoomServiceImpl implements RoomService {
         data.createOn = room.getCreateOn();
         data.code = room.getCode();
         data.url = room.getUrl();
+        data.attendees = getAttendeeDTOs(room);
+
+        return data;
+    }
+
+    private ArrayList<AttendeeDTO> getAttendeeDTOs(Room room) {
         List<Attendee> attendees = room.getAttendees();
         ArrayList<AttendeeDTO> attendeeDTOs = new ArrayList<>();
         attendees.forEach(e -> {
@@ -137,11 +152,50 @@ public class RoomServiceImpl implements RoomService {
             attendeeDTO.name = e.getName();
             attendeeDTO.checkInCode = e.getCheckInCode();
             attendeeDTO.checkInStatus = e.getCheckInStatus().ordinal();
+
+            if(e.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM && e.getCheckInStatus() != CheckInStatus.REJECTED) {
+                // get additional information
+                if(e.getAttendOn().toLocalDate().isEqual(LocalDate.now())) {
+                    attendeeDTO.attendOn = DateTimeFormatter.ofPattern("HH:mm:ss").format(e.getAttendOn());
+                } else {
+                    attendeeDTO.attendOn = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(e.getAttendOn());
+                }
+                attendeeDTO.distance = getDistance(room.getLatitude(), room.getLongitude(), e.getLatitude(), e.getLongitude());
+                attendeeDTO.ip = e.getIp();
+                UserAgent userAgent = UserAgent.parseUserAgentString(e.getUserAgent());
+                attendeeDTO.device = userAgent.getOperatingSystem().getDeviceType().getName();
+                attendeeDTO.browser = userAgent.getBrowser().getName();
+                attendeeDTO.violationPrediction = "--";
+            } else {
+                attendeeDTO.distance = -1;
+                attendeeDTO.attendOn = "--";
+                attendeeDTO.ip = "--";
+                attendeeDTO.device = "--";
+                attendeeDTO.browser = "--";
+                attendeeDTO.violationPrediction = "--";
+            }
+
             attendeeDTOs.add(attendeeDTO);
         });
-        data.attendees = attendeeDTOs;
+        return attendeeDTOs;
+    }
 
-        return data;
+    private double getDistance(double lat1, double lon1, double lat2, double lon2) {
+        final double DEG_TO_RAD = Math.PI / 180;
+        final double EARTH_RADIUS = 63710088;
+
+        double dLat = (lat2 - lat1) * DEG_TO_RAD;
+        double dLon = (lon2 - lon1) * DEG_TO_RAD;
+
+        double lat1Rad = lat1 * DEG_TO_RAD;
+        double lat2Rad = lat2 * DEG_TO_RAD;
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return EARTH_RADIUS * c;
     }
 
     @Override
@@ -171,17 +225,9 @@ public class RoomServiceImpl implements RoomService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             MessageDTO<AttendeeStatusDTO> message = mapper.readValue(jsonData, new TypeReference<>() {});
-            if(message.type == MessageType.ATTENDEE_STATUS) {
-                int result = attendeeRepository.updateStatusById(message.data.attendeeId, message.data.attendeeStatus);
-                if(result > 0) {
-                    sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
-                }
-
-                //Xóa session của attendee
-                if(message.data.attendeeStatus == CheckInStatus.OUT_OF_ROOM) {
-                    session.removeAttribute("joinedRoomId");
-                    session.removeAttribute("attendeeId");
-                }
+            int result = attendeeRepository.updateStatusById(message.data.attendeeId, message.data.attendeeStatus);
+            if(result > 0) {
+                sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
             }
         } catch (Exception ex) {
             throw new RuntimeException("Lỗi parse json data (setAttendeeStatus)", ex);

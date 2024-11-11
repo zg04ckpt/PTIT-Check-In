@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Attendees")
@@ -22,16 +23,14 @@ public class Attendee {
     @Enumerated(EnumType.ORDINAL)
     private CheckInStatus checkInStatus; // trạng thái
 
-    @Column(nullable = true)
     private double latitude; //Vĩ độ
 
-    @Column(nullable = true)
     private double longitude; //Kinh độ
 
-    @Column(nullable = true)
     private String ip; //IP check-in
 
-    @Column(nullable = true)
+    private String userAgent;
+
     private LocalDateTime attendOn; //time checkin
 
     @ManyToOne()
@@ -45,6 +44,14 @@ public class Attendee {
         this.id = id;
         this.checkInCode = checkInCode;
         this.name = name;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
     }
 
     public String getId() {

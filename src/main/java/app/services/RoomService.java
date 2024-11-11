@@ -1,9 +1,11 @@
 package app.services;
 
-import app.dtos.*;
+import app.dtos.attendee.CreateAttendeeDTO;
+import app.dtos.room.CreateRoomDTO;
+import app.dtos.room.RoomDTO;
+import app.dtos.system.ResultDTO;
 import app.enums.RoomStatus;
 import app.models.Room;
-import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 

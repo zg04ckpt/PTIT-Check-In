@@ -1,0 +1,1 @@
+ALTER TABLE attendees ADD user_agent VARCHAR(255) NULL;

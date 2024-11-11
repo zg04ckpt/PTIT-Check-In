@@ -186,6 +186,115 @@ function showConfirm(msg, onConfirm, onCancel) {
     notification.hidden = false;
 }
 
+// --------------------------- DETAIL -------------------------------
+const detail = document.getElementById('detail');
+
+function showDetail() {
+    loadDetailTable(room.attendees);
+    detail.hidden = false;
+}
+
+function reloadAdditionalInfo() {
+    fetch("/rooms/attendees-info")
+    .then(res => res.json())
+    .then(data => {
+        debugger
+        room.attendees = data;
+        loadDetailTable(room.attendees);
+        showNotification("Reload thành công", null)
+    })
+    .catch(error => showNotification("Reload thất bại", null));
+}
+
+function getViolation() {
+    debugger
+    const range = Number(detail.querySelector("#range").value);
+    const device = detail.querySelector('#device').value;
+    const ip = detail.querySelector('#ip').value;
+    if(range != 0 || device != 'Any' || ip != '') {
+        let filteredList = room.attendees;
+        if(range != 0) {
+            filteredList = filteredList.filter(e => e.range != '--' && e.distance > range);
+        }
+        if(device != 'Any') {
+            filteredList = filteredList.filter(e => e.device != '--' && e.device != device);
+        }
+        if(ip != '') {
+            filteredList = filteredList.filter(e => e.ip != '--' && e.ip != ip);
+        }
+        loadDetailTable(filteredList);
+        detail.querySelector("#resetBtn").hidden = false;
+        detail.querySelector("#filterBtn").hidden = true;
+    }
+}
+
+function loadDetailTable(attendees) {
+    debugger
+    const content = detail.querySelector('tbody');
+    content.innerHTML = ''
+    attendees.forEach((e, index) => {
+        const row = document.createElement('tr');
+
+        const order = document.createElement('td');
+        order.innerText = index + 1;
+        row.appendChild(order);
+
+        const name = document.createElement('td');
+        name.innerText = e.name;
+        row.appendChild(name);
+
+        const checkInCode = document.createElement('td');
+        checkInCode.innerText = e.checkInCode;
+        row.appendChild(checkInCode);
+
+        const device = document.createElement('td');
+        device.innerText = e.device;
+        row.appendChild(device);
+
+        const browser = document.createElement('td');
+        browser.innerText = e.browser;
+        row.appendChild(browser);
+
+        const distance = document.createElement('td');
+        distance.innerText = e.distance == -1 ? '--' : e.distance.toFixed(2) + 'm';
+        row.appendChild(distance);
+
+        const ip = document.createElement('td');
+        ip.innerText = e.ip;
+        row.appendChild(ip);
+
+        const attendOn = document.createElement('td');
+        attendOn.innerText = e.attendOn;
+        row.appendChild(attendOn);
+
+        const violationPrediction = document.createElement('td');
+        violationPrediction.innerText = e.violationPrediction;
+        row.appendChild(violationPrediction);
+
+        const action = document.createElement('td');
+        action.className = "text-center";
+        action.innerHTML = `<div class="dropdown">
+                    <i class="bx bx-dots-vertical-rounded" data-bs-toggle="dropdown"></i>
+                    <div class="dropdown-menu rounded-0 py-0" style="font-size: 12px;">
+                      <button class="dropdown-item">Xem log</button>
+                      <button class="dropdown-item">Xem log</button>
+                    </div>
+                  </div>`
+        row.appendChild(action);
+
+        content.appendChild(row);
+    });
+}
+
+function resetFilter() {
+    detail.querySelector("#range").value = 0;
+    detail.querySelector('#device').value = 'Any';
+    detail.querySelector('#ip').value = '';
+    loadDetailTable(room.attendees);
+    detail.querySelector("#resetBtn").hidden = true;
+    detail.querySelector("#filterBtn").hidden = false;
+}
+
 // ----------------- OTHER --------------------
 var h, m, s;
 var sub;
@@ -227,7 +336,7 @@ function closeRoom() {
             { name: 'Hủy', action: () => notification.hidden = true },
             { name: 'Xác nhận', action: () => {
                 notification.hidden = true;
-                window.location.href = '/rooms/result?roomId=' + room.id;
+                window.location.href = '/rooms/result';
             }}
         ]
     )

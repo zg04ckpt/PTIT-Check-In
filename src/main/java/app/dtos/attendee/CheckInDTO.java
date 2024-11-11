@@ -1,4 +1,4 @@
-package app.dtos;
+package app.dtos.attendee;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

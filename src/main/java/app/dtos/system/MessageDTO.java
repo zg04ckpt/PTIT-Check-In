@@ -1,4 +1,4 @@
-package app.dtos;
+package app.dtos.system;
 
 import app.enums.MessageType;
 import com.google.gson.JsonObject;

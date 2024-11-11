@@ -1,9 +1,9 @@
 package app.services.impl;
 
-import app.dtos.AttendeeStatusDTO;
-import app.dtos.CheckInDTO;
-import app.dtos.MessageDTO;
-import app.dtos.WaitingRoomDTO;
+import app.dtos.attendee.AttendeeStatusDTO;
+import app.dtos.attendee.CheckInDTO;
+import app.dtos.system.MessageDTO;
+import app.dtos.attendee.WaitingRoomDTO;
 import app.enums.CheckInStatus;
 import app.enums.MessageType;
 import app.models.Attendee;
@@ -13,9 +13,12 @@ import app.repositories.RoomRepository;
 import app.services.AttendeeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AttendeeServiceImpl implements AttendeeService {
@@ -66,11 +69,19 @@ public class AttendeeServiceImpl implements AttendeeService {
 
 
     @Override
-    public void checkIn(Attendee attendee, CheckInDTO data) {
+    public void checkIn(Attendee attendee, CheckInDTO data, HttpServletRequest request) {
         // thiết đặt trạng thái cho attendee
+        String userAgent = request.getHeader("User-Agent");
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty()) {
+            clientIp = request.getRemoteAddr();
+        }
         attendee.setLatitude(data.latitude);
         attendee.setLongitude(data.longitude);
         attendee.setCheckInStatus(CheckInStatus.WAIT_APPROVAL);
+        attendee.setAttendOn(LocalDateTime.now());
+        attendee.setIp(clientIp);
+        attendee.setUserAgent(userAgent);
         attendeeRepository.save(attendee);
 
         // gửi thông báo attendee đã tham gia tới phòng

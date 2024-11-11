@@ -1,13 +1,11 @@
 package app.controller;
 
-import app.dtos.CheckInDTO;
-import app.dtos.WaitingRoomDTO;
+import app.dtos.attendee.CheckInDTO;
 import app.enums.CheckInStatus;
-import app.enums.RoomStatus;
 import app.models.Attendee;
-import app.models.Room;
 import app.services.AttendeeService;
 import app.services.RoomService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,6 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 //checkInCode mau: B22DCCN001, B22DCCN002, B22DCCN003, B22DCCN004
+
+// Bat su kien thoat / chuyen tab: sự kien đóng kết nối websocket, visibilitychange(window event)
+
 
 @Controller
 @RequestMapping("/attendees")
@@ -38,7 +39,7 @@ public class AttendeesController {
     }
 
     @PostMapping("/join-room")
-    public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model, HttpSession session) {
+    public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model, HttpSession session, HttpServletRequest request) {
 
         Attendee attendee = attendeeService.getByCheckInCodeAndRoomId(data.checkInCode, data.roomId);
         // Kiểm tra attendee có trong danh sách điểm danh hay ko
@@ -47,6 +48,8 @@ public class AttendeesController {
             errorMessage = "Mã điểm danh không hợp lệ";
         } else if(attendee.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM) {
             errorMessage = "Mã này đã được điểm danh bởi: " + attendee.getName();
+        } else if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
+            errorMessage = "Vui lòng lấy vị trí";
         }
 
         if(errorMessage != null) {
@@ -56,7 +59,7 @@ public class AttendeesController {
         }
 
         // Điểm danh
-        attendeeService.checkIn(attendee, data);
+        attendeeService.checkIn(attendee, data, request);
 
         // Lưu session
         session.setAttribute("attendeeId", attendee.getId());

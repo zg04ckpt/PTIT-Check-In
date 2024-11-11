@@ -48,7 +48,7 @@
                 <div class="col-8" style="padding-left: 0px;">
                     <!-- check vi tri -->
                     <div class="list flex flex-row">
-                        <input type="checkbox" id="check1" class="mr-4 cursor-pointer w-[20px]" th:field="*{requireCheckLocation}">
+                        <input type="checkbox" id="check1" class="mr-4 cursor-pointer w-[20px]" th:field="*{requireCheckLocation}" >
                         <label for="check1" class="flex items-center mr-6">
                             <span class = "text-medium">Check vị trí</span>
                         </label>
@@ -57,11 +57,6 @@
                             <button id="check7" class = "btn btn-success btn-sm me-2 align-content-center" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#getLocationDialog">
                                 <i class='bx bxs-map text-danger'></i> Lấy mốc
                             </button>
-
-                            <!-- <div id="rangeInput" class="d-flex align-items-center">
-                                <label class="me-2">Phạm vi</label>
-                                <input th:field="*{range}" min="0" type="number" placeholder="Lớp học(50m)" style="width: 120px;" class = "ps-2 h-[30px] border-[1.5px] border-gray-900 rounded-sm focus:outline-none focus:border-green-600">
-                            </div> -->
                         </div>
                     </div>
 
@@ -104,16 +99,14 @@
                     </div> -->
 
                     <!-- Ẩn -->
-                    <div hidden>
-                        <div id="list">
-                            <div th:each="attendee, iterStat : *{attendees}">
-                                <input type="text" th:field="*{attendees[__${iterStat.index}__].checkInCode}"/>
-                                <input type="text" th:field="*{attendees[__${iterStat.index}__].name}"/>
-                            </div>
+                    <div id="list">
+                        <div th:each="attendee, iterStat : *{attendees}">
+                            <input type="hidden" th:field="*{attendees[__${iterStat.index}__].checkInCode}"/>
+                            <input type="hidden" th:field="*{attendees[__${iterStat.index}__].name}"/>
                         </div>
-                        <input type="number" th:field="*{latitude}">
-                        <input type="number" th:field="*{longitude}">
                     </div>
+                    <input id="latitude" type="hidden" th:field="*{latitude}">
+                    <input id="longitude" type="hidden" th:field="*{longitude}">
                 </div>
 
                 <!-- Button -->
@@ -209,6 +202,7 @@
                     </div>
                 </div>
                 <div class="col-6">
+
                     <!-- option 1 -->
                     <select id="locationSelect" class="w-75 mb-2 border-1 border-secondary p-1">
                         <option value="1">PTIT</option>
@@ -235,7 +229,7 @@
 
                 <div class="d-flex m-2 justify-content-center my-3">
                 <button class="btn btn-info text-light btn-sm" style="width: 100px;">Hướng dẫn</button>
-                <button class="ms-2 btn btn-success text-light btn-sm" id="saveBtn" style="width: 100px;">Lưu</button>
+                <button class="ms-2 btn btn-success text-light btn-sm" data-bs-dismiss="modal" id="saveBtn" onclick="saveLocation()" style="width: 100px;">Lưu</button>
                 </div>
             </div>
             </div>

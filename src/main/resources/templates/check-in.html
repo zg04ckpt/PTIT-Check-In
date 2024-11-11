@@ -25,22 +25,16 @@
                         <input th:field="*{checkInCode}" type="text" placeholder="Mã điểm danh..." class="inner-input border-1 border-secondary shadow-sm">
         
                         <div th:if="${data.requireCheckLocation}" class="d-flex w-75 align-items-center">
-                            <button class="btn btn-sm btn-secondary">Lấy vị trí</button>
-                            <p class="p-0 m-0 ms-2 text-success">
-                                <i class='bx bx-check'></i>
-                                Lấy vị trí thành công
-                            </p>
+                            <button id="getLocationBtn" class="btn btn-sm btn-secondary">Lấy vị trí</button>
                         </div>
 
-                        <div hidden>
-                            <input type="text" th:field="*{roomId}">
-                            <input type="text" th:field="*{roomName}">
-                            <input type="text" th:field="*{roomCode}">
-                            <input type="checkbox" th:field="*{requireCheckLocation}">
-                            <input type="number" th:field="*{latitude}">
-                            <input type="number" th:field="*{longitude}">
-                            <input type="text" th:field="*{ipAddress}">
-                        </div>
+                        <input type="hidden" th:field="*{roomId}">
+                        <input type="hidden" th:field="*{roomName}">
+                        <input type="hidden" th:field="*{roomCode}">
+                        <input type="hidden" th:field="*{requireCheckLocation}">
+                        <input id="latitude" type="hidden" th:field="*{latitude}">
+                        <input id="longitude" type="hidden" th:field="*{longitude}">
+                        <input type="hidden" th:field="*{ipAddress}">
 
                         <div class="d-flex flex-column mt-4 justify-content-center mb-2 w-75">
                             <button type="submit" class="btn btn-success px-3 ">Vào phòng</button>
@@ -49,6 +43,18 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                <div id="action" class="d-flex justify-content-center mt-3">
                 </div>
             </div>
         </div>
