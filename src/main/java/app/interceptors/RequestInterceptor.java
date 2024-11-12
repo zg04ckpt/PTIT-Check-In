@@ -1,5 +1,6 @@
 package app.interceptors;
 
+import app.services.ILogService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -9,17 +10,27 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class RequestInterceptor implements HandlerInterceptor {
+    private final ILogService logService;
     @Value("${spring.base-url}")
     private String baseUrl;
+
+    public RequestInterceptor(ILogService logService) {
+        this.logService = logService;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(
             request.getRequestURI().contains("/js/") ||
             request.getRequestURI().contains("/css/") ||
-            request.getRequestURI().contains("/images/")
+            request.getRequestURI().contains("/images/") ||
+            request.getRequestURI().contains("/get-ggmap-url") ||
+            request.getRequestURI().contains("/logs/")
         ) {
             return true;
         }
+
+        logService.writeLog("Truy cập trang web", null, null, request);
 
         HttpSession session = request.getSession(false);
         String currentUri = request.getRequestURI();

@@ -1,6 +1,5 @@
 package app.repositories;
 
-import app.enums.CheckInStatus;
 import app.enums.RoomStatus;
 import app.models.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-public interface RoomRepository extends JpaRepository<Room, String> {
+public interface IRoomRepository extends JpaRepository<Room, String> {
     //dựa vào thuộc tính code để tìm kiếm phòng
     Room findByCode(String code);
     //sử dụng code để kiểm tra xem có tồn tại phòng không

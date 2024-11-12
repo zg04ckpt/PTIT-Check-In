@@ -2,7 +2,7 @@ package app.services.impl;
 
 import app.enums.CheckInStatus;
 import app.models.Attendee;
-import app.repositories.RoomRepository;
+import app.repositories.IRoomRepository;
 import app.services.IFileService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -17,9 +17,9 @@ import java.util.List;
 
 @Service
 public class FileService implements IFileService {
-    private final RoomRepository roomRepository;
+    private final IRoomRepository roomRepository;
 
-    public FileService(RoomRepository roomRepository) {
+    public FileService(IRoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 

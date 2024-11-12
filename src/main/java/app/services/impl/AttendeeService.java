@@ -8,8 +8,8 @@ import app.enums.CheckInStatus;
 import app.enums.MessageType;
 import app.models.Attendee;
 import app.models.Room;
-import app.repositories.AttendeeRepository;
-import app.repositories.RoomRepository;
+import app.repositories.IAttendeeRepository;
+import app.repositories.IRoomRepository;
 import app.services.IAttendeeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,12 +22,12 @@ import java.time.LocalDateTime;
 
 @Service
 public class AttendeeService implements IAttendeeService {
-    private final AttendeeRepository attendeeRepository;
-    private final RoomRepository roomRepository;
+    private final IAttendeeRepository attendeeRepository;
+    private final IRoomRepository roomRepository;
     private final SimpMessagingTemplate sender;
 
     @Autowired
-    public AttendeeService(AttendeeRepository attendeeRepository, RoomRepository roomRepository, SimpMessagingTemplate sender) {
+    public AttendeeService(IAttendeeRepository attendeeRepository, IRoomRepository roomRepository, SimpMessagingTemplate sender) {
         this.attendeeRepository = attendeeRepository;
         this.roomRepository = roomRepository;
         this.sender = sender;
@@ -39,6 +39,11 @@ public class AttendeeService implements IAttendeeService {
     }
 
     @Override
+    public boolean checkIfAttendeeIsInRoom(String attendeeId, String roomId) {
+        return attendeeRepository.existsByIdAndRoomId(attendeeId, roomId);
+    }
+
+    @Override
     public WaitingRoomDTO getWaitingData(String roomId, String attendeeId) {
         Room room = roomRepository.getReferenceById(roomId);
         Attendee attendee = attendeeRepository.getReferenceById(attendeeId);
@@ -46,6 +51,7 @@ public class AttendeeService implements IAttendeeService {
         WaitingRoomDTO data = new WaitingRoomDTO();
         data.roomId = roomId;
         data.attendeeId = attendeeId;
+        data.attendeeName = attendee.getName();
         data.roomName = room.getName();
         data.roomCode = room.getCode();
         data.end = room.getEndTime();

@@ -1,9 +1,11 @@
 package app.controller;
 
 import app.dtos.attendee.CheckInDTO;
+import app.dtos.attendee.WaitingRoomDTO;
 import app.enums.CheckInStatus;
 import app.models.Attendee;
 import app.services.IAttendeeService;
+import app.services.ILogService;
 import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,12 +23,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/attendees")
 public class AttendeesController {
     private final IAttendeeService attendeeService;
+    private final ILogService logService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public AttendeesController(IAttendeeService attendeeService) {
+    public AttendeesController(IAttendeeService attendeeService, ILogService logService) {
         this.attendeeService = attendeeService;
+        this.logService = logService;
     }
 
     @GetMapping("/join-room")
@@ -46,11 +50,15 @@ public class AttendeesController {
             errorMessage = "Mã điểm danh không hợp lệ";
         } else if(attendee.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM) {
             errorMessage = "Mã này đã được điểm danh bởi: " + attendee.getName();
-        } else if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
+        } else if(data.requireCheckLocation && (data.latitude == 0 && data.longitude == 0)) {
             errorMessage = "Vui lòng lấy vị trí";
         }
 
         if(errorMessage != null) {
+            //log
+            logService.writeLog("Yêu cầu điểm danh thất bại với mã điểm danh: " + data.checkInCode +
+                    ". Lỗi [" + errorMessage + "]", data.roomId, null,  request);
+
             model.addAttribute("data", data);
             model.addAttribute("message", errorMessage);
             return "check-in.html";
@@ -67,17 +75,33 @@ public class AttendeesController {
     }
 
     @GetMapping("/waiting")
-    public String getWaitingRoom(Model model, HttpSession session){
+    public String getWaitingRoom(Model model, HttpSession session, HttpServletRequest request){
         String attendeeId = session.getAttribute("attendeeId").toString();
         String roomId = session.getAttribute("joinedRoomId").toString();
-        model.addAttribute("data", attendeeService.getWaitingData(roomId, attendeeId));
+        WaitingRoomDTO data = attendeeService.getWaitingData(roomId, attendeeId);
+        model.addAttribute("data", data);
+
+        logService.writeLog("Vào phòng chờ điểm danh.", null, attendeeId, request);
+        logService.writeLog(data.attendeeName + " đã vào phòng chờ.", roomId, null, request);
+
         return "waiting-room.html";
     }
 
     @GetMapping("/clear-session")
-    public String clearSession(HttpSession session) {
+    public String clearSession(HttpSession session , HttpServletRequest request) {
+
+        WaitingRoomDTO data = attendeeService.getWaitingData(
+                session.getAttribute("joinedRoomId").toString(),
+                session.getAttribute("attendeeId").toString()
+        );
+
+        // Ghi log
+        logService.writeLog("Thoát phòng điểm danh", null, data.attendeeId, request);
+        logService.writeLog(data.attendeeName + " rời phòng điểm danh.", data.roomId, null, request);
+
         session.removeAttribute("attendeeId");
         session.removeAttribute("joinedRoomId");
+
         return "redirect:" + baseUrl;
     }
 }

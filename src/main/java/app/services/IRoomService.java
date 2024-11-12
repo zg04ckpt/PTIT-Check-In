@@ -25,4 +25,5 @@ public interface IRoomService {
     RoomStatus getStatus(String roomId);
     long getRemainingSecondsUntilRoomOpens(String roomId);
     void openRoom(String roomId);
+//    String getGGMapUrl(String roomId, String attendeeId);
 }

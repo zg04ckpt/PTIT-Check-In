@@ -1,5 +1,8 @@
-/*section-1*/
-.section-1{
-    
+@media (min-width: 575.98px) {
+    .header {
+        font-size: 120px;
+    }
 }
-/*end section-1*/
+
+
+

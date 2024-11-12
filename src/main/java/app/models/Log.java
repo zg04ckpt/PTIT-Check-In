@@ -29,4 +29,16 @@ public class Log {
         this.attendeeId = attendeeId;
         this.roomId = roomId;
     }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

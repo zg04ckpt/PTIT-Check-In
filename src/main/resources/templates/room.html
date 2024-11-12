@@ -46,6 +46,12 @@
                             QR Code
                             <i class='bx bx-qr' ></i>
                         </button>
+
+                        <button class="btn btn-outline-dark btn-sm me-2"
+                        onclick="showLogAboutRoom()">
+                            Xem log
+                            <i class='bx bx-history'></i>
+                        </button>
                         
                         <button id="enableAuto" class="btn btn-outline-dark btn-sm me-2 box position-relative"
                         onclick="this.hidden = true; disableAuto.hidden = false">
@@ -182,17 +188,17 @@
                                 <th class="w-auto text-center align-content-start">STT</th>
                                 <th class="col-2 text-center align-content-start">Họ & tên</th>
                                 <th class="col-2 text-center align-content-start">Mã điểm danh</th>
+                                <th class="col-1 text-center align-content-start">Trạng thái</th>
                                 <th class="col-1 text-center align-content-start">Thiết bị</th>
                                 <th class="col-1 text-center align-content-start">Trình duyệt</th>
                                 <th class="col-1 text-center align-content-start">Vị trí</th>
                                 <th class="col-2 text-center align-content-start">IP</th>
-                                <th class="col-1 text-center align-content-start">Checkin</th>
-                                <th class="col-4 text-center align-content-start">Dự đoán vi phạm</th>
+                                <th class="col-2 text-center align-content-start">Thời điểm vào phòng</th>
                                 <th class="w-auto">Chọn</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <!-- <tr>
                                 <td>1</td>
                                 <td>Hoàng Cao Nguyên</td>
                                 <td>B22DCCN589</td>
@@ -201,23 +207,52 @@
                                 <td>32.0m</td>
                                 <td>172.168.78.22</td>
                                 <td>14:56</td>
-                                <td>Sử dụng 2 trình duyệt</td>
                                 <td class="text-center">
                                 <div class="dropdown">
                                     <i class="bx bx-dots-vertical-rounded" data-bs-toggle="dropdown"></i>
                                     <div class="dropdown-menu rounded-0 py-0" style="font-size: 12px;">
                                     <button class="dropdown-item">Xem log</button>
-                                    <button class="dropdown-item">Xem log</button>
+                                    <button class="dropdown-item">Xem vị trí</button>
                                     </div>
                                 </div>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
                 
             </div>
         </div>
+
+        <!-- Log information -->
+        <div id="log" class="w-100 h-100 position-fixed top-0 start-0" hidden>
+            <div class="card card-body col-lg-6 offset-lg-3 pt-2 shadow"
+            style="margin-top: 60px; height: 500px;">
+              <div id="log-title" class="fs-6 text-center mt-0"></div>
+              <button class="btn btn-close position-absolute top-0 end-0 m-2" onclick="log.hidden = true"></button>
+      
+              <div class="table-wrapper mt-2">
+                <table class="table table-sm table-auto table-hover table-bordered" style="font-size: 12px;">
+                  <thead>
+                    <tr>
+                      <th class="w-auto text-center align-content-start">STT</th>
+                      <th class="col-3 text-center align-content-start">Thời gian</th>
+                      <th class="col-3 text-center align-content-start">IP</th>
+                      <th class="col-6 text-center align-content-start">Mô tả</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <tr>
+                      <td>1</td>
+                      <td>14:12 - 19/12/2023</td>
+                      <td>192.186.14.5</td>
+                      <td>Tham gia điểm danh với mã: B22DCCN589</td>
+                    </tr> -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>

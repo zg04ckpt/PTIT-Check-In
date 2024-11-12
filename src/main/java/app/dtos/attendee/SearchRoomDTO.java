@@ -1,5 +1,6 @@
 package app.dtos.attendee;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data

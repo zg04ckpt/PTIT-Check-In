@@ -3,8 +3,8 @@ CREATE TABLE logs (
    ip VARCHAR(255) NOT NULL,
    time datetime NOT NULL,
    `desc` VARCHAR(255) NOT NULL,
-   attendee_id VARCHAR(32) NULL,
-   room_id VARCHAR(32) NULL,
+   attendee_id VARCHAR(255) NULL,
+   room_id VARCHAR(255) NULL,
    CONSTRAINT pk_logs PRIMARY KEY (id)
 );
 

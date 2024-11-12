@@ -13,8 +13,8 @@ import app.enums.MessageType;
 import app.enums.RoomStatus;
 import app.models.Attendee;
 import app.models.Room;
-import app.repositories.AttendeeRepository;
-import app.repositories.RoomRepository;
+import app.repositories.IAttendeeRepository;
+import app.repositories.IRoomRepository;
 import app.services.IRoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -37,11 +37,11 @@ import java.util.UUID;
 
 @Service
 public class RoomService implements IRoomService {
-    private final RoomRepository roomRepository;
-    private final AttendeeRepository attendeeRepository;
+    private final IRoomRepository roomRepository;
+    private final IAttendeeRepository attendeeRepository;
     private final SimpMessagingTemplate sender;
     @Autowired
-    public RoomService(RoomRepository roomRepository, AttendeeRepository attendeeRepository, SimpMessagingTemplate sender) {
+    public RoomService(IRoomRepository roomRepository, IAttendeeRepository attendeeRepository, SimpMessagingTemplate sender) {
         this.roomRepository = roomRepository;
         this.attendeeRepository = attendeeRepository;
         this.sender = sender;
@@ -155,24 +155,23 @@ public class RoomService implements IRoomService {
 
             if(e.getCheckInStatus() != CheckInStatus.OUT_OF_ROOM && e.getCheckInStatus() != CheckInStatus.REJECTED) {
                 // get additional information
+                attendeeDTO.attendOn = DateTimeFormatter.ofPattern("HH:mm:ss").format(e.getAttendOn());
                 if(e.getAttendOn().toLocalDate().isEqual(LocalDate.now())) {
-                    attendeeDTO.attendOn = DateTimeFormatter.ofPattern("HH:mm:ss").format(e.getAttendOn());
+                    attendeeDTO.attendOn += " - Hôm nay";
                 } else {
-                    attendeeDTO.attendOn = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(e.getAttendOn());
+                    attendeeDTO.attendOn += " - " + DateTimeFormatter.ofPattern("dd/MM/yyyy").format(e.getAttendOn());
                 }
                 attendeeDTO.distance = getDistance(room.getLatitude(), room.getLongitude(), e.getLatitude(), e.getLongitude());
                 attendeeDTO.ip = e.getIp();
                 UserAgent userAgent = UserAgent.parseUserAgentString(e.getUserAgent());
                 attendeeDTO.device = userAgent.getOperatingSystem().getDeviceType().getName();
                 attendeeDTO.browser = userAgent.getBrowser().getName();
-                attendeeDTO.violationPrediction = "--";
             } else {
                 attendeeDTO.distance = -1;
                 attendeeDTO.attendOn = "--";
                 attendeeDTO.ip = "--";
                 attendeeDTO.device = "--";
                 attendeeDTO.browser = "--";
-                attendeeDTO.violationPrediction = "--";
             }
 
             attendeeDTOs.add(attendeeDTO);
@@ -293,4 +292,27 @@ public class RoomService implements IRoomService {
         room.setStartTime(LocalDateTime.now());
         roomRepository.save(room);
     }
+
+//    @Override
+//    public String getGGMapUrl(String roomId, String attendeeId) {
+//        Room room = roomRepository.getReferenceById(roomId);
+//        if(!room.isRequireCheckLocation()) {
+//            return "/error";
+//        }
+//        Attendee attendee = attendeeRepository.getReferenceById(attendeeId);
+//        //https://www.google.com/maps/place/20%C2%B058'53.6%22N+105%C2%B047'06.5%22E
+//        return String.format(
+//                "https://www.google.com/maps/place/%sN+$%sE",
+//                convertToDMS(attendee.getLatitude()),
+//                convertToDMS(attendee.getLongitude())
+//        );
+//    }
+//
+//    private String convertToDMS(double decimalDegree) {
+//        int degrees = (int) decimalDegree;
+//        double fractionalPart = Math.abs(decimalDegree - degrees);
+//        int minutes = (int) (fractionalPart * 60);
+//        double seconds = (fractionalPart * 60 - minutes) * 60;
+//        return degrees + "%C2%B0" + minutes + "'" + seconds + "%22";
+//    }
 }

@@ -186,6 +186,56 @@ function showConfirm(msg, onConfirm, onCancel) {
     notification.hidden = false;
 }
 
+// --------------------------- LOG ---------------------------------
+const log = document.getElementById('log');
+
+function showLogAboutAttendee(index) {
+    debugger
+    const attendee = room.attendees[index];
+    log.querySelector("#log-title").innerText = `Lịch sử hoạt động của ${attendee.name}`;
+    const content = log.querySelector('tbody');
+    content.innerHTML = ''
+    fetch(`/logs/attendees/${attendee.id}`)
+    .then(res => res.json())
+    .then(data => loadLogTable(data));
+}
+
+function showLogAboutRoom() {
+    debugger
+    log.querySelector("#log-title").innerText = `Lịch sử hoạt động của phòng`;
+    fetch(`/logs/room`)
+    .then(res => res.json())
+    .then(data => loadLogTable(data));
+}
+
+function loadLogTable(logs) {
+    const content = log.querySelector('tbody');
+    content.innerHTML = ''
+    logs.forEach((e, index) => {
+        debugger
+        const row = document.createElement('tr');
+
+        const order = document.createElement('td');
+        order.innerText = index + 1;
+        row.appendChild(order);
+
+        const time = document.createElement('td');
+        time.innerText = e.time;
+        row.appendChild(time);
+
+        const ip = document.createElement('td');
+        ip.innerText = e.ip;
+        row.appendChild(ip);
+
+        const description = document.createElement('td');
+        description.innerText = e.description;
+        row.appendChild(description);
+
+        content.appendChild(row);
+    });
+    log.hidden = false;
+}
+
 // --------------------------- DETAIL -------------------------------
 const detail = document.getElementById('detail');
 
@@ -247,6 +297,18 @@ function loadDetailTable(attendees) {
         checkInCode.innerText = e.checkInCode;
         row.appendChild(checkInCode);
 
+        const status = document.createElement('td');
+        if(e.checkInStatus == CheckInStatus.OUT_OF_ROOM) {
+            status.innerText = 'Chưa vào';
+        } else if(e.checkInStatus == CheckInStatus.WAITING) {
+            status.innerText = 'Chờ duyệt';
+        } else if(e.checkInStatus == CheckInStatus.ACCEPTED) {
+            status.innerText = 'Đã duyệt';
+        } else {
+            status.innerText = 'Cấm';
+        }
+        row.appendChild(status);
+
         const device = document.createElement('td');
         device.innerText = e.device;
         row.appendChild(device);
@@ -267,17 +329,13 @@ function loadDetailTable(attendees) {
         attendOn.innerText = e.attendOn;
         row.appendChild(attendOn);
 
-        const violationPrediction = document.createElement('td');
-        violationPrediction.innerText = e.violationPrediction;
-        row.appendChild(violationPrediction);
-
         const action = document.createElement('td');
         action.className = "text-center";
         action.innerHTML = `<div class="dropdown">
                     <i class="bx bx-dots-vertical-rounded" data-bs-toggle="dropdown"></i>
                     <div class="dropdown-menu rounded-0 py-0" style="font-size: 12px;">
-                      <button class="dropdown-item">Xem log</button>
-                      <button class="dropdown-item">Xem log</button>
+                      <button class="dropdown-item" onclick="showLogAboutAttendee(${index})">Xem log</button>
+                      <a class="dropdown-item" onclick="showRealityLocation(${index})">Xem vị trí (GG map)</a>
                     </div>
                   </div>`
         row.appendChild(action);
@@ -293,6 +351,17 @@ function resetFilter() {
     loadDetailTable(room.attendees);
     detail.querySelector("#resetBtn").hidden = true;
     detail.querySelector("#filterBtn").hidden = false;
+}
+
+function showRealityLocation(index) {
+    showNotification("Tính năng chưa phát triển", null);
+    // const attendeeId = room.attendees[index].id;
+    // fetch(`/rooms/get-ggmap-url?attendeeId=${attendeeId}`).then(res => {
+    //     debugger
+    //     if(res.redirected) {
+    //         window.open(res.url, "_blank");
+    //     }
+    // });
 }
 
 // ----------------- OTHER --------------------

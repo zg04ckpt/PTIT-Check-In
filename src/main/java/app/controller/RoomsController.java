@@ -4,7 +4,9 @@ import app.dtos.attendee.AttendeeDTO;
 import app.dtos.room.CreateRoomDTO;
 import app.enums.RoomStatus;
 import app.models.Room;
+import app.services.IAttendeeService;
 import app.services.IFileService;
+import app.services.ILogService;
 import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -27,119 +29,109 @@ import java.util.Objects;
 @RequestMapping("/rooms")
 public class RoomsController {
     private final IRoomService roomService;
+    private final IAttendeeService attendeeService;
     private final IFileService fileService;
+    private final ILogService logService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public RoomsController(IRoomService roomService, IFileService fileService) {
+    public RoomsController(IRoomService roomService, IAttendeeService attendeeService, IFileService fileService, ILogService logService) {
         this.roomService = roomService;
+        this.attendeeService = attendeeService;
         this.fileService = fileService;
+        this.logService = logService;
     }
 
     // Tạo phòng
     @GetMapping("/create-room")
-    public String getCreateForm(Model model) {
+    public String getCreateForm(Model model, HttpServletRequest request) {
         CreateRoomDTO data = new CreateRoomDTO();
         model.addAttribute("data", data);
+
         return "create-room.html";
     }
 
     @PostMapping("/create-room")
     public String createRoom(@ModelAttribute("data") CreateRoomDTO data, Model model, HttpServletRequest request, HttpSession session) {
-        if(data.name.isEmpty()) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Tên phòng trống");
-            return "create-room.html";
+        String errorMessage = null;
+
+        if(data.name.isEmpty() || roomService.isRoomNameExisted(data.name)) {
+            errorMessage = "Tên phòng không hợp lệ";
+        } else if(data.createBy.isEmpty()) {
+            errorMessage = "Tên chủ phòng trống";
+        } else if(data.attendees.isEmpty() || !roomService.isAttendeeListValid(data.attendees)) {
+            errorMessage = "Danh sách người tham gia không hợp lệ";
+        } else if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
+            errorMessage = "Vị trí không hợp lệ";
+        } else {
+            Room newRoom = roomService.createNewRoom(data, request);
+            if(newRoom == null) {
+                errorMessage = "Tạo phòng thất bại";
+            } else {
+                // Lưu session
+                session.setAttribute("roomId", newRoom.getId());
+                return "redirect:" + baseUrl + "/rooms/";
+            }
         }
 
-        if(data.createBy.isEmpty()) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Tên chủ phòng trống");
-            return "create-room.html";
-        }
+        model.addAttribute("data", data);
+        model.addAttribute("message", errorMessage);
 
-        if(data.attendees.isEmpty()) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Danh sách người tham gia trống");
-            return "create-room.html";
-        }
-
-        if(roomService.isRoomNameExisted(data.name)) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Tên phòng bị trùng");
-            return "create-room.html";
-        }
-
-        if(!roomService.isAttendeeListValid(data.attendees)) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Danh sách người tham gia không hợp lệ");
-            return "create-room.html";
-        }
-
-        if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Vị trí không hợp lệ");
-            return "create-room.html";
-        }
-
-        Room newRoom = roomService.createNewRoom(data, request);
-        if(newRoom == null) {
-            model.addAttribute("data", data);
-            model.addAttribute("message", "Tạo phòng thất bại, vui lòng thử lại!");
-            return "create-room.html";
-        }
-
-        // Lưu session
-        session.setAttribute("roomId", newRoom.getId());
-
-        return "redirect:" + baseUrl + "/rooms/";
+        return "create-room.html";
     }
 
     // Quản lý phòng
     @GetMapping("/")
-    public String getRoom(Model model, HttpSession session) {
+    public String getRoom(Model model, HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
 
         RoomStatus status = roomService.getStatus(roomId);
         if(status == RoomStatus.PENDING) {
             return "redirect:" + baseUrl + "/rooms/wait-open";
         } else if(status == RoomStatus.CLOSED) {
-            return "error.html";
+            return "redirect:" + baseUrl + "/error";
         }
+
+        logService.writeLog("Truy cập vào phòng điểm danh", roomId, null, request);
 
         model.addAttribute("data", roomService.getRoomData(roomId));
         return "room.html";
     }
 
     @GetMapping("/wait-open")
-    public String getWaitOpenPage(Model model, HttpSession session) {
+    public String getWaitOpenPage(Model model, HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
-
+        long remainingTime = roomService.getRemainingSecondsUntilRoomOpens(roomId);
         model.addAttribute("roomId", roomId);
-        model.addAttribute("remaining", roomService.getRemainingSecondsUntilRoomOpens(roomId));
+        model.addAttribute("remaining", remainingTime);
+
+        logService.writeLog("Chờ phòng mở, đếm ngược: " + remainingTime + "s", roomId, null, request);
+
         return "wait-open.html";
     }
 
     @PostMapping("/open-room")
-    public String openRoom(HttpSession session) {
+    public String openRoom(HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
         roomService.openRoom(roomId);
+        logService.writeLog("Mở phòng điểm danh", roomId, null, request);
         return "redirect:" + baseUrl + "/rooms/";
     }
 
     @GetMapping("/result")
-    public String getResult(Model model, HttpSession session) {
+    public String getResult(Model model, HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
         if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
             model.addAttribute("data", roomService.getResult(roomId));
+            logService.writeLog("Lấy kết quả điểm danh", roomId, null, request);
             return "result.html";
         }
-        return "error.html";
+        return "redirect:" + baseUrl + "/error";
     }
 
     @GetMapping("/export")
-    public ResponseEntity<InputStreamResource> exportResult(HttpSession session) {
+    public ResponseEntity<InputStreamResource> exportResult(HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
         if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
             ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
@@ -152,6 +144,14 @@ public class RoomsController {
             if(stream == null)  {
                 return ResponseEntity.internalServerError().body(null);
             }
+
+            // Ghi log
+            logService.writeLog("Xuất file kết quả, đóng phòng điểm danh", roomId, null, request);
+
+            // Tải xuống log ? trước khi xóa
+            logService.removeAllLogOfRoom(roomId);
+
+            // Trả về luồng file
             return ResponseEntity.ok()
                     .body(new InputStreamResource(stream));
         }
@@ -165,9 +165,20 @@ public class RoomsController {
         return ResponseEntity.ok().body(data);
     }
 
+//    @GetMapping("/get-ggmap-url")
+//    public String getGGMapUrl(@RequestParam("attendeeId") String attendeeId, HttpSession session) {
+//        String roomId = session.getAttribute("roomId").toString();
+//        if(attendeeService.checkIfAttendeeIsInRoom(attendeeId, roomId)) {
+//            return "redirect:" + roomService.getGGMapUrl(roomId, attendeeId);
+//        }
+//        return "redirect:" + baseUrl + "/error";
+//    }
+
     @MessageMapping("/setAttendeeStatus")
     public void setAttendeeStatus(String data, SimpMessageHeaderAccessor headerAccessor) {
         HttpSession session = (HttpSession) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("HTTP_SESSION");
         roomService.setAttendeeStatus(data, session);
     }
+
+
 }

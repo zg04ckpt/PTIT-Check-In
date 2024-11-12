@@ -1,56 +1,51 @@
 <!DOCTYPE html>
-<html
-    xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layout}">
+
 <head>
     <title layout:fragment="title">Vào phòng</title>
     <link rel="stylesheet" href="/css/check-in.css">
 </head>
+
 <body>
 
     <div layout:fragment="content">
 
         <!-- Thịnh -->
-        <div class="section-2" style="padding-top: 50px;">
-            <div class="container">
-                <div class="inner-wrap" style="padding: 15px; height: auto; width: 360px;">
-                    <form th:object="${data}" th:action="@{/attendees/join-room}" method="post" class="inner-form">
-        
-                        <div class="inner-title text-center px-4 mt-2" style="font-size: 25px;" th:text="${data.roomName}"></div>
-                        <p class="fst-italic" style="margin-bottom: 40px;">Mã phòng: <b th:text="${data.roomCode}"></b></p>
-         
-                        <p class="inner-desc text-secondary" style="margin-bottom: 8px;">Vui lòng nhập mã điểm danh:</p>
-        
-                        <input th:field="*{checkInCode}" type="text" placeholder="Mã điểm danh..." class="inner-input border-1 border-secondary shadow-sm">
-        
-                        <div th:if="${data.requireCheckLocation}" class="d-flex w-75 align-items-center">
-                            <button id="getLocationBtn" class="btn btn-sm btn-secondary">Lấy vị trí</button>
-                        </div>
-
-                        <input type="hidden" th:field="*{roomId}">
-                        <input type="hidden" th:field="*{roomName}">
-                        <input type="hidden" th:field="*{roomCode}">
-                        <input type="hidden" th:field="*{requireCheckLocation}">
-                        <input id="latitude" type="hidden" th:field="*{latitude}">
-                        <input id="longitude" type="hidden" th:field="*{longitude}">
-                        <input type="hidden" th:field="*{ipAddress}">
-
-                        <div class="d-flex flex-column mt-4 justify-content-center mb-2 w-75">
-                            <button type="submit" class="btn btn-success px-3 ">Vào phòng</button>
-                            <button class="btn btn-outline-secondary px-3 mt-2" id="backBtn">
-                                <i class="fa-solid fa-arrow-left m-0"></i> Quay lại
-                            </button>
-                        </div>
-                    </form>
+        <div class="position-absolute start-50 translate-middle-x card card-body shadow-sm px-4">
+            <div class="fs-5 fw-bolder text-center" th:text="${data.roomName}">Tên phòng</div>
+            <p class="fst-italic text-center">Mã phòng: <b th:text="${data.roomCode}"></b></p>
+            <form th:object="${data}" th:action="@{/attendees/join-room}" method="post" class="mt-4">
+      
+                <p class="text-center text-secondary">Vui lòng nhập mã điểm danh:</p>
+      
+                <input th:field="*{checkInCode}" type="text" placeholder="Mã điểm danh..."
+                    class="border-1 border-secondary shadow-sm form-control mt-2">
+      
+                <div th:if="${data.requireCheckLocation}" class="d-flex align-items-center mt-2 justify-content-center">
+                    <button id="getLocationBtn" class="btn btn-sm btn-outline-dark">Lấy vị trí hiện tại</button>
                 </div>
-            </div>
+      
+                <input type="hidden" th:field="*{roomId}">
+                <input type="hidden" th:field="*{roomName}">
+                <input type="hidden" th:field="*{roomCode}">
+                <input type="hidden" th:field="*{requireCheckLocation}">
+                <input id="latitude" type="hidden" th:field="*{latitude}">
+                <input id="longitude" type="hidden" th:field="*{longitude}">
+                <input type="hidden" th:field="*{ipAddress}">
+      
+                <button type="submit" class="btn btn-sm btn-success form-control mt-5">Vào phòng</button>
+                <button class="btn btn-sm btn-outline-secondary w-100 mt-2" id="backBtn">Quay lại</button>
+            </form>
         </div>
 
         <!-- Notification -->
-        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
-            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
-                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0"
+            style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x"
+                style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2"
+                    onclick="notification.hidden = true"></button>
                 <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
                 <hr class="mt-2 mb-2">
                 <p id="content" class="text-center px-2"></p>
@@ -59,9 +54,10 @@
             </div>
         </div>
 
-        
+
         <script src="/js/check-in.js"></script>
     </div>
-    
+
 </body>
+
 </html>

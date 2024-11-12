@@ -15,7 +15,6 @@ public class AttendeeDTO {
     public double longitude; //Kinh độ
     @Enumerated(EnumType.ORDINAL)
     public int checkInStatus;
-    public String violationPrediction;
     public double distance;
     public String device;
     public String browser;

@@ -6,9 +6,11 @@ import app.models.Room;
 import app.services.ILogService;
 import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,14 +32,13 @@ public class HomeController {
     //code ở đây
     @GetMapping("/")
     public String getHome(Model model, HttpServletRequest request) {
-        logService.writeLog("Truy cập trang chủ", request);
         SearchRoomDTO data = new SearchRoomDTO();
         model.addAttribute("data", data);
         return "index.html";
     }
 
     @PostMapping("/")
-    public String findRoom(@ModelAttribute("data") SearchRoomDTO data,  Model model) {
+    public String findRoom(@ModelAttribute("data") SearchRoomDTO data, Model model, HttpServletRequest request) {
 
         // Kiểm tra độ dài
         if(data.roomCode.length() != 6) {
@@ -63,7 +64,6 @@ public class HomeController {
             model.addAttribute("message", "Phòng điểm danh đã đóng!");
             return "index.html";
         }
-
 
         /*Chuyển hướng đến join-room(AttendeesController)*/
         return "redirect:" + baseUrl + "/attendees/join-room?" + "roomId=" + room.getId();
