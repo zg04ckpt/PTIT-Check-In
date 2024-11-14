@@ -10,7 +10,6 @@ public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(nullable = false)
     private String ip;
     @Column(nullable = false)
     private LocalDateTime time;
@@ -40,5 +39,13 @@ public class Log {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getAttendeeId() {
+        return attendeeId;
+    }
+
+    public String getRoomId() {
+        return roomId;
     }
 }

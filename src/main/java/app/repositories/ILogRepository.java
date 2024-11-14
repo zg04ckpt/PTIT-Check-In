@@ -14,10 +14,10 @@ public interface ILogRepository extends JpaRepository<Log, Integer> {
     @Modifying
     @Transactional
     @Query("DELETE FROM Log l WHERE l.attendeeId = ?1")
-    int deleteByAttendeeId(String attendeeId);
+    void deleteByAttendeeId(String attendeeId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Log l WHERE l.roomId = ?1")
-    int deleteByRoomId(String roomId);
+    void deleteByRoomId(String roomId);
 }

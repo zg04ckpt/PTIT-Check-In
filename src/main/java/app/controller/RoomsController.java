@@ -49,6 +49,9 @@ public class RoomsController {
         CreateRoomDTO data = new CreateRoomDTO();
         model.addAttribute("data", data);
 
+        // System log
+        logService.writeLog("Truy cập trang tạo phòng", null, null, request);
+
         return "create-room.html";
     }
 
@@ -69,6 +72,12 @@ public class RoomsController {
             if(newRoom == null) {
                 errorMessage = "Tạo phòng thất bại";
             } else {
+                // System log
+                logService.writeLog("Tạo phòng thành công", null, null, request);
+
+                // Room log
+                logService.writeLog("Tạo phòng thành công", newRoom.getId(), null, request);
+
                 // Lưu session
                 session.setAttribute("roomId", newRoom.getId());
                 return "redirect:" + baseUrl + "/rooms/";
@@ -77,6 +86,9 @@ public class RoomsController {
 
         model.addAttribute("data", data);
         model.addAttribute("message", errorMessage);
+
+        // System log
+        logService.writeLog("Tạo phòng thất bại", null, null, request);
 
         return "create-room.html";
     }
@@ -93,7 +105,8 @@ public class RoomsController {
             return "redirect:" + baseUrl + "/error";
         }
 
-        logService.writeLog("Truy cập vào phòng điểm danh", roomId, null, request);
+        // System log
+        logService.writeLog("Chủ phòng truy cập vào phòng", null, null, request);
 
         model.addAttribute("data", roomService.getRoomData(roomId));
         return "room.html";
@@ -106,16 +119,16 @@ public class RoomsController {
         model.addAttribute("roomId", roomId);
         model.addAttribute("remaining", remainingTime);
 
-        logService.writeLog("Chờ phòng mở, đếm ngược: " + remainingTime + "s", roomId, null, request);
+        // System log
+        logService.writeLog("Chủ phòng chờ mở phòng: " + remainingTime + "s", null, null, request);
 
         return "wait-open.html";
     }
 
     @PostMapping("/open-room")
-    public String openRoom(HttpSession session, HttpServletRequest request) {
+    public String openRoom(HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
         roomService.openRoom(roomId);
-        logService.writeLog("Mở phòng điểm danh", roomId, null, request);
         return "redirect:" + baseUrl + "/rooms/";
     }
 
@@ -124,7 +137,10 @@ public class RoomsController {
         String roomId = session.getAttribute("roomId").toString();
         if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
             model.addAttribute("data", roomService.getResult(roomId));
-            logService.writeLog("Lấy kết quả điểm danh", roomId, null, request);
+
+            // System log
+            logService.writeLog("Chủ phòng yêu cầu kết quả điểm danh", null, null, request);
+
             return "result.html";
         }
         return "redirect:" + baseUrl + "/error";
@@ -145,7 +161,10 @@ public class RoomsController {
                 return ResponseEntity.internalServerError().body(null);
             }
 
-            // Ghi log
+            // System log
+            logService.writeLog("Phòng được đóng bởi chủ phòng", null, null, request);
+
+            // Room log
             logService.writeLog("Xuất file kết quả, đóng phòng điểm danh", roomId, null, request);
 
             // Tải xuống log ? trước khi xóa
@@ -177,8 +196,6 @@ public class RoomsController {
     @MessageMapping("/setAttendeeStatus")
     public void setAttendeeStatus(String data, SimpMessageHeaderAccessor headerAccessor) {
         HttpSession session = (HttpSession) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("HTTP_SESSION");
-        roomService.setAttendeeStatus(data, session);
+        roomService.setAttendeeStatus(data, session, (String) headerAccessor.getSessionAttributes().get("ip"));
     }
-
-
 }

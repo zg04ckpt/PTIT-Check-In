@@ -67,27 +67,12 @@ function setRowStatus(row, status) {
 window.onload = e => {
     setAllRowsStatus();
     initRemainingTime();
+    fetch('/attendees/get-ip')
+        .then(res => res.text())
+        .then(ip => connectSocket(ip));
 }
 
 //----------------- WEBSOCKET -------------------------
-function calculateDistance(lat1, lon1, lat2, lon2) {
-    const DEG_TO_RAD = Math.PI / 180;
-    const R = 63710088; // Bán kính Trái Đất chính xác hơn (m)
-    
-    const dLat = (lat2 - lat1) * DEG_TO_RAD;
-    const dLon = (lon2 - lon1) * DEG_TO_RAD;
-
-    const lat1Rad = lat1 * DEG_TO_RAD;
-    const lat2Rad = lat2 * DEG_TO_RAD;
-
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // Khoảng cách tính bằng m
-}
 
 const MessageType = {
     ATTENDEE_STATUS: 0,
@@ -96,21 +81,24 @@ const MessageType = {
 
 var socket = new SockJS("/ws");
 var stompClient = Stomp.over(socket);
-stompClient.connect({}, function(frame) {
-    stompClient.subscribe("/topic/rooms/" + room.id, next => {
-        /**next.body = {
-         *     type: MessageType
-         *     data: any
-         * }
-         */
-        debugger
-        const message = JSON.parse(next.body);
-        if(message.type === MessageType.ATTENDEE_STATUS) {
-            const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == message.data.attendeeId);
-            setRowStatus(targetRow, message.data.attendeeStatus);
-        }
+
+function connectSocket(ip) {
+    const headers = {
+        isRoomOwner: true,
+        ip: ip
+    }
+    
+    stompClient.connect(headers, function(frame) {
+        stompClient.subscribe("/topic/rooms/" + room.id, next => {
+            debugger
+            const message = JSON.parse(next.body);
+            if(message.type === MessageType.ATTENDEE_STATUS) {
+                const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == message.data.attendeeId);
+                setRowStatus(targetRow, message.data.attendeeStatus);
+            }
+        });
     });
-});
+}
 
 function setStatus(id, status) {
     const json = {
@@ -124,9 +112,6 @@ function setStatus(id, status) {
     stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
 }
 
-function setCloseStatus() {
-
-}
 
 // ----------------- Notification management -------------------------
 const notification = document.getElementById('notification');
@@ -396,7 +381,6 @@ function updateRemainingTime() {
         s = 59;
     }
 }
-
 
 function closeRoom() {
     showNotification(

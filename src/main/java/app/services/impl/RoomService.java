@@ -4,6 +4,7 @@ import app.dtos.attendee.AttendeeDTO;
 import app.dtos.attendee.AttendeeStatusDTO;
 import app.dtos.attendee.CheckInResultDTO;
 import app.dtos.attendee.CreateAttendeeDTO;
+import app.dtos.management.RoomStatusDTO;
 import app.dtos.room.CreateRoomDTO;
 import app.dtos.room.RoomDTO;
 import app.dtos.system.MessageDTO;
@@ -15,6 +16,7 @@ import app.models.Attendee;
 import app.models.Room;
 import app.repositories.IAttendeeRepository;
 import app.repositories.IRoomRepository;
+import app.services.ILogService;
 import app.services.IRoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +27,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -40,11 +43,13 @@ public class RoomService implements IRoomService {
     private final IRoomRepository roomRepository;
     private final IAttendeeRepository attendeeRepository;
     private final SimpMessagingTemplate sender;
+    private final ILogService logService;
     @Autowired
-    public RoomService(IRoomRepository roomRepository, IAttendeeRepository attendeeRepository, SimpMessagingTemplate sender) {
+    public RoomService(IRoomRepository roomRepository, IAttendeeRepository attendeeRepository, SimpMessagingTemplate sender, ILogService logService) {
         this.roomRepository = roomRepository;
         this.attendeeRepository = attendeeRepository;
         this.sender = sender;
+        this.logService = logService;
     }
 
     //code ở đây
@@ -220,14 +225,25 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public void setAttendeeStatus(String jsonData, HttpSession session) {
+    @Transactional
+    public void setAttendeeStatus(String jsonData, HttpSession session, String ip) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             MessageDTO<AttendeeStatusDTO> message = mapper.readValue(jsonData, new TypeReference<>() {});
-            int result = attendeeRepository.updateStatusById(message.data.attendeeId, message.data.attendeeStatus);
-            if(result > 0) {
-                sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
+            Attendee attendee = attendeeRepository.getReferenceById(message.data.attendeeId);
+            CheckInStatus status =  message.data.attendeeStatus;
+            attendee.setCheckInStatus(status);
+            // Ghi log
+            if (status == CheckInStatus.WAIT_APPROVAL) {
+                logService.writeLog("Đã bỏ điểm danh cho " + attendee.getName(), message.roomId, message.data.attendeeId, ip);
+            } else if (status == CheckInStatus.ACCEPTED) {
+                logService.writeLog("Đã điểm danh cho " + attendee.getName(), message.roomId, message.data.attendeeId, ip);
+            } else if (status == CheckInStatus.OUT_OF_ROOM) {
+                logService.writeLog(attendee.getName() + " đã thoát phòng.", message.roomId, message.data.attendeeId, ip);
+            } else {
+                logService.writeLog(attendee.getName() + " bị cấm vào phòng.", message.roomId, message.data.attendeeId, ip);
             }
+            sender.convertAndSend("/topic/rooms/" + message.roomId, jsonData);
         } catch (Exception ex) {
             throw new RuntimeException("Lỗi parse json data (setAttendeeStatus)", ex);
         }
@@ -292,7 +308,6 @@ public class RoomService implements IRoomService {
         room.setStartTime(LocalDateTime.now());
         roomRepository.save(room);
     }
-
 //    @Override
 //    public String getGGMapUrl(String roomId, String attendeeId) {
 //        Room room = roomRepository.getReferenceById(roomId);
@@ -315,4 +330,30 @@ public class RoomService implements IRoomService {
 //        double seconds = (fractionalPart * 60 - minutes) * 60;
 //        return degrees + "%C2%B0" + minutes + "'" + seconds + "%22";
 //    }
+
+    // ------------------- Manage Thịnh Hưng --------------------
+    @Override
+    public List<RoomStatusDTO> listRoomStatusDTO() {
+        List<RoomStatusDTO> roomStatusDTOList=new ArrayList<>();
+        List<Room> listRoom=roomRepository.findAll();
+        for(Room room:listRoom){
+            RoomStatusDTO roomStatusDTO=new RoomStatusDTO();
+            roomStatusDTO.id=room.getId();
+            roomStatusDTO.name=room.getName();
+            roomStatusDTO.createBy=room.getCreateBy();
+            roomStatusDTO.startTime=room.getStartTime();
+            roomStatusDTO.endTime=room.getEndTime();
+            roomStatusDTO.status = room.getStatus();
+            roomStatusDTOList.add(roomStatusDTO);
+        }
+        return roomStatusDTOList;
+    }
+    @Override//xóa phòng
+    public void deleteById(String id) {
+        roomRepository.deleteById(id);
+    }
+    @Override//kiếm phòng
+    public Room findByID(String id) {
+        return roomRepository.getReferenceById(id);
+    }
 }

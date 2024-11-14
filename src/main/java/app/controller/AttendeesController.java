@@ -10,6 +10,7 @@ import app.services.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +35,10 @@ public class AttendeesController {
     }
 
     @GetMapping("/join-room")
-    public String getJoinRoomForm(@RequestParam String roomId, Model model) {
+    public String getJoinRoomForm(@RequestParam String roomId, Model model, HttpServletRequest request) {
         //trả về trang check-in.html kèm theo biến DTO
         model.addAttribute("data", attendeeService.getCheckInData(roomId));
+        logService.writeLog("Truy cập trang check-in", null, null, request);
         return "check-in.html";
     }
 
@@ -57,7 +59,8 @@ public class AttendeesController {
         if(errorMessage != null) {
             //log
             logService.writeLog("Yêu cầu điểm danh thất bại với mã điểm danh: " + data.checkInCode +
-                    ". Lỗi [" + errorMessage + "]", data.roomId, null,  request);
+                    " - Lỗi [" + errorMessage + "]", data.roomId, null,  request);
+            logService.writeLog("Check-in thất bại", null, null, request);
 
             model.addAttribute("data", data);
             model.addAttribute("message", errorMessage);
@@ -71,6 +74,9 @@ public class AttendeesController {
         session.setAttribute("attendeeId", attendee.getId());
         session.setAttribute("joinedRoomId", data.roomId);
 
+        // System log
+        logService.writeLog("Check-in thành công", null, null, request);
+
         return "redirect:" + baseUrl + "/attendees/waiting";
     }
 
@@ -79,11 +85,11 @@ public class AttendeesController {
         String attendeeId = session.getAttribute("attendeeId").toString();
         String roomId = session.getAttribute("joinedRoomId").toString();
         WaitingRoomDTO data = attendeeService.getWaitingData(roomId, attendeeId);
+
+        // System log
+        logService.writeLog("Vào phòng chờ", null, null, request);
+
         model.addAttribute("data", data);
-
-        logService.writeLog("Vào phòng chờ điểm danh.", null, attendeeId, request);
-        logService.writeLog(data.attendeeName + " đã vào phòng chờ.", roomId, null, request);
-
         return "waiting-room.html";
     }
 
@@ -95,13 +101,21 @@ public class AttendeesController {
                 session.getAttribute("attendeeId").toString()
         );
 
-        // Ghi log
-        logService.writeLog("Thoát phòng điểm danh", null, data.attendeeId, request);
-        logService.writeLog(data.attendeeName + " rời phòng điểm danh.", data.roomId, null, request);
-
         session.removeAttribute("attendeeId");
         session.removeAttribute("joinedRoomId");
 
+        // System log
+        logService.writeLog("Rời phòng", null, null, request);
+
         return "redirect:" + baseUrl;
+    }
+
+    @GetMapping("/get-ip")
+    public ResponseEntity<String> getIpAddress(HttpServletRequest request) {
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty()) {
+            clientIp = request.getRemoteAddr();
+        }
+        return ResponseEntity.ok().body(clientIp);
     }
 }

@@ -34,6 +34,15 @@ public class LogsController {
         return ResponseEntity.ok(logService.getLogsOfRoom(roomId));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<LogDTO>> getAll(HttpSession session) {
+        // Nếu ko là chủ phòng thì không được xem log
+        if(session.getAttribute("isAdmin") == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok(logService.getAllLogs());
+    }
+
     @GetMapping("/attendees/{id}")
     public ResponseEntity<List<LogDTO>> getLogsOfAttendee(@PathVariable String id, HttpSession session) {
         // Nếu ko là chủ phòng thì không được xem log của người tham gia

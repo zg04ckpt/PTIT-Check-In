@@ -30,10 +30,12 @@ public class RequestInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        logService.writeLog("Truy cập trang web", null, null, request);
-
         HttpSession session = request.getSession(false);
         String currentUri = request.getRequestURI();
+        if(currentUri.endsWith("/attendees/get-ip")) {
+            return true;
+        }
+
         if(session != null) {
             // Nếu có roomId => đang là chủ phòng
             if(session.getAttribute("roomId") != null) {

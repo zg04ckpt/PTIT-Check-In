@@ -20,8 +20,16 @@ const CheckInStatus = {
 
 var socket = new SockJS('/ws');
 var stompClient = Stomp.over(socket);
-function registerSocket() {
-    stompClient.connect({}, frame => {
+function connectSocket(ip) {
+    // thông tin người tham gia gửi đi để đăng kí lắng nghe event
+    const headers = {
+        isRoomOwner: false,
+        attendeeId: data.attendeeId,
+        roomId: data.roomId,
+        ip: ip,
+    }
+
+    stompClient.connect(headers, frame => {
         stompClient.subscribe(`/topic/rooms/${data.roomId}`, next => {
             const message = JSON.parse(next.body);
             if(message.roomId != data.roomId) {
@@ -47,8 +55,6 @@ function registerSocket() {
     });
 }
 
-registerSocket()
-
 function sendOutRoomMessage() {
     const json = {
         type: MessageType.ATTENDEE_STATUS,
@@ -56,6 +62,18 @@ function sendOutRoomMessage() {
         data: {
             attendeeId: data.attendeeId,
             attendeeStatus: CheckInStatus.OUT_OF_ROOM
+        }
+    }
+    stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
+}
+
+function sendOnRoomMessage() {
+    const json = {
+        type: MessageType.ATTENDEE_STATUS,
+        roomId: data.roomId,
+        data: {
+            attendeeId: data.attendeeId,
+            attendeeStatus: CheckInStatus.WAITING
         }
     }
     stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
@@ -122,11 +140,15 @@ function updateRemainingTime() {
     }
 }
 
-window.onload = e => {
-    initRemainingTime();
-}
 
 // -------------------------------- OTHER --------------------------------
+window.onload = e => {
+    initRemainingTime();
+    fetch('/attendees/get-ip')
+        .then(res => res.text())
+        .then(ip => connectSocket(ip));
+}
+
 function outRoom() {
     fetch(`/attendees/clear-session`)
     .then(res => {
@@ -135,3 +157,11 @@ function outRoom() {
         }
     });
 }
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        sendOutRoomMessage();
+    } else {
+        sendOnRoomMessage();
+    }
+});

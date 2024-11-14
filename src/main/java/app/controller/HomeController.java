@@ -32,13 +32,18 @@ public class HomeController {
     //code ở đây
     @GetMapping("/")
     public String getHome(Model model, HttpServletRequest request) {
+
         SearchRoomDTO data = new SearchRoomDTO();
         model.addAttribute("data", data);
+
+        // System log
+        logService.writeLog("Truy cập trang chủ", null, null, request);
+
         return "index.html";
     }
 
     @PostMapping("/")
-    public String findRoom(@ModelAttribute("data") SearchRoomDTO data, Model model, HttpServletRequest request) {
+    public String findRoom(@ModelAttribute("data") SearchRoomDTO data, Model model) {
 
         // Kiểm tra độ dài
         if(data.roomCode.length() != 6) {

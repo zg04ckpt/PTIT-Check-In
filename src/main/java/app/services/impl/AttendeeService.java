@@ -11,12 +11,14 @@ import app.models.Room;
 import app.repositories.IAttendeeRepository;
 import app.repositories.IRoomRepository;
 import app.services.IAttendeeService;
+import app.services.ILogService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -25,12 +27,14 @@ public class AttendeeService implements IAttendeeService {
     private final IAttendeeRepository attendeeRepository;
     private final IRoomRepository roomRepository;
     private final SimpMessagingTemplate sender;
+    private final ILogService logService;
 
     @Autowired
-    public AttendeeService(IAttendeeRepository attendeeRepository, IRoomRepository roomRepository, SimpMessagingTemplate sender) {
+    public AttendeeService(IAttendeeRepository attendeeRepository, IRoomRepository roomRepository, SimpMessagingTemplate sender, ILogService logService) {
         this.attendeeRepository = attendeeRepository;
         this.roomRepository = roomRepository;
         this.sender = sender;
+        this.logService = logService;
     }
 
     @Override
@@ -76,34 +80,44 @@ public class AttendeeService implements IAttendeeService {
 
     @Override
     public void checkIn(Attendee attendee, CheckInDTO data, HttpServletRequest request) {
-        // thiết đặt trạng thái cho attendee
-        String userAgent = request.getHeader("User-Agent");
-        String clientIp = request.getHeader("X-Forwarded-For");
-        if (clientIp == null || clientIp.isEmpty()) {
-            clientIp = request.getRemoteAddr();
-        }
+        // Thiết đặt thông tin checkin cho attendee
         attendee.setLatitude(data.latitude);
         attendee.setLongitude(data.longitude);
         attendee.setCheckInStatus(CheckInStatus.WAIT_APPROVAL);
         attendee.setAttendOn(LocalDateTime.now());
-        attendee.setIp(clientIp);
-        attendee.setUserAgent(userAgent);
-        attendeeRepository.save(attendee);
+        attendee.setUserAgent(request.getHeader("User-Agent"));
+        attendeeRepository.saveAndFlush(attendee);
+    }
 
-        // gửi thông báo attendee đã tham gia tới phòng
+    @Override
+    @Transactional
+    public void setAttendeeStatus(String attendeeId, String roomId, String ip, CheckInStatus status) {
+        // Cập nhật trạng thái của ngươời tham gia
+        Attendee attendee = attendeeRepository.getReferenceById(attendeeId);
+        attendee.setCheckInStatus(status);
+        attendee.setIp(ip);
+        attendeeRepository.saveAndFlush(attendee);
+
+        // Ghi log
+        if(status == CheckInStatus.WAIT_APPROVAL) {
+            logService.writeLog(attendee.getName() + " đã vào phòng.", roomId, attendeeId, ip);
+        } else if (status == CheckInStatus.OUT_OF_ROOM) {
+            logService.writeLog(attendee.getName() + " đã thoát phòng.", roomId, attendeeId, ip);
+        }
+
+        // Gửi message đến phòng
         MessageDTO<AttendeeStatusDTO> message = new MessageDTO<>();
+        message.roomId = roomId;
         message.type = MessageType.ATTENDEE_STATUS;
-        message.roomId = data.roomId;
         message.data = new AttendeeStatusDTO();
-        message.data.attendeeId = attendee.getId();
-        message.data.attendeeStatus = CheckInStatus.WAIT_APPROVAL;
-
+        message.data.attendeeId = attendeeId;
+        message.data.attendeeStatus = status;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String jsonString = objectMapper.writeValueAsString(message);
-            sender.convertAndSend("/topic/rooms/" + data.roomId, jsonString);
+            sender.convertAndSend("/topic/rooms/" + roomId, jsonString);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Lỗi chuyển đối object -> json (checkIn)", e);
+            throw new RuntimeException("Lỗi gửi message (setAttendeeStatus)", e);
         }
     }
 }
