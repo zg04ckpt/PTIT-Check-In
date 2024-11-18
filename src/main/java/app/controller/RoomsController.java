@@ -118,7 +118,6 @@ public class RoomsController {
         long remainingTime = roomService.getRemainingSecondsUntilRoomOpens(roomId);
         model.addAttribute("roomId", roomId);
         model.addAttribute("remaining", remainingTime);
-
         // System log
         logService.writeLog("Chủ phòng chờ mở phòng: " + remainingTime + "s", null, null, request);
 
@@ -139,37 +138,47 @@ public class RoomsController {
             model.addAttribute("data", roomService.getResult(roomId));
 
             // System log
-            logService.writeLog("Chủ phòng yêu cầu kết quả điểm danh", null, null, request);
+            logService.writeLog("Phòng được đóng bởi chủ phòng", null, null, request);
 
-            return "result.html";
-        }
-        return "redirect:" + baseUrl + "/error";
-    }
+            // Room log
+            logService.writeLog("Đóng phòng điểm danh", roomId, null, request);
 
-    @GetMapping("/export")
-    public ResponseEntity<InputStreamResource> exportResult(HttpSession session, HttpServletRequest request) {
-        String roomId = session.getAttribute("roomId").toString();
-        if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
-            ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
+            // Xóa hết log của phòng
+            logService.removeAllLogOfRoom(roomId);
 
             // Đóng phòng
             roomService.closeRoom(roomId);
             // Xóa session
             session.removeAttribute("roomId");
 
+            return "result.html";
+        }
+        return "redirect:" + baseUrl + "/error";
+    }
+
+    @GetMapping("/export-data")
+    public ResponseEntity<InputStreamResource> exportResult(HttpSession session, HttpServletRequest request) {
+        String roomId = session.getAttribute("roomId").toString();
+        if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
+            ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);
             if(stream == null)  {
                 return ResponseEntity.internalServerError().body(null);
             }
+            // Trả về luồng file
+            return ResponseEntity.ok()
+                    .body(new InputStreamResource(stream));
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
 
-            // System log
-            logService.writeLog("Phòng được đóng bởi chủ phòng", null, null, request);
-
-            // Room log
-            logService.writeLog("Xuất file kết quả, đóng phòng điểm danh", roomId, null, request);
-
-            // Tải xuống log ? trước khi xóa
-            logService.removeAllLogOfRoom(roomId);
-
+    @GetMapping("/export-log")
+    public ResponseEntity<InputStreamResource> exportLog(HttpSession session, HttpServletRequest request) {
+        String roomId = session.getAttribute("roomId").toString();
+        if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
+            ByteArrayInputStream stream = fileService.exportLogDataToExcelFile(roomId);
+            if(stream == null)  {
+                return ResponseEntity.internalServerError().body(null);
+            }
             // Trả về luồng file
             return ResponseEntity.ok()
                     .body(new InputStreamResource(stream));

@@ -1,5 +1,6 @@
 spring:
   base-url: "http://localhost:8080"
+  admin-pass: "123456"
   application:
     name: ptit-checkin
   datasource:

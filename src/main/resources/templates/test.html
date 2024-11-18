@@ -13,23 +13,15 @@
 </head>
 
 <body>
-
-  <div class="position-absolute start-50 translate-middle-x card card-body shadow-sm px-4"
-    style="padding: 15px; height: auto; width: 360px;">
-    <div class="fs-5 fw-bolder text-center">Chờ điểm danh</div>
-    <p class="fst-italic text-center" style="margin-bottom: 30px;"><b id="remainingTime" class="text-info"></b></p>
-    <div class="d-flex flex-column mb-5" style="font-size: 18px;">
-      <span class="mb-2">Tên phòng: <b th:text="${data.roomName}">dfsdfsdfsdf</b></span>
-      <span class="mb-2">Mã phòng: <b th:text="${data.roomCode}">[mã room]</b></span>
-      <span class="mb-2">Chủ phòng: <b th:text="${data.roomOwner}">[tên chủ room]</b></span>
-      <span class="mb-2">Mã điểm danh: <b th:text="${data.checkInCode}">[tên chủ room]</b></span>
-      <span class="mb-2">Tên điểm danh: <b th:text="${data.attendeeName}">[tên điểm danh]</b></span>
-    </div>
-    <button class="btn btn-outline-danger rounded-0" onclick="dialog.hidden = false">
-      Thoát phòng
-    </button>
+  <!-- Toast -->
+  <div id="toast" class="position-absolute bs-toast show toast m-2 end-0 top-0 mt-5"  style="z-index: 10000;">
+      <div class="toast-header">
+          <i class="bx bx-bell me-2"></i>
+          <div class="me-auto fw-medium">Thông báo</div>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body"></div>
   </div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

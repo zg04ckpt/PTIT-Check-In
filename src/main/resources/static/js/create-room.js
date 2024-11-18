@@ -34,7 +34,7 @@ getListFromExcelBtn.onchange = e => {
             const sheet = workbook.Sheets[sheetName];
 
             const rowData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-            
+            debugger
             const idCol = document.getElementById('idColumnInput').value - 1;
             const nameCol = document.getElementById('nameColumnInput').value - 1;
             const startRow = document.getElementById('startRowInput').value - 1;
@@ -131,8 +131,6 @@ getLocationMethodSelect.onchange = e => {
     if(select == 1) {
         locationSelect.hidden = false;
         positionInput.hidden = true;
-
-        
 
         QR.hidden = true;
     } else if(select == 2) {

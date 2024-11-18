@@ -1,5 +1,6 @@
 spring:
   base-url: "https://www.zlearn.io.vn"
+  admin-pass: "nhom2vippro"
   application:
     name: ptit-checkin
   datasource:

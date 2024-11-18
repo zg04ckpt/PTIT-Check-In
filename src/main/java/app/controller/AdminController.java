@@ -22,7 +22,10 @@ public class AdminController {
     public final ILogService logService;
 
     @Value("${spring.base-url}")
-    public String baseUrl;
+    private String baseUrl;
+
+    @Value("${spring.admin-pass}")
+    private String adminPass;
 
     public AdminController(RoomService roomService, ILogService logService) {
         this.roomService = roomService;
@@ -40,14 +43,12 @@ public class AdminController {
     //kiểm tra và cho người dùng đăng nhập
     @PostMapping("/login")
     public String login(@ModelAttribute("data") AdminPasswordDTO data, Model model, HttpSession session){
-        if(!data.PasswordDTO.equals("123456")){
+        if(!data.password.equals(this.adminPass)){
             model.addAttribute("data",data);
             model.addAttribute("message","Sai mật khẩu");
             return "admin-login.html";
         }
-
         session.setAttribute("isAdmin", true);
-
         return "redirect:" + baseUrl + "/admin/dashboard";
     }
 

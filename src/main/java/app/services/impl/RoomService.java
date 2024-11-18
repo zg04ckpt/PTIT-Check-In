@@ -185,21 +185,12 @@ public class RoomService implements IRoomService {
     }
 
     private double getDistance(double lat1, double lon1, double lat2, double lon2) {
-        final double DEG_TO_RAD = Math.PI / 180;
-        final double EARTH_RADIUS = 63710088;
-
-        double dLat = (lat2 - lat1) * DEG_TO_RAD;
-        double dLon = (lon2 - lon1) * DEG_TO_RAD;
-
-        double lat1Rad = lat1 * DEG_TO_RAD;
-        double lat2Rad = lat2 * DEG_TO_RAD;
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
+        final double R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS * c;
+        return R * c; // Khoảng cách tính bằng km
     }
 
     @Override
@@ -336,13 +327,18 @@ public class RoomService implements IRoomService {
     public List<RoomStatusDTO> listRoomStatusDTO() {
         List<RoomStatusDTO> roomStatusDTOList=new ArrayList<>();
         List<Room> listRoom=roomRepository.findAll();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy");
         for(Room room:listRoom){
             RoomStatusDTO roomStatusDTO=new RoomStatusDTO();
             roomStatusDTO.id=room.getId();
             roomStatusDTO.name=room.getName();
             roomStatusDTO.createBy=room.getCreateBy();
-            roomStatusDTO.startTime=room.getStartTime();
-            roomStatusDTO.endTime=room.getEndTime();
+            if(room.getStartTime() != null) {
+                roomStatusDTO.startTime= formatter.format(room.getStartTime());
+            }
+            if(room.getEndTime() != null) {
+                roomStatusDTO.endTime=formatter.format(room.getEndTime());
+            }
             roomStatusDTO.status = room.getStatus();
             roomStatusDTOList.add(roomStatusDTO);
         }

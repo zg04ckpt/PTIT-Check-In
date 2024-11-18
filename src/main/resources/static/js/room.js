@@ -95,6 +95,12 @@ function connectSocket(ip) {
             if(message.type === MessageType.ATTENDEE_STATUS) {
                 const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == message.data.attendeeId);
                 setRowStatus(targetRow, message.data.attendeeStatus);
+
+                const name = room.attendees.find(e => e.id).name;
+                console.log(name);
+                if(message.data.attendeeStatus == CheckInStatus.WAITING) {
+                    showToast(`${name} đã vào phòng.`)
+                }
             }
         });
     });
@@ -303,7 +309,7 @@ function loadDetailTable(attendees) {
         row.appendChild(browser);
 
         const distance = document.createElement('td');
-        distance.innerText = e.distance == -1 ? '--' : e.distance.toFixed(2) + 'm';
+        distance.innerText = e.distance == -1 ? '--' : e.distance.toFixed(3) + 'km';
         row.appendChild(distance);
 
         const ip = document.createElement('td');
@@ -389,7 +395,7 @@ function closeRoom() {
             { name: 'Hủy', action: () => notification.hidden = true },
             { name: 'Xác nhận', action: () => {
                 notification.hidden = true;
-                window.location.href = '/rooms/result';
+                downResult();
             }}
         ]
     )
@@ -425,4 +431,58 @@ function generateQRCode() {
     const qrImage = document.getElementById('qrImage');
     const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(room.url)}&size=300x300`;
     qrImage.src = apiUrl;
+}
+
+async function downloadFile(url, filename) {
+    try {
+        const res = await fetch(url, { method: 'GET' });
+        if (!res.ok) {
+            throw new Error(`Failed to download file from ${url}`);
+        }
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error('Download error:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+async function downResult() {
+    const roomName = room.name;
+    const currentDate = getCurrentDateFormatted();
+
+    const tasks = [
+        downloadFile(
+            '/rooms/export-data',
+            `${roomName}_${currentDate}.xlsx`
+        ),
+        downloadFile(
+            '/rooms/export-log',
+            `${roomName}_log_${currentDate}.xlsx`
+        )
+    ];
+
+    await Promise.all(tasks);
+
+    window.location.href = '/rooms/result';
+}
+
+function getCurrentDateFormatted() {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+function showToast(msg) {
+    const content = document.querySelector('#toast');
+    content.querySelector('.toast-body').innerText = msg;
+    content.classList.toggle('show');
+    setTimeout(() => content.classList.toggle('show'), 2000);
 }

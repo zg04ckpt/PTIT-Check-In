@@ -12,8 +12,8 @@ public class RoomStatusDTO {
     public String id;
     public String name; //tên phòng
     public String createBy; // người tạo phòng
-    public LocalDateTime startTime; // thời gian mở phòng (null -> mở lúc tạo)
-    public LocalDateTime endTime; // thời gian đóng phòng (null ->đóng bằng tay)
+    public String startTime; // thời gian mở phòng (null -> mở lúc tạo)
+    public String endTime; // thời gian đóng phòng (null ->đóng bằng tay)
     @Enumerated(EnumType.ORDINAL)
     public RoomStatus status; // trạng thái phòng
 }

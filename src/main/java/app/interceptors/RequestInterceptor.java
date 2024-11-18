@@ -25,7 +25,8 @@ public class RequestInterceptor implements HandlerInterceptor {
             request.getRequestURI().contains("/css/") ||
             request.getRequestURI().contains("/images/") ||
             request.getRequestURI().contains("/get-ggmap-url") ||
-            request.getRequestURI().contains("/logs/")
+            request.getRequestURI().contains("/logs/") ||
+            request.getRequestURI().contains("/admin/")
         ) {
             return true;
         }
@@ -42,7 +43,8 @@ public class RequestInterceptor implements HandlerInterceptor {
                 if(
                     !currentUri.endsWith("/rooms/") &&
                     !currentUri.endsWith("/rooms/result") &&
-                    !currentUri.endsWith("/rooms/export") &&
+                    !currentUri.endsWith("/rooms/export-data") &&
+                    !currentUri.endsWith("/rooms/export-log") &&
                     !currentUri.endsWith("/rooms/open-room") &&
                     !currentUri.endsWith("/rooms/wait-open") &&
                     !currentUri.endsWith("/rooms/attendees-info")

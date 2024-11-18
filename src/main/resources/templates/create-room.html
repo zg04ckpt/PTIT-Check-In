@@ -126,6 +126,7 @@
             <div class="modal-dialog">
             <div class="modal-content pt-0 px-3 translate-middle-x start-50" style="width: 700px;">
                 <div class="ms-2 mt-2 text-center fs-5 fw-bold">Danh sách người tham gia</div>
+                <div class = "fs-6 fst-italic w-100 text-center text-secondary">(*) Lưu ý những dòng trống trong file excel sẽ không được đọc</div>
                 <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
                 
                 <!-- content -->
@@ -175,7 +176,7 @@
                 </div>
 
                 <div class="d-flex m-2 justify-content-center my-3">
-                <button class="btn btn-info text-light btn-sm" style="width: 100px;">Hướng dẫn</button>
+                <button class="btn btn-info text-light btn-sm" style="width: 100px;" onclick="instructionImage.hidden = false">Hướng dẫn</button>
                 <button class="ms-2 btn btn-success text-light btn-sm" id="saveBtn" style="width: 100px;" data-bs-dismiss="modal">Lưu</button>
                 </div>
             </div>
@@ -247,6 +248,13 @@
                     <button class="btn btn-outline-success btn-sm text-center" style="width: 100px;" onclick="notification.hidden = true">OK</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Instruction image -->
+        <div hidden id="instructionImage" class="w-100 h-100 top-0 start-0 position-fixed" style="z-index: 10000; background-color: rgba(128, 128, 128, 0.466);">
+            <button class="btn btn-close fs-1 position-absolute end-0 top-0 m-2" onclick="instructionImage.hidden = true"></button>
+            <img src="../static/images/hd1.jpg" alt="" class="position-absolute top-0 mt-5 start-50 translate-middle-x border-2 bg-dark sh"
+            style="max-width: 1000px;">
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
