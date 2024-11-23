@@ -1,8 +1,4 @@
-// ------------------------------- GET LIST ----------------------------
-console.log("script works!");
-
-const getListBtn = document.getElementById('getListBtn')
-const getListDialog = document.getElementById('getListDialog')
+// --- Upload list from excel
 const getListCloseBtn = document.getElementById('getListCloseBtn')
 const getListFromExcelBtn = document.getElementById('getListFromExcelBtn')
 const previewTable = document.getElementById('previewTable')
@@ -11,6 +7,11 @@ const saveBtn = document.getElementById('saveBtn')
 const successLabel = document.getElementById('successLabel')
 const list = document.getElementById('list')
 let previewData = [];
+
+document.getElementById('updateListBtn').onclick = e => {
+    e.preventDefault()
+    document.getElementById('uploadListDialog').hidden = false;
+}
 
 getListFromExcelBtn.onclick = e => {
     e.target.value = '';
@@ -99,31 +100,33 @@ saveBtn.onclick = e => {
         list.appendChild(name);
     });
 
-    successLabel.hidden = false;
-    console.log(data);
+    document.getElementById('successMess').hidden = false;
+    document.getElementById('emptyMess').hidden = true;
+    document.getElementById('uploadListDialog').hidden = true;
 }
 
-// ----------------------------- GET LOCATION -----------------------
-const getLocationDialog = document.getElementById('getLocationDialog')
-const getLocationBtn = document.getElementById('getLocationBtn')
-const getLocationCloseBtn = document.getElementById('getLocationCloseBtn')
+// --- Notification
+function showNotification(msg) {
+    const notification = document.getElementById('notification');
+    document.getElementById('noti-msg').innerText = msg;
+    notification.hidden = false;
+}
+
+// --- Get location
 const getLocationMethodSelect = document.getElementById('getLocationMethodSelect')
 const locationSelect = document.getElementById('locationSelect')
 const positionInput = document.getElementById('positionInput')
 const QR = document.getElementById('QR')
-const saveLocationBtn = document.getElementById('saveLocationBtn')
-const rangeSelect = document.getElementById('rangeSelect')
 const latitudeInp = document.getElementById('latitude')
 const longitudeInp = document.getElementById('longitude')
 
 function saveLocation() {
-    const selection = getLocationMethodSelect.value;
-    if(selection == 1) {
-        // Tạm thời
-        latitudeInp.value = 20.98113532126582;
-        longitudeInp.value = 105.78753244306769;
+    if(!latitudeInp.value || !longitudeInp.value) {
+        showNotification("Lấy mốc vị trí thất bại");
+        return;
     }
-    showNotification("Lấy vị trí thành công");
+    showNotification("Lấy mốc vị trí thành công");
+    document.getElementById('getLocationDialog').hidden = true;
 }
 
 getLocationMethodSelect.onchange = e => {
@@ -131,91 +134,53 @@ getLocationMethodSelect.onchange = e => {
     if(select == 1) {
         locationSelect.hidden = false;
         positionInput.hidden = true;
-
+        latitudeInp.value = 20.98113532126582;
+        longitudeInp.value = 105.78753244306769;
         QR.hidden = true;
     } else if(select == 2) {
         locationSelect.hidden = true;
         positionInput.hidden = false;
+        latitudeInp.value = null;
+        longitudeInp.value = null;
         QR.hidden = true;
     } else {
         locationSelect.hidden = true;
         positionInput.hidden = true;
+        latitudeInp.value = null;
+        longitudeInp.value = null;
         QR.hidden = false;
     }
 }
 
-// -------------------------- OTHER -----------------------------
-const startTimeInput = document.getElementById('check2')
-const endTimeInput = document.getElementById('check3')
-
-startTimeInput.onchange = e => {
-    data.startTime = startTimeInput.value;
-}
-
-endTimeInput.onchange = e => {
-    data.endTime = endTimeInput.value;
-}
-
-function showNotification(msg) {
-    const notification = document.getElementById('notification');
-    document.getElementById('noti-msg').innerText = msg;
-    notification.hidden = false;
-}
-
-
-// --------------------------- Hưng --------------------------------
-const checkbox1 = document.getElementById('check1');
-const additionalInfo1 = document.getElementById('info1');
-checkbox1.addEventListener('change', () => {
-    additionalInfo1.hidden = !additionalInfo1.hidden;
-});
-
-const checkbox2 = document.getElementById('check2');
-const additionalInfo2 = document.getElementById('info2');
-checkbox2.addEventListener('change', () => {
-    additionalInfo2.hidden = !additionalInfo2.hidden;
-    const lb2 = additionalInfo2.parentElement.querySelector('p');
-    lb2.hidden = !lb2.hidden;
-});
-
-const checkbox3 = document.getElementById('check3');
-const additionalInfo3 = document.getElementById('info3');
-checkbox3.addEventListener('change', () => {
-    additionalInfo3.hidden = !additionalInfo3.hidden;
-    const lb3 = additionalInfo3.parentElement.querySelector('p');
-    lb3.hidden = !lb3.hidden;
-});
-
-document.getElementById('getListBtn').onclick = e => {
+document.getElementById('getLocationBtn').onclick = e => {
     e.preventDefault();
+    document.getElementById('getLocationDialog').hidden = false
 }
 
-document.getElementById('check7').onclick = e => {
-    e.preventDefault();
-}
-
-document.getElementById("backBtn").onclick = e => {
-    e.preventDefault();
-    window.location.href='/';
-}
-
+// --- other
 //fix lỗi quay lại trang cữ có form ko hợp lệ
 window.history.pushState({}, window.location.href);
 window.addEventListener('popstate', (event) => {
     event.preventDefault();
     window.location.href = '/';
 });
+
 window.onload = e => {
-    additionalInfo1.hidden = !data.requireCheckLocation;
+    document.querySelector('#successMess').hidden = data.attendees.length == 0
+    document.querySelector('#emptyMess').hidden = data.attendees.length != 0
 
-    additionalInfo2.hidden = data.startTime == null;
-    additionalInfo2.querySelector('input').value = data.startTime;
-    additionalInfo2.parentElement.querySelector('p').hidden = !additionalInfo2.hidden;
-    checkbox2.checked = data.startTime != null;
+    const loc = document.getElementById('locationContainer');
+    loc.querySelector('button').hidden = !data.requireCheckLocation;
 
-    additionalInfo3.hidden = data.endTime == null;
-    additionalInfo3.querySelector('input').value = data.endTime;
-    additionalInfo3.parentElement.querySelector('p').hidden = !additionalInfo3.hidden;
-    checkbox3.checked = data.endTime != null;
+    const start = document.getElementById('startContainer');
+    start.querySelector('input').checked = data.startTime != null;
+    start.querySelector('#startTimeInput').hidden = data.startTime == null;
+    start.querySelector('#startTimeInput').value = data.startTime;
+    start.querySelector('p').hidden = data.startTime != null;
+
+    const end = document.getElementById('endContainer');
+    end.querySelector('input').checked = data.endTime != null;
+    end.querySelector('#endTimeInput').hidden = data.endTime == null;
+    start.querySelector('#endTimeInput').value = data.endTime;
+    end.querySelector('p').hidden = data.endTime != null;
 }
-

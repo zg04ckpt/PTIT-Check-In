@@ -65,6 +65,7 @@ function sendOutRoomMessage() {
         }
     }
     stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
+    console.log(json);
 }
 
 function sendOnRoomMessage() {

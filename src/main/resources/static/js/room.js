@@ -74,6 +74,15 @@ window.onload = e => {
 
 //----------------- WEBSOCKET -------------------------
 
+// // Ẩn log
+// const originalConsoleLog = console.log;
+// console.log = function(message, ...optionalParams) {
+//     if (typeof message === 'string' && message.includes('SockJS')) {
+//         return;
+//     }
+//     originalConsoleLog.apply(console, [message, ...optionalParams]);
+// };
+
 const MessageType = {
     ATTENDEE_STATUS: 0,
     ROOM_STATUS: 1,
@@ -81,26 +90,19 @@ const MessageType = {
 
 var socket = new SockJS("/ws");
 var stompClient = Stomp.over(socket);
-
 function connectSocket(ip) {
     const headers = {
         isRoomOwner: true,
         ip: ip
     }
-    
     stompClient.connect(headers, function(frame) {
         stompClient.subscribe("/topic/rooms/" + room.id, next => {
             debugger
             const message = JSON.parse(next.body);
             if(message.type === MessageType.ATTENDEE_STATUS) {
-                const targetRow = Array.from(tableBody.rows).find(e => e.getAttribute('data-id') == message.data.attendeeId);
+                const targetRow = Array.from(tableBody.rows)
+                    .find(e => e.getAttribute('data-id') == message.data.attendeeId);
                 setRowStatus(targetRow, message.data.attendeeStatus);
-
-                const name = room.attendees.find(e => e.id).name;
-                console.log(name);
-                if(message.data.attendeeStatus == CheckInStatus.WAITING) {
-                    showToast(`${name} đã vào phòng.`)
-                }
             }
         });
     });
@@ -250,15 +252,11 @@ function reloadAdditionalInfo() {
 function getViolation() {
     debugger
     const range = Number(detail.querySelector("#range").value);
-    const device = detail.querySelector('#device').value;
     const ip = detail.querySelector('#ip').value;
     if(range != 0 || device != 'Any' || ip != '') {
         let filteredList = room.attendees;
         if(range != 0) {
             filteredList = filteredList.filter(e => e.range != '--' && e.distance > range);
-        }
-        if(device != 'Any') {
-            filteredList = filteredList.filter(e => e.device != '--' && e.device != device);
         }
         if(ip != '') {
             filteredList = filteredList.filter(e => e.ip != '--' && e.ip != ip);
@@ -379,8 +377,8 @@ function updateRemainingTime() {
         if(m < 0) {
             h--;
             if(h < 0) {
-                window.location.href = '/rooms/result';
                 clearInterval(sub);
+                window.location.href = '/rooms/result';
             }
             m = 59
         }
@@ -394,8 +392,7 @@ function closeRoom() {
         [
             { name: 'Hủy', action: () => notification.hidden = true },
             { name: 'Xác nhận', action: () => {
-                notification.hidden = true;
-                downResult();
+                window.location.href = '/rooms/result';
             }}
         ]
     )
@@ -431,58 +428,4 @@ function generateQRCode() {
     const qrImage = document.getElementById('qrImage');
     const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(room.url)}&size=300x300`;
     qrImage.src = apiUrl;
-}
-
-async function downloadFile(url, filename) {
-    try {
-        const res = await fetch(url, { method: 'GET' });
-        if (!res.ok) {
-            throw new Error(`Failed to download file from ${url}`);
-        }
-        const blob = await res.blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    } catch (error) {
-        console.error('Download error:', error);
-        alert(`Error: ${error.message}`);
-    }
-}
-
-async function downResult() {
-    const roomName = room.name;
-    const currentDate = getCurrentDateFormatted();
-
-    const tasks = [
-        downloadFile(
-            '/rooms/export-data',
-            `${roomName}_${currentDate}.xlsx`
-        ),
-        downloadFile(
-            '/rooms/export-log',
-            `${roomName}_log_${currentDate}.xlsx`
-        )
-    ];
-
-    await Promise.all(tasks);
-
-    window.location.href = '/rooms/result';
-}
-
-function getCurrentDateFormatted() {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-}
-
-function showToast(msg) {
-    const content = document.querySelector('#toast');
-    content.querySelector('.toast-body').innerText = msg;
-    content.classList.toggle('show');
-    setTimeout(() => content.classList.toggle('show'), 2000);
 }

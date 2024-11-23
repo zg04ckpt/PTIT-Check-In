@@ -159,14 +159,14 @@
                             style="width: 100px;border: 1px solid rgb(188, 188, 188);">
                     </div>
 
-                    <div class="ms-3">
+                    <!-- <div class="ms-3">
                         <label class="fw-bolder">Thiết bị hợp lệ:</label>
                         <select id="device" class="ms-1" style="border: 1px solid rgb(188, 188, 188);">
                             <option value="Any">Bất kì</option>
                             <option value="Computer">Máy tính</option>
                             <option value="Mobile">Điện thoại</option>
                         </select>
-                    </div>
+                    </div> -->
 
                     <div class="ms-3">
                         <label class="fw-bolder">IP hợp lệ:</label>
@@ -227,7 +227,7 @@
 
         <!-- Log information -->
         <div id="log" class="w-100 h-100 position-fixed top-0 start-0" hidden>
-            <div class="card card-body col-lg-6 offset-lg-3 pt-2 shadow" style="margin-top: 200px; height: 500px;">
+            <div class="card card-body col-lg-6 offset-lg-3 pt-2 shadow" style="margin-top: 100px; height: 500px;">
                 <div id="log-title" class="fs-6 text-center mt-0"></div>
                 <button class="btn btn-close position-absolute top-0 end-0 m-2" onclick="log.hidden = true"></button>
 
@@ -252,16 +252,6 @@
                     </table>
                 </div>
             </div>
-        </div>
-
-        <!-- Toast -->
-        <div id="toast" class="position-absolute bs-toast toast m-2 start-50 translate-middle-x" style="z-index: 100; top: 70px;">
-            <div class="toast-header">
-                <i class="bx bx-bell me-2"></i>
-                <div class="me-auto fw-medium">Thông báo</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body"></div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>

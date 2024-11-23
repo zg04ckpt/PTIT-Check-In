@@ -23,7 +23,7 @@ server:
     path: /error
   servlet:
     session:
-      timeout: 60m
+      timeout: 120m
       cookie:
         max-age: 86400
         http-only: true
