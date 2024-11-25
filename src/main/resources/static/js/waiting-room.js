@@ -20,8 +20,16 @@ const CheckInStatus = {
 
 var socket = new SockJS('/ws');
 var stompClient = Stomp.over(socket);
-function registerSocket() {
-    stompClient.connect({}, frame => {
+function connectSocket(ip) {
+    // thông tin người tham gia gửi đi để đăng kí lắng nghe event
+    const headers = {
+        isRoomOwner: false,
+        attendeeId: data.attendeeId,
+        roomId: data.roomId,
+        ip: ip,
+    }
+
+    stompClient.connect(headers, frame => {
         stompClient.subscribe(`/topic/rooms/${data.roomId}`, next => {
             const message = JSON.parse(next.body);
             if(message.roomId != data.roomId) {
@@ -30,16 +38,16 @@ function registerSocket() {
 
             debugger
             if(message.type === MessageType.ATTENDEE_STATUS && message.data.attendeeId === data.attendeeId) {
-                if(message.data.attendeeStatus === CheckInStatus.OUT_OF_ROOM) {
+                if(message.data.attendeeStatus === CheckInStatus.REJECTED) {
                     window.location.href = '/';
                 }
             } else if(message.type === MessageType.CLOSE_ROOM) {
                 const result = message.data[data.attendeeId];
                 if(result.success) {
-                    showNotification("Điểm danh thành công!", [{name: 'OK', action: () => window.location.href = '/'}])
+                    showNotification("Điểm danh thành công!", [{name: 'OK', action: () => outRoom()}])
                     
                 } else {
-                    showNotification("Điểm danh thất bại!", [{name: 'OK', action: () => window.location.href = '/'}])
+                    showNotification("Điểm danh thất bại!", [{name: 'OK', action: () => outRoom()}])
                 }
                 notification.querySelector('.btn-close').onclick = () => window.location.href = '/';
             }
@@ -47,15 +55,26 @@ function registerSocket() {
     });
 }
 
-registerSocket()
-
-function outRoom() {
+function sendOutRoomMessage() {
     const json = {
         type: MessageType.ATTENDEE_STATUS,
         roomId: data.roomId,
         data: {
             attendeeId: data.attendeeId,
             attendeeStatus: CheckInStatus.OUT_OF_ROOM
+        }
+    }
+    stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
+    console.log(json);
+}
+
+function sendOnRoomMessage() {
+    const json = {
+        type: MessageType.ATTENDEE_STATUS,
+        roomId: data.roomId,
+        data: {
+            attendeeId: data.attendeeId,
+            attendeeStatus: CheckInStatus.WAITING
         }
     }
     stompClient.send(`/app/setAttendeeStatus`, {}, JSON.stringify(json));
@@ -89,3 +108,61 @@ function showNotification(msg, actions) {
     }
     notification.hidden = false;
 }
+
+// ----------------------- TIME REMAINING ----------------------------
+var h, m, s;
+var sub;
+const remainingTime = document.getElementById("remainingTime");
+
+function initRemainingTime() {
+    if(data.end) {
+        const remaining = Math.floor((new Date(data.end) - new Date()) / 1000);
+        remainingTime.hidden = false;
+        h = Math.floor(remaining / 3600);
+        m = Math.floor((remaining % 3600) / 60); 
+        s = remaining % 60;
+        sub = setInterval(updateRemainingTime, 1000);
+    }
+}
+
+function updateRemainingTime() {
+    remainingTime.innerText = `Còn lại: ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    s--;
+    if(s < 0) {
+        m--;
+        if(m < 0) {
+            h--;
+            if(h < 0) {
+                clearInterval(sub);
+            }
+            m = 59
+        }
+        s = 59;
+    }
+}
+
+
+// -------------------------------- OTHER --------------------------------
+window.onload = e => {
+    initRemainingTime();
+    fetch('/attendees/get-ip')
+        .then(res => res.text())
+        .then(ip => connectSocket(ip));
+}
+
+function outRoom() {
+    fetch(`/attendees/clear-session`)
+    .then(res => {
+        if(res.redirected) {
+            window.location.href = res.url;
+        }
+    });
+}
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        sendOutRoomMessage();
+    } else {
+        sendOnRoomMessage();
+    }
+});

@@ -1,0 +1,95 @@
+table { margin-top: 20px;
+    width: 90%;
+    margin-left: 5%;
+}
+table, th, td {
+    border: 1px solid black;
+    padding: 8px;
+}
+th {
+    background-color: #95afc0;
+    text-align: left;
+    border: none;
+}
+td {
+    text-align: left;
+    border: none;
+}
+
+.table-wrapper {
+    overflow: auto;
+    height: auto;
+    padding-right: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    width: 8px;  
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background-color: #888; 
+    border-radius: 10px;  
+}
+
+.stt-column {
+    width: 5%;
+    text-align: center;
+}
+.tenphong-column {
+    width: 15%;
+    text-align: center;
+}
+.chuphong-column {
+    width: 20%;
+    text-align: center;
+}
+.trangthai-column {
+    width: 15%;
+    text-align: center;
+}
+.chitiet-column {
+    width: 15%;
+    text-align: center;
+}
+.xoa-column {
+    width: 10%;
+    text-align: center;
+}
+.delete-button, .closed {
+    background-color: #d63031;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.isOpen, .xemchitiet {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.waiting {
+    background-color: #f1c40f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.delete-button:hover {
+    background-color: #e60000;
+}
+tbody {
+    background-color: #dff9fb;
+}
+
+.status-table * {
+    font-size: 13px;
+}

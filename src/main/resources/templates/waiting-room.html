@@ -1,76 +1,75 @@
 <!DOCTYPE html>
-<html
-    xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layout}">
+
 <head>
     <title layout:fragment="title">Phòng chờ</title>
     <link rel="stylesheet" href="/css/waiting-room.css">
 </head>
+
 <body>
 
     <div layout:fragment="content">
 
         <!-- Thịnh -->
-        <div class="section-2" style="padding-top: 50px;">
-            <div class="container">
-                <div class="inner-wrap" style="padding: 15px; height: auto; width: 360px;">
-                    <div class="inner-title text-center px-4 mt-2" style="font-size: 28px;">Chờ điểm danh</div>
-                    <p class="fst-italic text-center text-secondary" style="margin-bottom: 30px;">Còn lại: <b class="text-info"> 05m:49s </b></p>
-                    <div class="d-flex flex-column text-decoration-none mb-4" style="font-size: 18px; margin-left: 30px;">
-        
-                        <span class="mb-2">Tên phòng: <b th:text="${data.roomName}"></b></span>
-        
-                        <span class="mb-2">Mã phòng: <b th:text="${data.roomCode}">[mã room]</b></span>
-        
-                        <span class="mb-2">Chủ phòng: <b th:text="${data.roomOwner}">[tên chủ room]</b></span>
-        
-                        <span class="mb-2">Mã điểm danh: <b th:text="${data.checkInCode}">[tên chủ room]</b></span>
-        
-                    </div>
-                    
-                    <div class="w-100 text-center">
-                        <button class="btn btn-outline-danger px-3" onclick="dialog.hidden = false">
-                            Thoát phòng
-                        </button>
-                    </div>
-        
-                </div>
+        <div class="position-absolute start-50 translate-middle-x card card-body shadow-sm px-4"
+            style="padding: 15px; height: auto; width: 360px;">
+            <div class="fs-5 fw-bolder text-center">Chờ điểm danh</div>
+            <p class="fst-italic text-center" style="margin-bottom: 30px;">
+                <b id="remainingTime" class="text-info"></b>
+            </p>
+            <div class="d-flex flex-column mb-5" style="font-size: 18px;">
+                <span class="mb-2">Tên phòng: <b th:text="${data.roomName}">dfsdfsdfsdf</b></span>
+                <span class="mb-2">Mã phòng: <b th:text="${data.roomCode}">[mã room]</b></span>
+                <span class="mb-2">Chủ phòng: <b th:text="${data.roomOwner}">[tên chủ room]</b></span>
+                <span class="mb-2">Mã điểm danh: <b th:text="${data.checkInCode}">[tên chủ room]</b></span>
+                <span class="mb-2">Tên điểm danh: <b th:text="${data.attendeeName}">[tên điểm danh]</b></span>
             </div>
+            <button class="btn btn-outline-danger rounded-0" onclick="dialog.hidden = false">
+                Thoát phòng
+            </button>
         </div>
 
-        <div id="dialog" class="position-fixed w-100 h-100 top-0" style="background-color: rgba(128, 128, 128, 0.551);" hidden>
-            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+        <div id="dialog" class="position-fixed w-100 h-100 top-0" style="background-color: rgba(128, 128, 128, 0.551);"
+            hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x"
+                style="width: 360px; margin-top: 80px;">
                 <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="dialog.hidden = true"></button>
                 <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
                 <hr class="mt-2 mb-2">
                 <p class="text-center px-2">Xác nhận thoát phòng?</p>
-                
+
                 <div class="d-flex justify-content-center mt-3">
-                    <button class="btn btn-outline-secondary btn-sm text-center" style="width: 100px;" onclick="dialog.hidden = true">Hủy</button>
-                    <button class="btn btn-outline-danger btn-sm text-center ms-2" style="width: 100px;" onclick="dialog.hidden = true; outRoom();">Xác nhận</button>
+                    <button class="btn btn-outline-secondary btn-sm text-center" style="width: 100px;"
+                        onclick="dialog.hidden = true">Hủy</button>
+                    <button class="btn btn-outline-danger btn-sm text-center ms-2" style="width: 100px;"
+                        onclick="dialog.hidden = true;  sendOutRoomMessage(); outRoom();">Xác nhận</button>
                 </div>
             </div>
         </div>
 
         <!-- Notification -->
-        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
-            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
-                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0"
+            style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x"
+                style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2"
+                    onclick="notification.hidden = true"></button>
                 <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
                 <hr class="mt-2 mb-2">
                 <p id="content" class="text-center px-2"></p>
-                
+
                 <div id="action" class="d-flex justify-content-center mt-3">
                 </div>
             </div>
         </div>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
         <script th:inline="javascript"> var data = /*[[${data}]]*/ {}; </script>
         <script src="/js/waiting-room.js"></script>
     </div>
-    
+
 </body>
+
 </html>

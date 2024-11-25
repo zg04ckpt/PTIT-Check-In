@@ -10,234 +10,198 @@
 
     <div layout:fragment="content">
 
+        <div class="w-100" style="height: 50px;"></div>
+
         <!-- Hưng -->
-        
         <!-- Content -->
-        <div class="container-lg px-lg-5" style="margin-top: 50px;">
-            <div class="card card-body col-lg-8 offset-lg-2 shadow-sm">
-            <div class = "font-medium text-3xl w-fit pl-[50px] w-100 text-center" style="font-size: 28px;">Tạo phòng điểm danh</div>
-            <form th:object="${data}" th:action="@{/rooms/create-room}" method="post" style="margin-top: 80px;" class="ms-5">
-                
-                <!-- room name -->
-                <div class="row mb-4">
-                <label class = "col-4 text-lg font-medium">Tên phòng:</label>
-                <input th:field="*{name}" type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
-                </div>
+        <div class="card card-body col-md-6 offset-md-3 shadow-sm">
+            <div class="text-center fw-light fs-4">Tạo phòng điểm danh mới</div>
 
-                <!-- room owner name -->
-                <div class="row mb-4">
-                <label class = "col-4 text-lg font-medium">Tên chủ phòng:</label>
-                <input th:field="*{createBy}" type="text" placeholder="Nhập ..." class = "ps-2 col-8 ml-[0px] h-[36px] border-[1.5px] border-gray-900 rounded-sm w-[400px] focus:outline-none focus:border-green-600">
-                </div>
+            <form th:object="${data}" th:action="@{/rooms/create-room}" method="post" class="mx-2">
+                <div class="mt-3 row">
 
-                <!-- list -->
-                <div class="row mb-4">
-                    <label class = "col-4 text-lg font-medium">Danh sách duyệt:</label>
-                    <div class = "col-8 flex flex-row div4_1" style="padding-left: 0px; align-items: center;">
-                        <button id="getListBtn" class = "bg-gray-400 text-white w-[120px] rounded py-1" data-bs-toggle="modal" data-bs-target="#getListDialog">Chỉnh sửa</button>
-                        <p id="successLabel" class="p-0 m-0 ms-2 text-success" hidden>
-                            <i class='bx bx-check'></i>
-                            Tải danh sách thành công
-                        </p>
-                    </div>
-                </div>
+                    <div class="col-6">
+                        <!-- Room name -->
+                        <label class="fw-bolder" for=""><i class='bx bx-notepad'></i> Tên phòng:</label>
+                        <input th:field="*{name}" type="text" class="form-control mt-2" placeholder="VD: Phòng điểm danh lớp A...">
 
-                <!-- Options -->
-                <div class="row mb-4">
-                <label class = "col-4 text-lg font-medium">Tùy chọn:</label>
-                <div class="col-8" style="padding-left: 0px;">
-                    <!-- check vi tri -->
-                    <div class="list flex flex-row">
-                        <input type="checkbox" id="check1" class="mr-4 cursor-pointer w-[20px]" th:field="*{requireCheckLocation}">
-                        <label for="check1" class="flex items-center mr-6">
-                            <span class = "text-medium">Check vị trí</span>
-                        </label>
+                        <!-- Room owner name -->
+                        <label for="" class="mt-3 fw-bolder"><i class='bx bx-user'></i> Tên chủ phòng:</label>
+                        <input th:field="*{createBy}" type="text" class="form-control mt-2" placeholder="VD: Nguyễn Văn A...">
 
-                        <div class = "flex flex-row" id = "info1" style="font-size: 14px; height: 25px;" hidden>
-                            <button id="check7" class = "btn btn-success btn-sm me-2 align-content-center" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#getLocationDialog">
-                                <i class='bx bxs-map text-danger'></i> Lấy mốc
-                            </button>
-
-                            <div id="rangeInput" class="d-flex align-items-center">
-                                <label class="me-2">Phạm vi</label>
-                                <input th:field="*{range}" min="0" type="number" placeholder="Lớp học(50m)" style="width: 120px;" class = "ps-2 h-[30px] border-[1.5px] border-gray-900 rounded-sm focus:outline-none focus:border-green-600">
-                            </div>
+                        <!-- Attendees list -->
+                        <label for="" class="mt-3 fw-bolder w-100"><i class='bx bx-user'></i> Danh sách người tham gia:</label>
+                        <div class="mt-2 d-flex">
+                            <button id="updateListBtn" class="btn btn-sm btn-dark"><i class='bx bx-upload'></i> Cập nhật</button>
+                            <p id="emptyMess" class="fst-italic fw-bold text-danger my-auto ms-2" style="font-size: 14px;">Danh sách trống!</p>
+                            <p id="successMess" hidden class="fst-italic fw-bold text-success my-auto ms-2" style="font-size: 14px;">Đã tải danh sách <i class='bx fw-bolder bx-check'></i></p>
                         </div>
                     </div>
 
-                    <!-- Hẹn giờ mở -->
-                    <div class="list flex flex-row mt-3">
-                        <input type="checkbox" id="check2" class="mr-4 cursor-pointer w-[20px]">
-                        <label for="check2" class="flex items-center mr-6">
-                            <span class = "text-medium">Hẹn giờ mở</span>
-                        </label>
+                    <div class="col-6">
+                        <label class="fw-bolder w-100" for=""><i class='bx bx-bar-chart-alt-2' ></i> Tùy chọn</label>
 
-                        <div class="flex-fill pe-4">
-                            <div id="info2" hidden>
-                                <input th:field="*{startTime}"  type="datetime-local" class="border-1 p-1 rounded-1 float-end " style="height: 25px;">
-                            </div>
-                            <p class="fst-italic float-end text-secondary">(Mặc định: Mở khi tạo phòng)</p>
+                        <!-- Require check location -->
+                        <div id="locationContainer" class="mt-2 d-flex align-items-center" style="height: 34px;">
+                            <input onclick="getLocationBtn.hidden = !getLocationBtn.hidden" type="checkbox" style="width: 16px; height: 16px;" th:field="*{requireCheckLocation}">
+                            <label for="" class="ms-2">Yêu cầu vị trí</label>
+                            <div class="flex-fill"></div>
+                            <button hidden id="getLocationBtn" class="btn btn-sm btn-outline-dark ms-3"><i class='bx bxs-map text-danger'></i> Lấy mốc</button>
                         </div>
-                    </div>
 
-                    <!-- Hẹn giờ đóng -->
-                    <div class="list flex flex-row mt-3">
-                        <input type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
-                        <label for="check3" class="flex items-center mr-6">
-                            <span class = "text-medium">Hẹn giờ đóng</span>
-                        </label>
-
-                        <div class="flex-fill pe-4">
-                            <div id="info3" hidden>
-                                <input th:field="*{endTime}" type="datetime-local" class="border-1 p-1 rounded-1 float-end" style="height: 25px;">
-                            </div>
-                            <p class="fst-italic float-end text-secondary">(Mặc định: Đóng thủ công)</p>
+                        <!-- Set start time -->
+                        <div id="startContainer" class="mt-2 d-flex align-items-center" style="height: 34px;">
+                            <input type="checkbox" style="width: 16px; height: 16px;" onclick="defaultMess1.hidden = !defaultMess1.hidden; startTimeInput.hidden = !startTimeInput.hidden">
+                            <label for="" class="ms-2">Hẹn giờ mở</label>
+                            <div class="flex-fill"></div>
+                            <input id="startTimeInput" type="datetime-local" class="form-control-sm w-auto border-1 border-secondary" hidden th:field="*{startTime}">
+                            <p id="defaultMess1" class="fst-italic float-end text-secondary my-auto" style="font-size: 14px;">(Mặc định: Mở khi tạo phòng)</p>
                         </div>
-                    </div>
 
-                    <!-- Auto điểm danh -->
-                    <div class="list flex flex-row mt-3">
-                        <input th:field="*{enableAutoApproval}" type="checkbox" id="check3" class="mr-4 cursor-pointer w-[20px]">
-                        <label for="check3" class="flex items-center mr-6">
-                            <span class = "text-medium">Tự động điểm danh</span>
-                        </label>
+                        <!-- Set end time -->
+                        <div id="endContainer" class="mt-2 d-flex align-items-center" style="height: 34px;">
+                            <input type="checkbox" style="width: 16px; height: 16px;" onclick="defaultMess2.hidden = !defaultMess2.hidden; endTimeInput.hidden = !endTimeInput.hidden">
+                            <label for="" class="ms-2">Hẹn giờ đóng</label>
+                            <div class="flex-fill"></div>
+                            <input id="endTimeInput" type="datetime-local" class="form-control-sm w-auto border-1 border-secondary" hidden th:field="*{endTime}">
+                            <p id="defaultMess2" class="fst-italic float-end text-secondary my-auto" style="font-size: 14px;">(Mặc định: Mở khi tạo phòng)</p>
+                        </div>
                     </div>
 
                     <!-- Ẩn -->
-                    <div hidden>
-                        <div id="list">
-                            <div th:each="attendee, iterStat : *{attendees}">
-                                <input type="text" th:field="*{attendees[__${iterStat.index}__].checkInCode}"/>
-                                <input type="text" th:field="*{attendees[__${iterStat.index}__].name}"/>
-                            </div>
-                        </div>
-                        <input type="number" th:field="*{latitude}">
-                        <input type="number" th:field="*{longitude}">
+                    <div id="list">
+                    <div th:each="attendee, iterStat : *{attendees}">
+                        <input type="hidden" th:field="*{attendees[__${iterStat.index}__].checkInCode}"/>
+                        <input type="hidden" th:field="*{attendees[__${iterStat.index}__].name}"/>
                     </div>
+                    </div>
+                    <input id="latitude" type="hidden" th:field="*{latitude}">
+                    <input id="longitude" type="hidden" th:field="*{longitude}">
                 </div>
 
-                <!-- Button -->
-                <div class="w-100 text-center mt-5 mb-3">
-                    <button class="btn btn-outline-secondary" id="backBtn" style="width: 200px;" >
-                        <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
-                    </button>
-                    <button type="submit" class="btn btn-success" style="width: 200px;">Tạo phòng</button>
+                <div class="d-flex w-100 justify-content-center mt-3">
+                    <button id="backBtn" class="btn btn-sm btn-secondary">Quay lại trang chủ</button>
+                    <button class="btn btn-sm btn-outline-dark ms-2 px-3">Tạo phòng</button>
                 </div>
             </form>
-
-            </div>
         </div>
 
-        <!-- Get list dialog -->
-        <div class="modal fade" id="getListDialog" aria-hidden="true">
-            <div class="modal-dialog">
-            <div class="modal-content pt-0 px-3 translate-middle-x start-50" style="width: 700px;">
-                <div class="ms-2 mt-2 text-center fs-5 fw-bold">Danh sách người tham gia</div>
-                <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
-                
-                <!-- content -->
-                <small id="count" class="mt-4">Số lượng: <b th:text="${data.attendees.size()}"></b></small>
-                <div class="row" style="font-size: 14px;">
-                    <div class="col-6">
-                        <table class="table" id="previewTable" th:object="${data}">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Mã điểm danh</th>
-                                    <th>Tên</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <div th:each="attendee, iterStat : *{attendees}">
+        <!-- Upload list dialog -->
+        <div hidden id="uploadListDialog" class="w-100 h-100 position-fixed top-0 start-0 overflow-y-auto" style="background-color: rgba(128, 128, 128, 0.478);">
+            <div class="position-absolute start-50 translate-middle-x" style="width: 800px; margin-top: 80px; margin-bottom: 50px;">
+                <div class="card card-body pt-2">
+                    <div class="text-center fs-5 fw-bold">Cập nhật danh sách người tham gia</div>
+                    <div class = "fs-6 fst-italic w-100 text-center text-secondary">(*) Lưu ý những dòng trống trong file excel sẽ không được đọc</div>
+                    <button class="btn btn-close position-absolute top-0 end-0 m-1" onclick="uploadListDialog.hidden = true"></button>
+                    
+                    <!-- content -->
+                    <small id="count" class="mt-2">Số lượng: <b th:text="${data.attendees.size()}"></b></small>
+                    <div class="row" style="font-size: 14px;">
+                        <!-- Preview -->
+                        <div class="col-6">
+                            <table class="table" id="previewTable" th:object="${data}">
+                                <thead>
                                     <tr>
-                                        <td th:text="${iterStat.index + 1}"></td>
-                                        <td th:text="${attendee.checkInCode}"></td>
-                                        <td th:text="${attendee.name}"></td>
+                                        <th>STT</th>
+                                        <th>Mã điểm danh</th>
+                                        <th>Tên</th>
                                     </tr>
-                                </div>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <div th:each="attendee, iterStat : *{attendees}">
+                                        <tr>
+                                            <td th:text="${iterStat.index + 1}"></td>
+                                            <td th:text="${attendee.checkInCode}"></td>
+                                            <td th:text="${attendee.name}"></td>
+                                        </tr>
+                                    </div>
+                                </tbody>
+                            </table>
+                        </div>
+    
+                        <!-- Upload Config -->
+                        <div class="col-6">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Thứ tự cột chứa mã điểm danh:</span>
+                                <input type="text" style="width: 40px;" id="idColumnInput" class="border-1 border-secondary px-1">
+                            </div>
+    
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Thứ tự cột chứa tên:</span>
+                                <input type="text" style="width: 40px;" id="nameColumnInput" class="border-1 border-secondary px-1">
+                            </div>
+    
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Dòng bắt đầu:</span>
+                                <input type="text" style="width: 40px;" id="startRowInput" class="border-1 border-secondary px-1">
+                            </div>
+    
+                            <div class="d-flex flex-column mb-2">
+                            <span class="mb-2">Tải lên file excel:</span>
+                            <input type="file" accept=".xlsx, .csv" id="getListFromExcelBtn"/>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Thứ tự cột chứa mã điểm danh:</span>
-                            <input type="text" style="width: 40px;" id="idColumnInput" class="border-1 border-secondary px-1">
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Thứ tự cột chứa tên:</span>
-                            <input type="text" style="width: 40px;" id="nameColumnInput" class="border-1 border-secondary px-1">
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Dòng bắt đầu:</span>
-                            <input type="text" style="width: 40px;" id="startRowInput" class="border-1 border-secondary px-1">
-                        </div>
-
-                        <div class="d-flex flex-column mb-2">
-                        <span class="mb-2">Tải lên file excel:</span>
-                        <input type="file" accept=".xlsx, .csv" id="getListFromExcelBtn"/>
-                        </div>
+    
+                    <!-- Action -->
+                    <div class="d-flex justify-content-center mt-3">
+                        <button class="btn btn-sm btn-secondary" style="width: 100px;" onclick="instructionImage.hidden = false">Hướng dẫn</button>
+                        <button class="btn btn-sm btn-outline-dark ms-2" id="saveBtn" style="width: 100px;">Lưu</button>
                     </div>
                 </div>
-
-                <div class="d-flex m-2 justify-content-center my-3">
-                <button class="btn btn-info text-light btn-sm" style="width: 100px;">Hướng dẫn</button>
-                <button class="ms-2 btn btn-success text-light btn-sm" id="saveBtn" style="width: 100px;" data-bs-dismiss="modal">Lưu</button>
-                </div>
-            </div>
+                <div class="w-100" style="height: 50px;"></div>
             </div>
         </div>
 
         <!-- Get location dialog -->
-        <div class="modal fade" id="getLocationDialog" aria-hidden="true">
-            <div class="modal-dialog">
-            <div class="modal-content pt-0 px-3 translate-middle-x start-50" style="width: 700px;">
-                <div class="ms-2 mt-2 text-center fs-5 fw-bold">Lấy vị trí</div>
-                <button class="btn btn-close position-absolute top-0 start-100 p-2" data-bs-dismiss="modal" style="transform: translateX(-100%);"></button>
-                
+        <div hidden id="getLocationDialog" class="w-100 h-100 position-fixed top-0 start-0" style="background-color: rgba(128, 128, 128, 0.478);">
+            <div class="card card-body position-absolute start-50 translate-middle-x pt-2" style="width: 800px; margin-top: 80px;">
+                <div class="text-center fs-5 fw-bold">Lấy vị trí</div>
+                <button class="btn btn-close position-absolute top-0 end-0 m-1" onclick="getLocationDialog.hidden = true"></button>
+            
                 <!-- content -->
                 <div class="row mt-4" style="font-size: 14px;">
-                <div class="col-6">
+                    <div class="col-6">
                     <div class="d-flex justify-content-between">
                         <label class="align-content-center">Tùy chọn</label>
                         <select id="getLocationMethodSelect" class="border-1 border-secondary p-1">
-                            <option value="1">Mặc định</option>
-                            <option value="2">Lấy vị trí thủ công (Bằng GG Maps)</option>
-                            <option value="3">Lấy vị trí bằng điện thoại</option>
+                        <option value="1">Mặc định</option>
+                        <option value="2">Lấy vị trí thủ công (Bằng GG Maps)</option>
+                        <option value="3">Lấy vị trí bằng điện thoại</option>
                         </select>
                     </div>
-                </div>
-                <div class="col-6">
+                    </div>
+                    <div class="col-6">
+                
                     <!-- option 1 -->
                     <select id="locationSelect" class="w-75 mb-2 border-1 border-secondary p-1">
                         <option value="1">PTIT</option>
                     </select>
-        
+                
                     <!-- option 2 -->
                     <input id="positionInput" type="text" placeholder="Kinh độ, Vĩ độ" class="mb-2 border-1 border-secondary p-1" hidden>
-                    
+                
                     <!-- option 3 -->
                     <div id="QR" hidden>
                         <div class="d-flex">
-                            <img src="" alt="" width="160px" height="160px">
-                            <div class="d-flex flex-column mx-2">
-                                <span class=" text-secondary fst-italic">Dùng điện thoại scan QR để lấy vị trí</span>
-                                <div class="d-flex flex-column mt-3 pe-2">
-                                    <span>Kết quả:</span>
-                                    <p id="qrResult">[trống]</p>
-                                </div>
+                        <img src="" alt="" width="160px" height="160px">
+                        <div class="d-flex flex-column mx-2">
+                            <span class=" text-secondary fst-italic">Dùng điện thoại scan QR để lấy vị trí</span>
+                            <div class="d-flex flex-column mt-3 pe-2">
+                            <span>Kết quả:</span>
+                            <p id="qrResult">[trống]</p>
                             </div>
                         </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
+            
+                <!-- Action -->
+                <div class="d-flex justify-content-center mt-3">
+                    <button class="btn btn-sm btn-secondary" style="width: 100px;">Hướng dẫn</button>
+                    <button class="btn btn-sm btn-outline-dark ms-2" onclick="saveLocation()" style="width: 100px;">Lưu</button>
                 </div>
-
-                <div class="d-flex m-2 justify-content-center my-3">
-                <button class="btn btn-info text-light btn-sm" style="width: 100px;">Hướng dẫn</button>
-                <button class="ms-2 btn btn-success text-light btn-sm" id="saveBtn" style="width: 100px;">Lưu</button>
-                </div>
-            </div>
             </div>
         </div>
 
@@ -250,9 +214,16 @@
                 <p id="noti-msg" class="text-center px-2"></p>
                 
                 <div class="d-flex justify-content-center mt-3">
-                    <button class="btn btn-outline-success btn-sm text-center" style="width: 100px;" onclick="notification.hidden = true">OK</button>
+                    <button class="btn btn-outline-secondary btn-sm text-center" style="width: 100px;" onclick="notification.hidden = true">OK</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Instruction image -->
+        <div hidden id="instructionImage" class="w-100 h-100 top-0 start-0 position-fixed" style="z-index: 10000; background-color: rgba(128, 128, 128, 0.466);">
+            <button class="btn btn-close fs-1 position-absolute end-0 top-0 m-2" onclick="instructionImage.hidden = true"></button>
+            <img src="../static/images/hd1.jpg" alt="" class="position-absolute top-0 mt-5 start-50 translate-middle-x border-2 bg-dark sh"
+            style="max-width: 1000px;">
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>

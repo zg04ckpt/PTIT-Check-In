@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+<head>
+    <title layout:fragment="title">Chờ mở phòng</title>
+    <link rel="stylesheet" href="/css/check-in.css">
+</head>
+<body>
+
+    <div layout:fragment="content">
+
+        <div class="card card-body position-absolute start-50 pt-2 translate-middle-x shadow"
+        style="margin-top: 50px; width: 380px;">
+
+            <div class="fs-5 fw-bold mt-0">Đợi mở phòng</div>
+
+            <div class="d-flex justify-content-between fs-6 mb-2">
+                <p class="text-secondary">Phòng điểm danh sẽ mở sau:</p>
+                <b id="time" class="text-info"></b>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button style="width: 100px;" class="btn btn-sm btn-outline-success mx-1" onclick="showOpenRoomConfirm()">Mở luôn</button>
+            </div>
+        </div>
+
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0" style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x" style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2" onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                
+                <div id="action" class="d-flex justify-content-center mt-3">
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const roomId = /*[[${roomId}]]*/ "";
+            const remaining = /*[[${remaining}]]*/ 0;
+        </script>
+        <script src="/js/wait-open.js"></script>
+    </div>
+    
+</body>
+</html>

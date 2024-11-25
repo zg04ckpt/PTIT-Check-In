@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title layout:fragment="title">Quản lý phòng</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+
+        
+
+        <!-- Danh sách phòng điểm danh -->
+        <div class="w-[80vw] h-[80vh] bg-white border border-black rounded-sm mt-[10vh] ml-[10vw] relative">
+            <h4 class="text-4xl font-medium text-center mt-2">Danh sách phòng điểm danh</h4>
+            <!-- Bảng chi tiết  -->
+            <div class="max-h-80 overflow-y-auto mt-3">
+                <div class="d-flex ms-5">
+                    <button class="btn btn-sm btn-outline-dark px-3" onclick="showLogAboutRoom()">Xem log trạng thái web</button>
+                    <button class="btn btn-sm btn-outline-dark px-3 ms-2" onclick="deleteAllSystemLog()">Xóa hết log hệ thống</button>
+                </div>
+
+                <table class="status-table">
+                    <thead>
+                        <tr>
+                            <th class="stt-column">STT</th>
+                            <th class="tenphong-column">Tên Phòng</th>
+                            <th class="chuphong-column">Chủ Phòng</th>
+                            <th class="trangthai-column">Trạng Thái</th>
+                            <th class="chitiet-column">Mở</th>
+                            <th class="chitiet-column">Đóng</th>
+                            <th class="xoa-column">Xóa Phòng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="RoomStatusDTO ,iterStat:${listRoomStatus}" th:attr="data-id=${RoomStatusDTO.id}">
+                            <td class="stt-column" th:text="${iterStat.count}"></td>
+                            <td class="tenphong-column" th:text="${RoomStatusDTO.name}"></td>
+                            <td class="chuphong-column" th:text="${RoomStatusDTO.createBy}"></td>
+                            <td class="trangthai-column"></td>
+                            <td class="chitiet-column detail" th:text="${RoomStatusDTO.startTime}"></td>
+                            <td class="chitiet-column detail" th:text="${RoomStatusDTO.endTime}"></td>
+                            <td class="xoa-column">
+                                <button class="delete-button " onclick="deleteRoom(this)">Xóa phòng</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- Notification -->
+        <div id="notification" class="position-fixed w-100 h-100 top-0 start-0"
+            style="z-index: 100000; background-color: rgba(128, 128, 128, 0.551);" hidden>
+            <div class="card card-body p-2 position-absolute start-50 translate-middle-x"
+                style="width: 360px; margin-top: 80px;">
+                <button class="btn btn-close position-absolute end-0 top-0 m-2"
+                    onclick="notification.hidden = true"></button>
+                <div class="m-0 text-center" style="font-size: 18px;">Thông báo</div>
+                <hr class="mt-2 mb-2">
+                <p id="content" class="text-center px-2"></p>
+                <div id="action" class="d-flex justify-content-center mt-3">
+                </div>
+            </div>
+        </div>
+
+        <!-- Log information -->
+        <div id="log" class="w-100 h-100 position-fixed top-0 start-0" hidden>
+            <div class="card card-body col-lg-8 offset-lg-2 pt-2 shadow"
+            style="margin-top: 60px; height: 500px;">
+              <div id="log-title" class="fs-6 text-center mt-0"></div>
+              <button class="btn btn-close position-absolute top-0 end-0 m-2" onclick="log.hidden = true"></button>
+      
+              <div class="table-wrapper mt-2">
+                <table class="table table-sm table-auto table-hover table-bordered" style="font-size: 12px;">
+                  <thead>
+                    <tr>
+                      <th class="w-auto text-center align-content-start">STT</th>
+                      <th class="col-3 text-center align-content-start">Thời gian</th>
+                      <th class="col-3 text-center align-content-start">IP</th>
+                      <th class="col-6 text-center align-content-start">Mô tả</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <tr>
+                      <td>1</td>
+                      <td>14:12 - 19/12/2023</td>
+                      <td>192.186.14.5</td>
+                      <td>Tham gia điểm danh với mã: B22DCCN589</td>
+                    </tr> -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript"> var rooms = /*[[${listRoomStatus}]]*/ {}; </script>
+        <script src="/js/admin-dashboard.js"></script>
+    </div>
+
+</body>
+
+</html>
