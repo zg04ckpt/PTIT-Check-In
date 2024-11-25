@@ -4,7 +4,7 @@ spring:
   application:
     name: ptit-checkin
   datasource:
-    url: jdbc:mysql://localhost:3306/db_v1
+    url: jdbc:mysql://localhost:3306/db_v3
     username: root
     password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver

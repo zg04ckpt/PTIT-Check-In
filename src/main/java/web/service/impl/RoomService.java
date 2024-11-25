@@ -84,9 +84,7 @@ public class RoomService implements IRoomService {
                 data.latitude,
                 data.longitude,
                 data.range,
-                data.enableAutoApproval,
-                LocalDateTime.now(),
-                false
+                LocalDateTime.now()
         );
 
         //Thiết lập trạng thái phòng
@@ -140,7 +138,6 @@ public class RoomService implements IRoomService {
         data.acceptRange = room.getAcceptRange();
         data.startTime = room.getStartTime();
         data.endTime = room.getEndTime();
-        data.enableAutoApproval = room.isEnableAutoApproval();
         data.createOn = room.getCreateOn();
         data.code = room.getCode();
         data.url = room.getUrl();

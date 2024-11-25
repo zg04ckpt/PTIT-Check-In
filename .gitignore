@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### ignore prod config ###
-application-prod.yml
+**/application-prod.yml
