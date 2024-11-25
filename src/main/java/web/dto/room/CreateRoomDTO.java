@@ -17,5 +17,4 @@ public class CreateRoomDTO {
     public double range;
     public LocalDateTime startTime;
     public LocalDateTime endTime;
-    public boolean enableAutoApproval;
 }

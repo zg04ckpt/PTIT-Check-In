@@ -28,14 +28,12 @@ public class Room {
     private LocalDateTime startTime; // thời gian mở phòng (null -> mở lúc tạo)
     @Column(nullable = true)
     private LocalDateTime endTime; // thời gian đóng phòng (null ->đóng bằng tay)
-    private boolean enableAutoApproval; // có bật tự động duyệt hay ko
     @Column(nullable = false)
     private LocalDateTime createOn; // tạo phòng lúc nào
     @Column(nullable = false, unique = true)
     private String code; //mã ngẫu nhiên 6 chữ in hoa duy nhất
     @Column(nullable = false, unique = true)
     private String url; //link vào phòng
-    private boolean isEnded; // đã đóng phòng hay chưa
     @Enumerated(EnumType.ORDINAL)
     private RoomStatus status; // trạng thái phòng
 
@@ -45,7 +43,7 @@ public class Room {
     public Room() {
     }
 
-    public Room(String id, String name, String createBy, boolean requireCheckLocation, double latitude, double longitude, double acceptRange, boolean enableAutoApproval, LocalDateTime createOn, boolean isEnded) {
+    public Room(String id, String name, String createBy, boolean requireCheckLocation, double latitude, double longitude, double acceptRange, LocalDateTime createOn) {
         this.id = id;
         this.name = name;
         this.createBy = createBy;
@@ -53,9 +51,7 @@ public class Room {
         this.latitude = latitude;
         this.longitude = longitude;
         this.acceptRange = acceptRange;
-        this.enableAutoApproval = enableAutoApproval;
         this.createOn = createOn;
-        this.isEnded = isEnded;
 
         this.attendees = new ArrayList<>();
     }
@@ -158,22 +154,6 @@ public class Room {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
-    }
-
-    public boolean isEnableAutoApproval() {
-        return enableAutoApproval;
-    }
-
-    public void setEnableAutoApproval(boolean enableAutoApproval) {
-        this.enableAutoApproval = enableAutoApproval;
-    }
-
-    public boolean isEnded() {
-        return isEnded;
-    }
-
-    public void setEnded(boolean ended) {
-        isEnded = ended;
     }
 
     public void generateRandomCode() {

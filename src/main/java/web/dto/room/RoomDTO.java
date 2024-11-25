@@ -17,7 +17,6 @@ public class RoomDTO {
     public double acceptRange; //meter
     public LocalDateTime startTime;
     public LocalDateTime endTime;
-    public boolean enableAutoApproval;
     public LocalDateTime createOn;
     public String code;
     public String url;
