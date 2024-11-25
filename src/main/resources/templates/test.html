@@ -14,13 +14,25 @@
 
 <body>
 
-  <div class="card card-body start-50 position-absolute translate-middle-x shadow-sm" style="width: 400px; margin-top: 100px;">
-    <h5 class="text-center">Đăng nhập cho admin</h5>
-    <form th:action="@{/admin/login}" method="post" class="text-center">
-      <input type="password" placeholder="Nhập mật khẩu" class="form-control mt-3">
-      <button class="mt-2 btn btn-outline-dark btn-sm px-5 mt-3">Đăng nhập</button>
-    </form>
+  <!-- Thịnh -->
+  <div class="position-absolute start-50 translate-middle-x card card-body shadow-sm px-4"
+  style="padding: 15px; height: auto; width: 360px;">
+  <div class="fs-5 fw-bolder text-center">Chờ điểm danh</div>
+  <p class="fst-italic text-center" style="margin-bottom: 30px;">
+      <b id="remainingTime" class="text-info"></b>
+  </p>
+  <p class="mt-1 fw-light text-secondary fst-italic text-center mb-2">Vui lòng không thoát trình duyệt hoặc để chạy ngầm cho đến khi kết thúc điểm danh</p>
+  <div class="d-flex flex-column mb-5" style="font-size: 18px;">
+      <span class="mb-2">Tên phòng: <b th:text="${data.roomName}">dfsdfsdfsdf</b></span>
+      <span class="mb-2">Mã phòng: <b th:text="${data.roomCode}">[mã room]</b></span>
+      <span class="mb-2">Chủ phòng: <b th:text="${data.roomOwner}">[tên chủ room]</b></span>
+      <span class="mb-2">Mã điểm danh: <b th:text="${data.checkInCode}">[tên chủ room]</b></span>
+      <span class="mb-2">Tên điểm danh: <b th:text="${data.attendeeName}">[tên điểm danh]</b></span>
   </div>
+  <button class="btn btn-outline-danger rounded-0" onclick="dialog.hidden = false">
+      Thoát phòng
+  </button>
+</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="../static/js/test.js"></script>
