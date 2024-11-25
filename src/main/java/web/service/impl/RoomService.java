@@ -1,5 +1,6 @@
 package web.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import web.dto.attendee.AttendeeDTO;
 import web.dto.attendee.AttendeeStatusDTO;
 import web.dto.attendee.CheckInResultDTO;
@@ -47,6 +48,8 @@ public class RoomService implements IRoomService {
     private final IAttendeeRepository attendeeRepository;
     private final SimpMessagingTemplate sender;
     private final ILogService logService;
+    @Value("${spring.base-url}")
+    private String baseUrl;
     @Autowired
     public RoomService(IRoomRepository roomRepository, IAttendeeRepository attendeeRepository, SimpMessagingTemplate sender, ILogService logService) {
         this.roomRepository = roomRepository;
@@ -72,12 +75,7 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public boolean isRoomExisted(String roomId) {
-        return roomRepository.existsById(roomId);
-    }
-
-    @Override
-    public Room createNewRoom(CreateRoomDTO data, HttpServletRequest request) {
+    public Room createNewRoom(CreateRoomDTO data) {
         Room room = new Room(
                 UUID.randomUUID().toString(),
                 data.name,
@@ -102,7 +100,7 @@ public class RoomService implements IRoomService {
         room.setEndTime(data.endTime);
 
         // Tạo link phòng
-        room.setUrl("https://" + request.getServerName() + "/attendees/join-room?roomId=" + room.getId());
+        room.setUrl(baseUrl + "/attendees/join-room?roomId=" + room.getId());
 
         // Tạo mã phòng
         room.generateRandomCode();
@@ -263,7 +261,7 @@ public class RoomService implements IRoomService {
         // Xoa phòng sau 15p
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable task = () -> {
-
+            deleteById(roomId);
             logService.writeLog("Đã xóa tự động phòng " + room.getName(), null, null, "--");
             scheduler.shutdown();
         };
@@ -359,9 +357,5 @@ public class RoomService implements IRoomService {
     @Override//xóa phòng
     public void deleteById(String id) {
         roomRepository.deleteById(id);
-    }
-    @Override//kiếm phòng
-    public Room findByID(String id) {
-        return roomRepository.getReferenceById(id);
     }
 }

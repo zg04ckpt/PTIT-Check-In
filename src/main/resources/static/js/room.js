@@ -37,6 +37,7 @@ function setRowStatus(row, status) {
             cols[4].innerHTML = '';
             const approvalBtn = document.createElement('button');
             approvalBtn.className = 'btn btn-sm btn-success py-0';
+            approvalBtn.style = 'height: 100%'
             approvalBtn.textContent = "Duyệt";
             approvalBtn.onclick = () => setStatus(attendeeId, CheckInStatus.ACCEPTED);
             cols[4].appendChild(approvalBtn);
@@ -253,7 +254,7 @@ function getViolation() {
     debugger
     const range = Number(detail.querySelector("#range").value);
     const ip = detail.querySelector('#ip').value;
-    if(range != 0 || device != 'Any' || ip != '') {
+    if(range != 0 || ip != '') {
         let filteredList = room.attendees;
         if(range != 0) {
             filteredList = filteredList.filter(e => e.range != '--' && e.distance > range);
@@ -335,7 +336,6 @@ function loadDetailTable(attendees) {
 
 function resetFilter() {
     detail.querySelector("#range").value = 0;
-    detail.querySelector('#device').value = 'Any';
     detail.querySelector('#ip').value = '';
     loadDetailTable(room.attendees);
     detail.querySelector("#resetBtn").hidden = true;
@@ -351,6 +351,18 @@ function showRealityLocation(index) {
     //         window.open(res.url, "_blank");
     //     }
     // });
+}
+
+document.getElementById('getIPBtn').onclick = e => {
+    e.preventDefault();
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            detail.querySelector('#ip').value = data.ip;
+        })
+        .catch(error => {
+            console.error('Lỗi khi lấy địa chỉ IP:', error);
+        });
 }
 
 // ----------------- OTHER --------------------

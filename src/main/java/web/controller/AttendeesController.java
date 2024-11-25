@@ -42,16 +42,19 @@ public class AttendeesController {
         if(roomService.getStatus(roomId) == RoomStatus.CLOSED) {
             return "redirect:" + baseUrl + "/error";
         }
-
-        //trả về trang check-in.html kèm theo biến DTO
+        //trả về trang check-in.html kèm theo DTO
         model.addAttribute("data", attendeeService.getCheckInData(roomId));
+        // System log
         logService.writeLog("Truy cập trang check-in", null, null, request);
         return "check-in.html";
     }
 
     @PostMapping("/join-room")
     public String joinRoom(@ModelAttribute("data") CheckInDTO data, Model model, HttpSession session, HttpServletRequest request) {
-
+        // Kiểm tra nếu phòng đã đóng
+        if(roomService.getStatus(data.roomId) == RoomStatus.CLOSED) {
+            return "redirect:" + baseUrl + "/error";
+        }
 
         Attendee attendee = attendeeService.getByCheckInCodeAndRoomId(data.checkInCode, data.roomId);
         // Kiểm tra attendee có trong danh sách điểm danh hay ko
@@ -82,9 +85,6 @@ public class AttendeesController {
         session.setAttribute("attendeeId", attendee.getId());
         session.setAttribute("joinedRoomId", data.roomId);
 
-        // System log
-        logService.writeLog("Check-in thành công", null, null, request);
-
         return "redirect:" + baseUrl + "/attendees/waiting";
     }
 
@@ -92,6 +92,12 @@ public class AttendeesController {
     public String getWaitingRoom(Model model, HttpSession session, HttpServletRequest request){
         String attendeeId = session.getAttribute("attendeeId").toString();
         String roomId = session.getAttribute("joinedRoomId").toString();
+
+        // Kiểm tra nếu phòng đã đóng
+        if(roomService.getStatus(roomId) == RoomStatus.CLOSED) {
+            return "redirect:" + baseUrl + "/attendees/clear-session";
+        }
+
         WaitingRoomDTO data = attendeeService.getWaitingData(roomId, attendeeId);
 
         // System log
@@ -111,9 +117,6 @@ public class AttendeesController {
 
         session.removeAttribute("attendeeId");
         session.removeAttribute("joinedRoomId");
-
-        // System log
-        logService.writeLog("Rời phòng", null, null, request);
 
         return "redirect:" + baseUrl;
     }

@@ -14,7 +14,7 @@
 
         <!-- Hưng -->
         <!-- Content -->
-        <div class="card card-body col-sm-6 offset-sm-3 shadow-sm">
+        <div class="card card-body col-md-6 offset-md-3 shadow-sm">
             <div class="text-center fw-light fs-4">Tạo phòng điểm danh mới</div>
 
             <form th:object="${data}" th:action="@{/rooms/create-room}" method="post" class="mx-2">
@@ -34,7 +34,7 @@
                         <div class="mt-2 d-flex">
                             <button id="updateListBtn" class="btn btn-sm btn-dark"><i class='bx bx-upload'></i> Cập nhật</button>
                             <p id="emptyMess" class="fst-italic fw-bold text-danger my-auto ms-2" style="font-size: 14px;">Danh sách trống!</p>
-                            <p id="successMess" hidden class="fst-italic fw-bold text-success my-auto ms-2" style="font-size: 14px;">Đã tải danh sách <i class='bx bx-check'></i></p>
+                            <p id="successMess" hidden class="fst-italic fw-bold text-success my-auto ms-2" style="font-size: 14px;">Đã tải danh sách <i class='bx fw-bolder bx-check'></i></p>
                         </div>
                     </div>
 
@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="d-flex w-100 justify-content-center mt-3">
-                    <button class="btn btn-sm btn-secondary">Quay lại trang chủ</button>
+                    <button id="backBtn" class="btn btn-sm btn-secondary">Quay lại trang chủ</button>
                     <button class="btn btn-sm btn-outline-dark ms-2 px-3">Tạo phòng</button>
                 </div>
             </form>

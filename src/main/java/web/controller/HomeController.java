@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class HomeController {
-
     private final IRoomService roomService;
     private final ILogService logService;
 

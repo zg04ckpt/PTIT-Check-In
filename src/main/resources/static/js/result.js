@@ -22,7 +22,7 @@ function getCurrentDateFormatted() {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
 }
 
 async function downResult() {
@@ -31,11 +31,11 @@ async function downResult() {
 
     await downloadFile(
         '/rooms/export-data',
-        `Kết quả điểm danh - ${roomName} - ${currentDate}.xlsx`
+        `Kết quả điểm danh-${roomName}-${currentDate}.xlsx`
     );
     await downloadFile(
         '/rooms/export-log',
-        `Lịch sử phòng - ${roomName} - ${currentDate}.xlsx`
+        `Lịch sử phòng-${roomName}-${currentDate}.xlsx`
     );
 }
 

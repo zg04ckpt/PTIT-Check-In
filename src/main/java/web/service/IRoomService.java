@@ -16,8 +16,7 @@ public interface IRoomService {
     Room findByCode(String code);
     Room findById(String Id);
     boolean isRoomNameExisted(String name);
-    boolean isRoomExisted(String roomId);
-    Room createNewRoom(CreateRoomDTO data, HttpServletRequest request);
+    Room createNewRoom(CreateRoomDTO data);
     RoomDTO getRoomData(String roomId);
     ResultDTO getResult(String roomId);
     void setAttendeeStatus(String jsonData, HttpSession session, String ip);
@@ -31,5 +30,4 @@ public interface IRoomService {
     // --------- Manage Thịnh + Hưng ----------------
     List<RoomStatusDTO> listRoomStatusDTO();
     void deleteById(String id);
-    Room findByID(String id);
 }

@@ -89,3 +89,7 @@ td {
 tbody {
     background-color: #dff9fb;
 }
+
+.status-table * {
+    font-size: 13px;
+}

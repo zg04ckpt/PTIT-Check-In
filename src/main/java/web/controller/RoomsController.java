@@ -23,22 +23,18 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Objects;
 
-// id phong mau: 6f7ffd60-959a-4953-9444-6bf0919dbe4a
-// ma phong mau: HS12JK
 @Controller
 @RequestMapping("/rooms")
 public class RoomsController {
     private final IRoomService roomService;
-    private final IAttendeeService attendeeService;
     private final IFileService fileService;
     private final ILogService logService;
 
     @Value("${spring.base-url}")
     private String baseUrl;
 
-    public RoomsController(IRoomService roomService, IAttendeeService attendeeService, IFileService fileService, ILogService logService) {
+    public RoomsController(IRoomService roomService, IFileService fileService, ILogService logService) {
         this.roomService = roomService;
-        this.attendeeService = attendeeService;
         this.fileService = fileService;
         this.logService = logService;
     }
@@ -48,19 +44,16 @@ public class RoomsController {
     public String getCreateForm(Model model, HttpServletRequest request) {
         CreateRoomDTO data = new CreateRoomDTO();
         model.addAttribute("data", data);
-
         // System log
         logService.writeLog("Truy cập trang tạo phòng", null, null, request);
-
         return "create-room.html";
     }
 
     @PostMapping("/create-room")
     public String createRoom(@ModelAttribute("data") CreateRoomDTO data, Model model, HttpServletRequest request, HttpSession session) {
         String errorMessage = null;
-
         if(data.name.isEmpty() || roomService.isRoomNameExisted(data.name)) {
-            errorMessage = "Tên phòng trống/không hợp lệ";
+            errorMessage = "Tên phòng trống/đã tồn tại";
         } else if(data.createBy.isEmpty()) {
             errorMessage = "Tên chủ phòng trống";
         } else if(data.attendees.isEmpty() || !roomService.isAttendeeListValid(data.attendees)) {
@@ -68,7 +61,7 @@ public class RoomsController {
         } else if(data.requireCheckLocation && (data.latitude == 0 || data.longitude == 0)) {
             errorMessage = "Vị trí không hợp lệ";
         } else {
-            Room newRoom = roomService.createNewRoom(data, request);
+            Room newRoom = roomService.createNewRoom(data);
             if(newRoom == null) {
                 errorMessage = "Tạo phòng thất bại";
             } else {
@@ -81,17 +74,14 @@ public class RoomsController {
                 return "redirect:" + baseUrl + "/rooms/";
             }
         }
-
         model.addAttribute("data", data);
         model.addAttribute("message", errorMessage);
-
         // System log
         logService.writeLog("Tạo phòng thất bại", null, null, request);
-
         return "create-room.html";
     }
 
-    // Quản lý phòng
+    // Lấy trạng thái phòng
     @GetMapping("/")
     public String getRoom(Model model, HttpSession session, HttpServletRequest request) {
         String roomId = session.getAttribute("roomId").toString();
@@ -103,7 +93,6 @@ public class RoomsController {
         }
         // System log
         logService.writeLog("Chủ phòng truy cập vào phòng", null, null, request);
-
         model.addAttribute("data", roomService.getRoomData(roomId));
         return "room.html";
     }
@@ -114,9 +103,8 @@ public class RoomsController {
         long remainingTime = roomService.getRemainingSecondsUntilRoomOpens(roomId);
         model.addAttribute("roomId", roomId);
         model.addAttribute("remaining", remainingTime);
-        // System log
-        logService.writeLog("Chủ phòng chờ mở phòng: " + remainingTime + "s", null, null, request);
-
+        // Room log
+        logService.writeLog("Chờ mở phòng: " + remainingTime + "s", roomId, null, request);
         return "wait-open.html";
     }
 
@@ -128,7 +116,7 @@ public class RoomsController {
     }
 
     @GetMapping("/result")
-    public String getResult(Model model, HttpSession session, HttpServletRequest request) {
+    public String getResult(Model model, HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
         if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
             model.addAttribute("data", roomService.getResult(roomId));
@@ -138,7 +126,7 @@ public class RoomsController {
     }
 
     @GetMapping("/export-data")
-    public ResponseEntity<InputStreamResource> exportResult(HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<InputStreamResource> exportResult(HttpSession session) {
         String roomId = session.getAttribute("roomId").toString();
         if(roomService.getStatus(roomId) == RoomStatus.OPENING) {
             ByteArrayInputStream stream = fileService.exportDataToExcelFile(roomId);

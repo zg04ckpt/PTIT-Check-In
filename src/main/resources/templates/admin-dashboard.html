@@ -15,22 +15,23 @@
 
         <!-- Danh sách phòng điểm danh -->
         <div class="w-[80vw] h-[80vh] bg-white border border-black rounded-sm mt-[10vh] ml-[10vw] relative">
-            <h1 class="text-4xl font-medium text-center mt-2">Danh sách phòng điểm danh</h1>
+            <h4 class="text-4xl font-medium text-center mt-2">Danh sách phòng điểm danh</h4>
             <!-- Bảng chi tiết  -->
-            <div class="max-h-80 overflow-y-auto	 ">
+            <div class="max-h-80 overflow-y-auto mt-3">
                 <div class="d-flex ms-5">
                     <button class="btn btn-sm btn-outline-dark px-3" onclick="showLogAboutRoom()">Xem log trạng thái web</button>
                     <button class="btn btn-sm btn-outline-dark px-3 ms-2" onclick="deleteAllSystemLog()">Xóa hết log hệ thống</button>
                 </div>
 
-                <table>
+                <table class="status-table">
                     <thead>
                         <tr>
                             <th class="stt-column">STT</th>
                             <th class="tenphong-column">Tên Phòng</th>
                             <th class="chuphong-column">Chủ Phòng</th>
                             <th class="trangthai-column">Trạng Thái</th>
-                            <th class="chitiet-column">Chi tiết</th>
+                            <th class="chitiet-column">Mở</th>
+                            <th class="chitiet-column">Đóng</th>
                             <th class="xoa-column">Xóa Phòng</th>
                         </tr>
                     </thead>
@@ -40,9 +41,8 @@
                             <td class="tenphong-column" th:text="${RoomStatusDTO.name}"></td>
                             <td class="chuphong-column" th:text="${RoomStatusDTO.createBy}"></td>
                             <td class="trangthai-column"></td>
-                            <td class="chitiet-column detail">
-                                --
-                            </td>
+                            <td class="chitiet-column detail" th:text="${RoomStatusDTO.startTime}"></td>
+                            <td class="chitiet-column detail" th:text="${RoomStatusDTO.endTime}"></td>
                             <td class="xoa-column">
                                 <button class="delete-button " onclick="deleteRoom(this)">Xóa phòng</button>
                             </td>

@@ -125,6 +125,9 @@ function saveLocation() {
         showNotification("Lấy mốc vị trí thất bại");
         return;
     }
+    // tạm thời
+    latitudeInp.value = 20.98113532126582;
+    longitudeInp.value = 105.78753244306769;
     showNotification("Lấy mốc vị trí thành công");
     document.getElementById('getLocationDialog').hidden = true;
 }
@@ -181,6 +184,11 @@ window.onload = e => {
     const end = document.getElementById('endContainer');
     end.querySelector('input').checked = data.endTime != null;
     end.querySelector('#endTimeInput').hidden = data.endTime == null;
-    start.querySelector('#endTimeInput').value = data.endTime;
+    end.querySelector('#endTimeInput').value = data.endTime;
     end.querySelector('p').hidden = data.endTime != null;
+}
+
+document.querySelector("#backBtn").onclick = e => {
+    e.preventDefault();
+    window.location.href = '/'
 }
